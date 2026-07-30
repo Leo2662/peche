@@ -160,11 +160,55 @@ export interface ScoreResult {
 
 export type Verdict = 'EXCELLENT' | 'GOOD' | 'AVERAGE' | 'POOR';
 
+/**
+ * Why a window is good, as a stable identifier rather than a phrase.
+ *
+ * The scoring engine carries no copy: it names the condition, and the UI turns
+ * that into one French word. Keeping the id out of the copy also means cached
+ * forecasts survive a rewording.
+ */
+export type ReasonKind =
+  // tide window
+  | 'flood'
+  | 'slackHigh'
+  | 'ebb'
+  // biological activity
+  | 'current'
+  | 'springTide'
+  | 'tidalRange'
+  // wind
+  | 'windW'
+  | 'windNW'
+  | 'windSW'
+  | 'windN'
+  | 'breeze'
+  // waves
+  | 'swell'
+  // light
+  | 'dawn'
+  | 'dusk'
+  | 'night'
+  | 'overcast'
+  // the remaining two factors have only one thing to say
+  | 'waterTemperature'
+  | 'stablePressure';
+
+export interface Reason {
+  key: FactorKey;
+  kind: ReasonKind;
+  /** 0–1 strength of the factor this reason came from. */
+  value: number;
+}
+
 export interface BestWindow {
   start: number;
   end: number;
   /** Peak score reached inside the window. */
   peakScore: number;
+  /** Instant the peak occurred — what the reasons describe. */
+  peakTime: number;
+  /** Why this window is worth fishing, strongest first. Never more than 4. */
+  reasons: Reason[];
 }
 
 /** One selectable day, with the fishing windows it contains. */

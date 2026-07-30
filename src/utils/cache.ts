@@ -5,9 +5,9 @@ import type { Forecast } from '../types';
 /**
  * Bump the version whenever `Forecast` changes shape: a cached payload from an
  * older build must be ignored, not rendered into a UI that no longer matches
- * it. v2 replaced the single `bestWindow` with per-day `days`.
+ * it. v2 replaced `bestWindow` with per-day `days`; v3 added window reasons.
  */
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 3;
 const KEY_PREFIX = `bassscore:forecast:v${CACHE_VERSION}:`;
 
 interface CacheEnvelope {

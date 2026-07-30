@@ -1,9 +1,15 @@
-import type { BestWindow } from '../types';
+import type { BestWindow, ScoreResult } from '../types';
 import { HOUR, MINUTE } from '../utils/time';
+import { explainScore } from './explain';
 
 export interface TimelinePoint {
   time: number;
   score: number;
+  /**
+   * Full factor breakdown at this instant. Present on the real timeline, and
+   * omitted by tests that only care about the shape of the score curve.
+   */
+  result?: ScoreResult;
 }
 
 /** Scores within this many points of the peak still count as "the window". */
@@ -93,10 +99,13 @@ export function findWindows(
     // …report only the best stretch of it…
     const [start, end] = trimToMaxDuration(timeline, plateauStart, plateauEnd);
 
+    const peak = timeline[peakIndex];
     let window: BestWindow = {
       start: timeline[start].time,
       end: timeline[end].time,
       peakScore,
+      peakTime: peak.time,
+      reasons: peak.result ? explainScore(peak.result) : [],
     };
     if (window.end - window.start < MIN_WINDOW_MS) window = padToMinimum(window);
     windows.push(window);

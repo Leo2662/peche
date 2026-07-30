@@ -15,16 +15,20 @@ export function buildForecast(raw: RawConditions, now: number): Forecast {
   const step = TIMELINE_STEP_MINUTES * MINUTE;
   const horizon = now + FORECAST_DAYS * DAY;
 
-  const timeline: TimelinePoint[] = [];
+  // The full breakdown is kept while the windows are found — that is what the
+  // "why?" sheet explains — but only {time, score} is carried on the Forecast,
+  // so the cached payload stays small.
+  const detailed: TimelinePoint[] = [];
   for (let time = now; time <= horizon; time += step) {
-    timeline.push({ time, score: computeScore(buildInputs(raw, time)).score });
+    const result = computeScore(buildInputs(raw, time));
+    detailed.push({ time, score: result.score, result });
   }
 
   return {
     spot: raw.spot,
     generatedAt: now,
     now: computeScore(buildInputs(raw, now)),
-    days: groupIntoDays(timeline, raw.spot.timezone, now),
+    days: groupIntoDays(detailed, raw.spot.timezone, now),
     moon: getMoonInfo(now),
     tide: {
       coefficient: raw.tide.coefficient,
@@ -33,7 +37,7 @@ export function buildForecast(raw: RawConditions, now: number): Forecast {
       nextLow: nextEvent(raw.tide.events, now, 'low'),
       source: raw.tide.source,
     },
-    timeline,
+    timeline: detailed.map(({ time, score }) => ({ time, score })),
   };
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { BestWindow } from '../types';
 import { STRINGS } from '../config/strings';
@@ -11,6 +11,8 @@ export interface WindowListProps {
   timeZone: string;
   /** True when the selected day is today, which changes the empty-state copy. */
   isToday: boolean;
+  /** Tapping a window opens the "why?" sheet. */
+  onSelectWindow: (window: BestWindow) => void;
 }
 
 /**
@@ -19,7 +21,7 @@ export interface WindowListProps {
  * The best one is rendered large — it is the answer to "when do I go?" — and
  * any others sit beneath it as secondary options.
  */
-export function WindowList({ windows, timeZone, isToday }: WindowListProps) {
+export function WindowList({ windows, timeZone, isToday, onSelectWindow }: WindowListProps) {
   if (windows.length === 0) {
     return (
       <View style={styles.container}>
@@ -46,10 +48,17 @@ export function WindowList({ windows, timeZone, isToday }: WindowListProps) {
         const end = formatTime(window.end, timeZone);
 
         return (
-          <View
+          <Pressable
             key={window.start}
-            style={[styles.row, isBest ? styles.rowBest : styles.rowSecondary]}
+            onPress={() => onSelectWindow(window)}
+            accessibilityRole="button"
             accessibilityLabel={STRINGS.windows.a11y(start, end, window.peakScore)}
+            accessibilityHint={STRINGS.windows.a11yHint}
+            style={({ pressed }) => [
+              styles.row,
+              isBest ? styles.rowBest : styles.rowSecondary,
+              pressed && styles.rowPressed,
+            ]}
           >
             <Text
               style={[styles.time, isBest ? styles.timeBest : styles.timeSecondary]}
@@ -62,7 +71,7 @@ export function WindowList({ windows, timeZone, isToday }: WindowListProps) {
                 {window.peakScore}
               </Text>
             </View>
-          </View>
+          </Pressable>
         );
       })}
     </View>
@@ -91,6 +100,9 @@ const styles = StyleSheet.create({
   },
   rowSecondary: {
     marginTop: 8,
+  },
+  rowPressed: {
+    opacity: 0.55,
   },
   time: {
     fontVariant: ['tabular-nums'],

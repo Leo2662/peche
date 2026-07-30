@@ -54,7 +54,7 @@ Checks:
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 82 unit tests over the scoring engine
+npm test           # 97 unit tests over the scoring engine
 npm run check      # both
 ```
 
@@ -206,6 +206,41 @@ Up to 3 windows are offered per day, and a secondary window is only kept if it
 comes within 12 points of the day's best — otherwise a day with one outstanding
 tide would also list the mediocre humps either side of it.
 
+### Why a window is good
+
+Tapping a window answers it in **one word per reason**, at most four:
+
+```
+              POURQUOI
+            19:10 – 21:00
+
+              · COURANT
+              · MONTANTE
+              · OUEST
+              · CRÉPUSCULE
+```
+
+A reason has to be *favourable* (the factor is genuinely good, not merely
+present — 0.7 and above) and it has to *matter*. Ranking is by `weight × value`,
+not by value alone: that is why biological activity at 0.9 outranks pressure at
+1.0, the first being worth 31 points and the second 5. Light is the lightest
+factor that can still be a reason, so on a window where everything is perfect it
+gets crowded out by the four heavier ones — correctly, since it is worth 8
+points.
+
+Each factor contributes its single most telling condition, taken from its
+sub-scores: the tide says `MONTANTE` / `PLEINE MER` / `JUSANT`, biological
+activity says `COURANT` or `VIVE-EAU` depending on which sub-score is carrying
+it, light says `AUBE` / `CRÉPUSCULE` / `NUIT` / `COUVERT`. The vocabulary is the
+one an angler uses on the dyke.
+
+When nothing clears the threshold the two strongest are shown anyway — a
+mediocre window is still the best one available, and saying nothing is worse
+than saying what carried it.
+
+`src/scoring/explain.ts` returns identifiers (`'flood'`, `'springTide'`), never
+words. The engine holds no copy, and cached forecasts survive a rewording.
+
 ### Why 7 days
 
 That is the ceiling of the **marine** model (`forecast_days` of 1/3/5/7), which
@@ -236,8 +271,10 @@ src/
 │   ├── buildInputs.ts      raw series → ScoreInputs at an instant
 │   ├── computeScore.ts     the index itself
 │   ├── bestWindow.ts       window detection over a score timeline
+│   ├── explain.ts          why a window is good, as reason ids
 │   └── forecast.ts         timeline + per-day grouping
-├── components/             ScoreDial, DayStrip, WindowList, SpotFooter, ErrorState
+├── components/             ScoreDial, DayStrip, WindowList, WindowDetailSheet,
+│                           SpotFooter, ErrorState
 ├── screens/ScoreScreen.tsx the whole UI
 ├── hooks/                  useFishingScore (data), useSelectedDay (date),
 │                           useCountUp (animation)
@@ -249,7 +286,7 @@ src/
 The rule the layout enforces: **`src/scoring` never imports from `src/api`**
 except for tide geometry helpers, and never touches the network or the clock.
 `computeScore(inputs)` is deterministic, which is why the engine is covered by
-82 tests that need no mocking framework.
+97 tests that need no mocking framework.
 
 ### Data flow
 
@@ -309,7 +346,7 @@ Hardcoded in `src/config/spots.ts`:
 npm test
 ```
 
-82 tests, no mocking framework — the engine is pure, so the tests are just
+97 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -326,6 +363,9 @@ tables of inputs and expected outputs:
 - day grouping: split on midnight in `Europe/Paris` and not UTC, capped at the
   forecast horizon, days with no window kept rather than dropped
 - every day's windows are chronological, separated, and inside their own day
+- explanations: ranked by contribution and not raw value, at most four, one per
+  factor, dawn told from dusk, the wind sector named only when the direction is
+  what helps, and a mediocre window still explained rather than left blank
 - French formatting: times and dates rendered in `Europe/Paris` across a DST
   boundary, day pills labelled from the spot's timezone and not the device's,
   no empty copy, every template interpolating what it is given
@@ -351,7 +391,9 @@ The seams are already in place:
   to be lifted into a species profile.
 - **Catch reports / history / an AI model** — `ScoreResult` keeps every factor
   value and its sub-scores in `detail`, so each score is a labelled feature
-  vector, and `Forecast` is already serialised to storage.
+  vector, and `Forecast` is already serialised to storage. `explainScore` turns
+  that vector into ranked reasons, which is most of what an explanation layer
+  over a trained model would need too.
 - **Lure recommendations** — would key off the same `factors` breakdown.
 
 ---

@@ -1,13 +1,16 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import type { BestWindow } from '../types';
+
 import { DayStrip } from '../components/DayStrip';
 import { ErrorState } from '../components/ErrorState';
 import { ScoreDial } from '../components/ScoreDial';
 import { SpotFooter } from '../components/SpotFooter';
+import { WindowDetailSheet } from '../components/WindowDetailSheet';
 import { WindowList } from '../components/WindowList';
 import { DEFAULT_SPOT } from '../config/spots';
 import { STRINGS } from '../config/strings';
@@ -30,6 +33,12 @@ export function ScoreScreen() {
 
   const days = forecast?.days ?? [];
   const { selectedKey, selectedDay, selectDay, isFirstDay } = useSelectedDay(days);
+
+  const [detailWindow, setDetailWindow] = useState<BestWindow | null>(null);
+
+  // A background refresh replaces every window object, so an open sheet would
+  // otherwise keep showing a stale one. Switching day should close it too.
+  useEffect(() => setDetailWindow(null), [selectedKey, forecast?.generatedAt]);
 
   // Today shows the score right now — "should I go?". Any other day has no
   // "now", so it shows the best the day will reach.
@@ -88,6 +97,7 @@ export function ScoreScreen() {
                 windows={selectedDay?.windows ?? []}
                 timeZone={spot.timezone}
                 isToday={isFirstDay}
+                onSelectWindow={setDetailWindow}
               />
             </View>
           </>
@@ -107,6 +117,12 @@ export function ScoreScreen() {
           />
         )}
       </View>
+
+      <WindowDetailSheet
+        window={detailWindow}
+        timeZone={spot.timezone}
+        onClose={() => setDetailWindow(null)}
+      />
     </View>
   );
 }

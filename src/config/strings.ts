@@ -7,6 +7,8 @@
  * later means adding a sibling object, not touching the UI.
  */
 
+import type { ReasonKind } from '../types';
+
 export const LOCALE = 'fr-FR';
 
 export const STRINGS = {
@@ -34,6 +36,47 @@ export const STRINGS = {
     empty: 'Aucun créneau intéressant',
     a11y: (start: string, end: string, score: number) =>
       `De ${start} à ${end}, score ${score}`,
+    a11yHint: 'Toucher pour voir pourquoi',
+  },
+
+  /**
+   * One word per reason — the whole point of the detail sheet. If a label here
+   * ever needs two words, the reason is not specific enough.
+   *
+   * The vocabulary is deliberately the one an angler uses on the dyke: vive-eau
+   * rather than "grand coefficient", jusant rather than "marée descendante".
+   */
+  reasons: {
+    flood: 'MONTANTE',
+    slackHigh: 'PLEINE MER',
+    ebb: 'JUSANT',
+
+    current: 'COURANT',
+    springTide: 'VIVE-EAU',
+    tidalRange: 'MARNAGE',
+
+    windW: 'OUEST',
+    windNW: 'NORD-OUEST',
+    windSW: 'SUD-OUEST',
+    windN: 'NORD',
+    breeze: 'BRISE',
+
+    swell: 'HOULE',
+
+    dawn: 'AUBE',
+    dusk: 'CRÉPUSCULE',
+    night: 'NUIT',
+    overcast: 'COUVERT',
+
+    waterTemperature: 'TEMPÉRATURE',
+    stablePressure: 'STABLE',
+    // `satisfies` makes the compiler, not a test, guarantee that every reason
+    // the engine can emit has a word here.
+  } satisfies Record<ReasonKind, string>,
+
+  detail: {
+    heading: 'POURQUOI',
+    close: 'Fermer',
   },
 
   days: {

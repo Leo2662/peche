@@ -16,6 +16,11 @@ export function hoursToTwilight(time: number, sun: SunTimes): number {
   return Math.min(Math.abs(time - sun.sunrise), Math.abs(time - sun.sunset)) / HOUR;
 }
 
+/** True when sunrise is the nearer of the two — i.e. this is dawn, not dusk. */
+export function isDawnSide(time: number, sun: SunTimes): boolean {
+  return Math.abs(time - sun.sunrise) <= Math.abs(time - sun.sunset);
+}
+
 export function isDaylight(time: number, sun: SunTimes): boolean {
   return time >= sun.sunrise && time <= sun.sunset;
 }
@@ -71,6 +76,9 @@ export function lightFactor(inputs: ScoreInputs): FactorResult {
       cloudScore: cloudSub,
       cloudCover: cloudCover ?? null,
       hoursToTwilight: sun ? Number(hoursToTwilight(time, sun).toFixed(2)) : null,
+      // 1 = sunrise is the nearer twilight, 0 = sunset. Lets the explanation
+      // say "aube" or "crépuscule" instead of a generic "lumière".
+      dawnSide: sun ? (isDawnSide(time, sun) ? 1 : 0) : null,
     },
     estimated: available.length < parts.length,
   };
