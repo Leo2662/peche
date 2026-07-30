@@ -205,10 +205,32 @@ export interface BestWindow {
   end: number;
   /** Peak score reached inside the window. */
   peakScore: number;
-  /** Instant the peak occurred — what the reasons describe. */
+  /** Instant the peak occurred — what the reasons and figures describe. */
   peakTime: number;
   /** Why this window is worth fishing, strongest first. Never more than 4. */
   reasons: Reason[];
+  /**
+   * Full breakdown at the peak, so a reason can show its numbers.
+   *
+   * Always present on a real forecast; absent only for windows found in a
+   * synthetic score curve, which is what the geometry tests use.
+   */
+  peak?: ScoreResult;
+}
+
+/**
+ * Hourly factor values for one day, for the sparkline behind a reason.
+ *
+ * Stored as parallel arrays rather than objects per sample: this is cached, and
+ * 7 factors × 24 hours × 7 days is small only if it stays plain numbers.
+ */
+export interface FactorSeries {
+  /** Timestamp of the first sample. */
+  start: number;
+  /** Milliseconds between samples. */
+  step: number;
+  /** 0–1 factor values, rounded to 2 decimals. */
+  values: Record<FactorKey, number[]>;
 }
 
 /** One selectable day, with the fishing windows it contains. */
@@ -227,6 +249,8 @@ export interface DayForecast {
   windows: BestWindow[];
   /** False for today, whose earlier hours are already behind us. */
   complete: boolean;
+  /** Hourly factor curves across this day, for the reason sparklines. */
+  series: FactorSeries;
 }
 
 /** The complete payload the UI renders. */

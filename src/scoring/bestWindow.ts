@@ -106,6 +106,7 @@ export function findWindows(
       peakScore,
       peakTime: peak.time,
       reasons: peak.result ? explainScore(peak.result) : [],
+      peak: peak.result,
     };
     if (window.end - window.start < MIN_WINDOW_MS) window = padToMinimum(window);
     windows.push(window);

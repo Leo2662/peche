@@ -7,7 +7,7 @@
  * later means adding a sibling object, not touching the UI.
  */
 
-import type { ReasonKind } from '../types';
+import type { FactorKey, ReasonKind } from '../types';
 
 export const LOCALE = 'fr-FR';
 
@@ -77,6 +77,47 @@ export const STRINGS = {
   detail: {
     heading: 'POURQUOI',
     close: 'Fermer',
+    back: 'RETOUR',
+    /** Axis caption under the sparkline. */
+    overTheDay: 'SUR LA JOURNÉE',
+    a11yReasonHint: 'Toucher pour voir les mesures',
+    a11yChart: (label: string) => `Courbe de ${label.toLowerCase()} sur la journée`,
+  },
+
+  /**
+   * Factor names, shown above the sparkline.
+   *
+   * The chart plots the *factor*, not the headline reading — tapping COURANT
+   * shows 0,74 m/s but a curve of biological activity. Naming the curve is what
+   * keeps that honest.
+   */
+  factors: {
+    biologicalActivity: 'ACTIVITÉ BIOLOGIQUE',
+    tideWindow: 'FENÊTRE DE MARÉE',
+    wind: 'VENT',
+    waves: 'VAGUES',
+    light: 'LUMIÈRE',
+    waterTemperature: 'TEMPÉRATURE DE L’EAU',
+    pressure: 'PRESSION',
+  } satisfies Record<FactorKey, string>,
+
+  /** Labels for the measured quantities behind each factor. */
+  metrics: {
+    currentVelocity: 'COURANT',
+    tideCoefficient: 'COEFFICIENT',
+    tidalRange: 'MARNAGE',
+    hoursFromHighTide: 'PLEINE MER',
+    beforeHighTide: 'avant',
+    afterHighTide: 'après',
+    windSpeed: 'VENT',
+    windGusts: 'RAFALES',
+    windDirection: 'DIRECTION',
+    waveHeight: 'HAUTEUR',
+    wavePeriod: 'PÉRIODE',
+    cloudCover: 'NUAGES',
+    hoursToTwilight: 'ÉCART AU CRÉPUSCULE',
+    seaTemperature: 'EAU',
+    pressureTrend6h: 'TENDANCE',
   },
 
   days: {

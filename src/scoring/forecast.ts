@@ -1,4 +1,5 @@
-import type { DayForecast, Forecast } from '../types';
+import type { DayForecast, FactorKey, FactorSeries, Forecast } from '../types';
+import { FACTOR_ORDER } from './weights';
 import { FORECAST_DAYS, MAX_WINDOWS_PER_DAY, TIMELINE_STEP_MINUTES } from '../config/env';
 import { nextEvent } from '../api/tides/tideMath';
 import { getMoonInfo } from '../utils/moon';
@@ -81,9 +82,33 @@ export function groupIntoDays(
         end: points[points.length - 1].time,
         peakScore: points.reduce((max, point) => Math.max(max, point.score), 0),
         windows,
+        series: buildFactorSeries(points),
         // The first day starts at "now", so its earlier hours are missing; the
         // last may be cut short by the end of the forecast horizon.
         complete: key !== todayKey && points.length >= (DAY / MINUTE / TIMELINE_STEP_MINUTES) * 0.95,
       };
     });
+}
+
+/**
+ * Downsample a day's factor values to one sample per hour.
+ *
+ * The sparkline behind a reason only needs the shape of the curve, and hourly
+ * is already finer than the source data — the APIs publish hourly, everything
+ * between is interpolation.
+ */
+export function buildFactorSeries(points: TimelinePoint[]): FactorSeries {
+  const stride = Math.max(1, Math.round(60 / TIMELINE_STEP_MINUTES));
+
+  const values = {} as Record<FactorKey, number[]>;
+  for (const key of FACTOR_ORDER) values[key] = [];
+
+  for (let i = 0; i < points.length; i += stride) {
+    const result = points[i].result;
+    for (const key of FACTOR_ORDER) {
+      values[key].push(result ? Number(result.factors[key].value.toFixed(2)) : 0);
+    }
+  }
+
+  return { start: points[0].time, step: stride * TIMELINE_STEP_MINUTES * MINUTE, values };
 }

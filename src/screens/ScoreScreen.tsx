@@ -120,6 +120,7 @@ export function ScoreScreen() {
 
       <WindowDetailSheet
         window={detailWindow}
+        series={selectedDay?.series ?? null}
         timeZone={spot.timezone}
         onClose={() => setDetailWindow(null)}
       />

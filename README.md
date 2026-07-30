@@ -54,7 +54,7 @@ Checks:
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 97 unit tests over the scoring engine
+npm test           # 111 unit tests over the scoring engine
 npm run check      # both
 ```
 
@@ -241,6 +241,47 @@ than saying what carried it.
 `src/scoring/explain.ts` returns identifiers (`'flood'`, `'springTide'`), never
 words. The engine holds no copy, and cached forecasts survive a rewording.
 
+### The numbers behind a word
+
+Tapping a word goes one level deeper: the raw reading, a curve, and the
+supporting figures.
+
+```
+              ‹ RETOUR
+
+              COURANT
+             0,74 m/s
+
+        ACTIVITÉ BIOLOGIQUE
+       ╭──╮  ╭──╮  ╭──╮  ╭─
+    ▓──╯  ╰──╯  ╰──╯  ╰──╯
+    00:04   SUR LA JOURNÉE   23:04
+
+    COEFFICIENT            98
+    MARNAGE             4,7 m
+```
+
+The headline is the one figure that best explains the factor — the current in
+m/s, the wind in km/h, the distance to high water as `1 h 49 avant`. The chart
+plots the **factor** (0–1) across the day, with the window shaded and the peak
+dotted, which answers *when* rather than *how much*.
+
+Those are two different quantities, so the curve is labelled with the factor's
+own name. Tapping `COURANT` shows `0,74 m/s` above a curve of *activité
+biologique*; without the label that reads as a current graph, which it is not.
+
+The y axis is pinned to 0–1 rather than scaled to the data: a factor that is
+flat and excellent must look flat and high, not be stretched to fill the box and
+suggest variation that is not there.
+
+Numbers are French — comma decimals, `1 h 49`, `SO` for a south-westerly — and
+`formatMetric` lives in `src/utils/format.ts`, outside the engine. The engine
+reports numbers; formatting decides decimals and words.
+
+Hourly factor curves are stored per day as parallel arrays of plain numbers.
+The whole cached forecast is about 65 KB: 33 KB timeline, 20 KB peak
+breakdowns, 4 KB curves.
+
 ### Why 7 days
 
 That is the ceiling of the **marine** model (`forecast_days` of 1/3/5/7), which
@@ -272,13 +313,15 @@ src/
 │   ├── computeScore.ts     the index itself
 │   ├── bestWindow.ts       window detection over a score timeline
 │   ├── explain.ts          why a window is good, as reason ids
+│   ├── factorMetrics.ts    the raw readings behind each factor
 │   └── forecast.ts         timeline + per-day grouping
 ├── components/             ScoreDial, DayStrip, WindowList, WindowDetailSheet,
+│                           ReasonDetail, FactorChart,
 │                           SpotFooter, ErrorState
 ├── screens/ScoreScreen.tsx the whole UI
 ├── hooks/                  useFishingScore (data), useSelectedDay (date),
 │                           useCountUp (animation)
-├── utils/                  math, time, series, moon, theme, cache
+├── utils/                  math, time, series, moon, theme, cache, format
 ├── config/                 spots.ts, env.ts, strings.ts (all French copy)
 └── types/                  shared domain types
 ```
@@ -286,7 +329,7 @@ src/
 The rule the layout enforces: **`src/scoring` never imports from `src/api`**
 except for tide geometry helpers, and never touches the network or the clock.
 `computeScore(inputs)` is deterministic, which is why the engine is covered by
-97 tests that need no mocking framework.
+111 tests that need no mocking framework.
 
 ### Data flow
 
@@ -346,7 +389,7 @@ Hardcoded in `src/config/spots.ts`:
 npm test
 ```
 
-97 tests, no mocking framework — the engine is pure, so the tests are just
+111 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -366,6 +409,11 @@ tables of inputs and expected outputs:
 - explanations: ranked by contribution and not raw value, at most four, one per
   factor, dawn told from dusk, the wind sector named only when the direction is
   what helps, and a mediocre window still explained rather than left blank
+- metrics: the headline figure of each factor, missing readings dropped rather
+  than shown as zero, French number formatting (comma decimals, `1 h 49 avant`,
+  `SO` at 240° but `O` at 250°), signed pressure trends
+- factor curves: hourly, in range, one per factor per day, aligned with the
+  window they highlight, and the whole forecast still small enough to cache
 - French formatting: times and dates rendered in `Europe/Paris` across a DST
   boundary, day pills labelled from the spot's timezone and not the device's,
   no empty copy, every template interpolating what it is given

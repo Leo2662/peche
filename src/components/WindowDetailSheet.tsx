@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { BestWindow } from '../types';
+import type { BestWindow, FactorSeries, Reason } from '../types';
 import { STRINGS } from '../config/strings';
 import { accentForScore, COLORS } from '../utils/theme';
 import { formatTime } from '../utils/time';
+import { ReasonDetail } from './ReasonDetail';
 
 export interface WindowDetailSheetProps {
   window: BestWindow | null;
+  /** Hourly factor curves for the day this window belongs to. */
+  series: FactorSeries | null;
   timeZone: string;
   onClose: () => void;
 }
@@ -22,24 +25,51 @@ export interface WindowDetailSheetProps {
  *
  * Tapping anywhere dismisses it.
  */
-export function WindowDetailSheet({ window, timeZone, onClose }: WindowDetailSheetProps) {
+export function WindowDetailSheet({
+  window,
+  series,
+  timeZone,
+  onClose,
+}: WindowDetailSheetProps) {
   const accent = window ? accentForScore(window.peakScore) : COLORS.text;
+
+  // Which reason is drilled into, if any. Reset whenever the sheet opens on a
+  // different window, so it never reopens on a stale reason.
+  const [openReason, setOpenReason] = useState<Reason | null>(null);
+  useEffect(() => setOpenReason(null), [window]);
+
+  const dismiss = () => {
+    // Back out one level at a time: the detail view first, then the sheet.
+    if (openReason) setOpenReason(null);
+    else onClose();
+  };
 
   return (
     <Modal
       visible={window !== null}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={dismiss}
       statusBarTranslucent
     >
       <Pressable
         style={styles.backdrop}
-        onPress={onClose}
+        onPress={dismiss}
         accessibilityRole="button"
         accessibilityLabel={STRINGS.detail.close}
       >
-        {window ? (
+        {window && openReason ? (
+          // Swallow taps inside the detail, which has its own back control.
+          <Pressable style={styles.card} onPress={() => {}}>
+            <ReasonDetail
+              reason={openReason}
+              window={window}
+              series={series}
+              timeZone={timeZone}
+              onBack={() => setOpenReason(null)}
+            />
+          </Pressable>
+        ) : window ? (
           <View style={styles.card}>
             <Text style={styles.heading}>{STRINGS.detail.heading}</Text>
 
@@ -49,12 +79,20 @@ export function WindowDetailSheet({ window, timeZone, onClose }: WindowDetailShe
 
             <View style={styles.reasons}>
               {window.reasons.map((reason) => (
-                <View key={reason.kind} style={styles.reasonRow}>
+                <Pressable
+                  key={reason.kind}
+                  onPress={() => setOpenReason(reason)}
+                  accessibilityRole="button"
+                  accessibilityLabel={STRINGS.reasons[reason.kind]}
+                  accessibilityHint={STRINGS.detail.a11yReasonHint}
+                  hitSlop={8}
+                  style={({ pressed }) => [styles.reasonRow, pressed && styles.reasonPressed]}
+                >
                   <View style={[styles.dot, { backgroundColor: accent }]} />
                   <Text style={styles.word} numberOfLines={1} allowFontScaling={false}>
                     {STRINGS.reasons[reason.kind]}
                   </Text>
-                </View>
+                </Pressable>
               ))}
             </View>
           </View>
@@ -77,6 +115,7 @@ const styles = StyleSheet.create({
   },
   card: {
     alignItems: 'center',
+    alignSelf: 'stretch',
   },
   heading: {
     color: COLORS.textTertiary,
@@ -100,6 +139,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
+  },
+  reasonPressed: {
+    opacity: 0.5,
   },
   dot: {
     width: 5,
