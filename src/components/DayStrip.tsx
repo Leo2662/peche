@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { DayForecast } from '../types';
+import { STRINGS } from '../config/strings';
 import { accentForScore, COLORS, withAlpha } from '../utils/theme';
 import { formatDayPill, formatFullDate } from '../utils/time';
 
@@ -54,7 +55,10 @@ export function DayStrip({ days, selectedKey, onSelect, timeZone, now }: DayStri
             onPress={() => onSelect(day.key)}
             accessibilityRole="button"
             accessibilityState={{ selected }}
-            accessibilityLabel={`${formatFullDate(day.start, timeZone)}, best score ${day.peakScore}`}
+            accessibilityLabel={STRINGS.days.a11y(
+              formatFullDate(day.start, timeZone),
+              day.peakScore
+            )}
             style={({ pressed }) => [
               styles.pill,
               selected && { backgroundColor: withAlpha(dotColor, 0.14), borderColor: dotColor },

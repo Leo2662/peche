@@ -1,4 +1,5 @@
 import type { FactorKey, FactorResult, ScoreInputs, ScoreResult, Verdict } from '../types';
+import { STRINGS } from '../config/strings';
 import { clamp } from '../utils/math';
 import { biologicalActivityFactor } from './factors/biologicalActivity';
 import { lightFactor } from './factors/light';
@@ -57,9 +58,4 @@ export function getVerdict(score: number): Verdict {
   return 'POOR';
 }
 
-export const VERDICT_LABELS: Record<Verdict, string> = {
-  EXCELLENT: 'EXCELLENT CONDITIONS',
-  GOOD: 'GOOD CONDITIONS',
-  AVERAGE: 'AVERAGE CONDITIONS',
-  POOR: 'POOR CONDITIONS',
-};
+export const VERDICT_LABELS: Record<Verdict, string> = STRINGS.verdict;

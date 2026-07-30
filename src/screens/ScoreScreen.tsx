@@ -10,6 +10,7 @@ import { ScoreDial } from '../components/ScoreDial';
 import { SpotFooter } from '../components/SpotFooter';
 import { WindowList } from '../components/WindowList';
 import { DEFAULT_SPOT } from '../config/spots';
+import { STRINGS } from '../config/strings';
 import { useFishingScore } from '../hooks/useFishingScore';
 import { useSelectedDay } from '../hooks/useSelectedDay';
 import { getVerdict, VERDICT_LABELS } from '../scoring/computeScore';
@@ -38,8 +39,13 @@ export function ScoreScreen() {
   const accent = score === null ? ACCENTS.neutral : accentForScore(score);
   const gradient = useMemo(() => backgroundGradient(accent), [accent]);
 
-  const verdict = score === null ? 'READING CONDITIONS' : VERDICT_LABELS[getVerdict(score)];
-  const caption = score === null ? undefined : showingNow ? 'RIGHT NOW' : 'BEST OF THE DAY';
+  const verdict = score === null ? STRINGS.score.loading : VERDICT_LABELS[getVerdict(score)];
+  const caption =
+    score === null
+      ? undefined
+      : showingNow
+        ? STRINGS.score.captionNow
+        : STRINGS.score.captionDayPeak;
 
   const showError = status === 'error' && !forecast;
   const isFirstLoad = status === 'loading' && !forecast;
@@ -72,7 +78,7 @@ export function ScoreScreen() {
         }
       >
         {showError ? (
-          <ErrorState message={error ?? 'Unable to load conditions'} onRetry={refresh} />
+          <ErrorState message={error ?? STRINGS.error.generic} onRetry={refresh} />
         ) : (
           <>
             <ScoreDial score={score} accent={accent} verdict={verdict} caption={caption} />

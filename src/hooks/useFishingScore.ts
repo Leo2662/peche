@@ -4,6 +4,7 @@ import { AppState, type AppStateStatus } from 'react-native';
 import type { Forecast, ForecastStatus, Spot } from '../types';
 import { loadForecast } from '../api/forecastRepository';
 import { REFRESH_INTERVAL_MS } from '../config/env';
+import { STRINGS } from '../config/strings';
 import { readCachedForecast, writeCachedForecast } from '../utils/cache';
 
 export interface FishingScoreState {
@@ -17,10 +18,17 @@ export interface FishingScoreState {
   refresh: () => void;
 }
 
+/**
+ * Map a failure onto copy the angler can act on.
+ *
+ * Exception messages are developer-facing — they name endpoints and providers,
+ * and they are in English. They belong in the console, not on the screen, so
+ * only the network case gets its own wording and everything else is generic.
+ */
 function describeError(error: unknown): string {
-  if (error instanceof Error && error.name === 'NetworkError') return 'No connection';
-  if (error instanceof Error) return error.message;
-  return 'Unable to load conditions';
+  if (error instanceof Error && error.name === 'NetworkError') return STRINGS.error.network;
+  console.warn('[forecast] load failed:', error);
+  return STRINGS.error.generic;
 }
 
 /**

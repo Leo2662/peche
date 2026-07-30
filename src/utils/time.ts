@@ -1,5 +1,7 @@
 /** Time helpers. All internal timestamps are epoch milliseconds (UTC). */
 
+import { LOCALE, STRINGS } from '../config/strings';
+
 export const MINUTE = 60_000;
 export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
@@ -17,7 +19,7 @@ export function parseUtcIso(value: string): number {
 
 /** "19:10" in the given IANA timezone. */
 export function formatTime(timestamp: number, timeZone: string): string {
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat(LOCALE, {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
@@ -41,31 +43,21 @@ export function zonedDayKey(timestamp: number, timeZone: string): string {
   }).format(new Date(timestamp));
 }
 
-/** "today" / "tomorrow" / weekday name, relative to `reference`. */
-export function relativeDayLabel(
-  timestamp: number,
-  reference: number,
-  timeZone: string
-): 'today' | 'tomorrow' | string {
-  const target = zonedDayKey(timestamp, timeZone);
-  if (target === zonedDayKey(reference, timeZone)) return 'today';
-  if (target === zonedDayKey(reference + DAY, timeZone)) return 'tomorrow';
-  return new Intl.DateTimeFormat('en-GB', { weekday: 'long', timeZone }).format(new Date(timestamp));
-}
-
-/** Compact label for the day selector: "TODAY", "THU 31", "FRI 1". */
+/** Compact label for the day selector: "AUJ.", "VEN. 31", "SAM. 1". */
 export function formatDayPill(timestamp: number, reference: number, timeZone: string): string {
-  if (zonedDayKey(timestamp, timeZone) === zonedDayKey(reference, timeZone)) return 'TODAY';
+  if (zonedDayKey(timestamp, timeZone) === zonedDayKey(reference, timeZone)) {
+    return STRINGS.days.today;
+  }
 
   const date = new Date(timestamp);
-  const weekday = new Intl.DateTimeFormat('en-GB', { timeZone, weekday: 'short' }).format(date);
-  const day = new Intl.DateTimeFormat('en-GB', { timeZone, day: 'numeric' }).format(date);
+  const weekday = new Intl.DateTimeFormat(LOCALE, { timeZone, weekday: 'short' }).format(date);
+  const day = new Intl.DateTimeFormat(LOCALE, { timeZone, day: 'numeric' }).format(date);
   return `${weekday.toUpperCase()} ${day}`;
 }
 
-/** "Thursday 31 July", for the accessible label on a day pill. */
+/** "vendredi 31 juillet", for the accessible label on a day pill. */
 export function formatFullDate(timestamp: number, timeZone: string): string {
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(LOCALE, {
     timeZone,
     weekday: 'long',
     day: 'numeric',

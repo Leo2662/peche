@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 
+import { STRINGS } from '../config/strings';
 import { useCountUp } from '../hooks/useCountUp';
 import { COLORS, TYPE, withAlpha } from '../utils/theme';
 
@@ -86,7 +87,7 @@ export function ScoreDial({
             style={[styles.score, { textShadowColor: withAlpha(accent, 0.4) }]}
             allowFontScaling={false}
             accessibilityLabel={
-              score === null ? 'Score loading' : `Sea bass score ${score} out of 100`
+              score === null ? STRINGS.score.a11yLoading : STRINGS.score.a11yScore(score)
             }
           >
             {score === null ? '––' : displayValue}

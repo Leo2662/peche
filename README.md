@@ -8,15 +8,15 @@ You open it, you see a number from 0 to 100, and you know. There is no
 dashboard, no chart, no menu, no login.
 
 ```
-   TODAY   FRI 31   SAT 1   SUN 2 …
-     •        •       •       •
+   AUJ.   VEN. 31   SAM. 1   DIM. 2 …
+    •        •         •        •
 
                 87
-        EXCELLENT CONDITIONS
-             RIGHT NOW
+        CONDITIONS EXCELLENTES
+              MAINTENANT
 
-            BEST WINDOW
-        19:10 – 21:00    97
+            MEILLEUR CRÉNEAU
+         19:10 – 21:00    97
 
       Dunkerque · Digue du Break
 ```
@@ -25,6 +25,13 @@ Today is always selected on open, so the two-second promise is untouched. Tap
 any of the next 7 days to plan ahead: the ring then shows that day's **best**
 score and the list shows every window worth fishing in it. Each day's dot is
 coloured by its peak, so the whole week reads at a glance.
+
+**The interface is in French.** Every user-facing string lives in
+`src/config/strings.ts`; dates, times and weekdays are formatted with `Intl`
+using `fr-FR` and the spot's timezone. Exception messages are *not* translated
+— they name endpoints and providers, so they go to the console and the screen
+shows generic copy instead. Adding a second language means adding a sibling
+object to that file, not touching the components.
 
 ---
 
@@ -47,7 +54,7 @@ Checks:
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 74 unit tests over the scoring engine
+npm test           # 82 unit tests over the scoring engine
 npm run check      # both
 ```
 
@@ -176,10 +183,10 @@ Magnitude of the change over the previous 6 hours: ≤ 2 hPa → 1.0 (settled),
 
 | Score | Verdict | Accent |
 | --- | --- | --- |
-| 90 – 100 | EXCELLENT CONDITIONS | green |
-| 70 – 89 | GOOD CONDITIONS | yellow |
-| 50 – 69 | AVERAGE CONDITIONS | red |
-| 0 – 49 | POOR CONDITIONS | red |
+| 90 – 100 | CONDITIONS EXCELLENTES | green |
+| 70 – 89 | BONNES CONDITIONS | yellow |
+| 50 – 69 | CONDITIONS MOYENNES | red |
+| 0 – 49 | MAUVAISES CONDITIONS | red |
 
 ### Best windows
 
@@ -235,14 +242,14 @@ src/
 ├── hooks/                  useFishingScore (data), useSelectedDay (date),
 │                           useCountUp (animation)
 ├── utils/                  math, time, series, moon, theme, cache
-├── config/                 spots.ts, env.ts
+├── config/                 spots.ts, env.ts, strings.ts (all French copy)
 └── types/                  shared domain types
 ```
 
 The rule the layout enforces: **`src/scoring` never imports from `src/api`**
 except for tide geometry helpers, and never touches the network or the clock.
 `computeScore(inputs)` is deterministic, which is why the engine is covered by
-74 tests that need no mocking framework.
+82 tests that need no mocking framework.
 
 ### Data flow
 
@@ -302,7 +309,7 @@ Hardcoded in `src/config/spots.ts`:
 npm test
 ```
 
-74 tests, no mocking framework — the engine is pure, so the tests are just
+82 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -319,6 +326,9 @@ tables of inputs and expected outputs:
 - day grouping: split on midnight in `Europe/Paris` and not UTC, capped at the
   forecast horizon, days with no window kept rather than dropped
 - every day's windows are chronological, separated, and inside their own day
+- French formatting: times and dates rendered in `Europe/Paris` across a DST
+  boundary, day pills labelled from the spot's timezone and not the device's,
+  no empty copy, every template interpolating what it is given
 - forecast round-trips through `JSON.stringify` (it must, to be cached)
 
 ---

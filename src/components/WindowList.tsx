@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { BestWindow } from '../types';
+import { STRINGS } from '../config/strings';
 import { accentForScore, COLORS, TYPE, withAlpha } from '../utils/theme';
 import { formatTime } from '../utils/time';
 
@@ -22,9 +23,9 @@ export function WindowList({ windows, timeZone, isToday }: WindowListProps) {
   if (windows.length === 0) {
     return (
       <View style={styles.container}>
-        <Text style={styles.label}>BEST WINDOW</Text>
+        <Text style={styles.label}>{STRINGS.windows.headingOne}</Text>
         <Text style={styles.empty}>
-          {isToday ? 'Nothing left today' : 'No window worth fishing'}
+          {isToday ? STRINGS.windows.emptyToday : STRINGS.windows.empty}
         </Text>
       </View>
     );
@@ -34,7 +35,9 @@ export function WindowList({ windows, timeZone, isToday }: WindowListProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{windows.length > 1 ? 'BEST WINDOWS' : 'BEST WINDOW'}</Text>
+      <Text style={styles.label}>
+        {windows.length > 1 ? STRINGS.windows.headingMany : STRINGS.windows.headingOne}
+      </Text>
 
       {windows.map((window) => {
         const isBest = window.peakScore === bestScore;
@@ -46,7 +49,7 @@ export function WindowList({ windows, timeZone, isToday }: WindowListProps) {
           <View
             key={window.start}
             style={[styles.row, isBest ? styles.rowBest : styles.rowSecondary]}
-            accessibilityLabel={`${start} to ${end}, score ${window.peakScore}`}
+            accessibilityLabel={STRINGS.windows.a11y(start, end, window.peakScore)}
           >
             <Text
               style={[styles.time, isBest ? styles.timeBest : styles.timeSecondary]}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { STRINGS } from '../config/strings';
 import { COLORS, TYPE } from '../utils/theme';
 import { formatTime } from '../utils/time';
 
@@ -20,8 +21,8 @@ export function SpotFooter({ label, timeZone, lastUpdated, isStale, error }: Spo
   const status = (() => {
     if (!isStale) return null;
     const stamp = lastUpdated ? formatTime(lastUpdated, timeZone) : null;
-    const reason = error ?? 'Offline';
-    return stamp ? `${reason} · last update ${stamp}` : reason;
+    const reason = error ?? STRINGS.footer.offline;
+    return stamp ? `${reason} · ${STRINGS.footer.lastUpdate(stamp)}` : reason;
   })();
 
   return (
