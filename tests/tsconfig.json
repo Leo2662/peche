@@ -1,0 +1,13 @@
+{
+  // The tests run on Node (`tsx --test`), not through Metro. Expo's base config
+  // sets `customConditions: ["react-native"]`, which stops TypeScript from
+  // resolving `node:*` module declarations at all — so the test project clears
+  // that condition and opts into @types/node explicitly.
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "customConditions": [],
+    "types": ["node"]
+  },
+  "include": ["**/*.ts"],
+  "exclude": []
+}

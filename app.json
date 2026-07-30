@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "BassScore",
+    "slug": "bassscore",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "bassscore",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#04060A",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bassscore.app"
+    },
+    "android": {
+      "package": "com.bassscore.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#04060A",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
