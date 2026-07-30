@@ -12,6 +12,8 @@ export interface ScoreDialProps {
   score: number | null;
   accent: string;
   verdict: string;
+  /** Tiny line under the verdict saying what the number refers to. */
+  caption?: string;
   size?: number;
   strokeWidth?: number;
 }
@@ -26,6 +28,7 @@ export function ScoreDial({
   score,
   accent,
   verdict,
+  caption,
   size = 264,
   strokeWidth = 12,
 }: ScoreDialProps) {
@@ -94,6 +97,8 @@ export function ScoreDial({
       <Text style={[styles.verdict, { color: accent }]} numberOfLines={1} adjustsFontSizeToFit>
         {verdict}
       </Text>
+
+      {caption ? <Text style={styles.caption}>{caption}</Text> : null}
     </View>
   );
 }
@@ -127,6 +132,14 @@ const styles = StyleSheet.create({
     fontSize: TYPE.verdict,
     fontWeight: '600',
     letterSpacing: 2.6,
+    textAlign: 'center',
+  },
+  caption: {
+    marginTop: 8,
+    color: COLORS.textTertiary,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 2,
     textAlign: 'center',
   },
 });

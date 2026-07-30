@@ -167,12 +167,31 @@ export interface BestWindow {
   peakScore: number;
 }
 
+/** One selectable day, with the fishing windows it contains. */
+export interface DayForecast {
+  /** "2026-07-30" in the spot's timezone — the day selector's identity. */
+  key: string;
+  /** First and last timeline sample that fall on this day. */
+  start: number;
+  end: number;
+  /** Best score reached during the covered part of the day. */
+  peakScore: number;
+  /**
+   * Windows worth fishing, in chronological order. Empty when nothing on this
+   * day clears the threshold — for today, also empty once they have passed.
+   */
+  windows: BestWindow[];
+  /** False for today, whose earlier hours are already behind us. */
+  complete: boolean;
+}
+
 /** The complete payload the UI renders. */
 export interface Forecast {
   spot: Spot;
   generatedAt: number;
   now: ScoreResult;
-  bestWindow: BestWindow | null;
+  /** Selectable days, starting with today. */
+  days: DayForecast[];
   moon: MoonInfo;
   tide: {
     coefficient: number | null;
@@ -181,7 +200,7 @@ export interface Forecast {
     nextLow: TideEvent | null;
     source: string;
   };
-  /** 10-minute-resolution score timeline used to find the best window. */
+  /** 10-minute-resolution score timeline the days were derived from. */
   timeline: Array<{ time: number; score: number }>;
 }
 

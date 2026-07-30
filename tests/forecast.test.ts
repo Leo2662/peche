@@ -3,12 +3,19 @@ import { describe, it } from 'node:test';
 
 import { findTideExtrema, tidalRangeAt, coefficientFromRange } from '../src/api/tides/tideMath';
 import { DEFAULT_SPOT } from '../src/config/spots';
-import { findBestWindow, MAX_WINDOW_MS, MIN_WINDOW_MS } from '../src/scoring/bestWindow';
+import { FORECAST_DAYS, MAX_WINDOWS_PER_DAY } from '../src/config/env';
+import {
+  findBestWindow,
+  findWindows,
+  MAX_WINDOW_MS,
+  MIN_WINDOW_MS,
+  WINDOW_SEPARATION_MS,
+} from '../src/scoring/bestWindow';
 import { buildInputs } from '../src/scoring/buildInputs';
-import { buildForecast } from '../src/scoring/forecast';
+import { buildForecast, groupIntoDays } from '../src/scoring/forecast';
 import { sampleSeries } from '../src/utils/series';
 import { getMoonInfo, getSunTimes } from '../src/utils/moon';
-import { HOUR, MINUTE, parseUtcIso } from '../src/utils/time';
+import { HOUR, MINUTE, parseUtcIso, zonedDayKey } from '../src/utils/time';
 import type { MarineSample, TideData, WeatherSample } from '../src/types';
 
 const NOW = Date.UTC(2026, 6, 30, 12, 0);
@@ -21,7 +28,9 @@ function buildFixture(): { weather: WeatherSample[]; marine: MarineSample[]; tid
   const weather: WeatherSample[] = [];
   const marine: MarineSample[] = [];
 
-  for (let i = 0; i <= 72; i += 1) {
+  // A day behind (for the 6 h pressure trend) and well past the selectable
+  // horizon, so every day the UI can offer is backed by real fixture data.
+  for (let i = 0; i <= 24 + (FORECAST_DAYS + 1) * 24; i += 1) {
     const time = start + i * HOUR;
     const angle = (2 * Math.PI * (time - highWater)) / TIDAL_PERIOD;
 
@@ -141,23 +150,59 @@ describe('buildForecast', () => {
     assert.equal(forecast.timeline[0].time, NOW);
   });
 
-  it('samples the timeline every 10 minutes across 24 h', () => {
+  it('samples the timeline every 10 minutes across the whole horizon', () => {
     const span = forecast.timeline[forecast.timeline.length - 1].time - forecast.timeline[0].time;
-    assert.equal(span, 24 * HOUR);
+    assert.equal(span, FORECAST_DAYS * 24 * HOUR);
     assert.equal(forecast.timeline[1].time - forecast.timeline[0].time, 10 * MINUTE);
   });
 
-  it('finds a best window bracketing a high water', () => {
-    assert.ok(forecast.bestWindow);
-    const { start, end, peakScore } = forecast.bestWindow;
-    assert.ok(end > start);
-    assert.ok(peakScore >= forecast.now.score - 100 && peakScore <= 100);
+  it('offers exactly one selectable day per forecast day, starting today', () => {
+    assert.equal(forecast.days.length, FORECAST_DAYS);
+    assert.equal(forecast.days[0].key, zonedDayKey(NOW, DEFAULT_SPOT.timezone));
 
-    const nearestHigh = raw.tide.events
-      .filter((e) => e.type === 'high')
-      .map((e) => Math.abs(e.time - (start + end) / 2))
-      .sort((a, b) => a - b)[0];
-    assert.ok(nearestHigh < 3 * HOUR, 'best window should sit near a high water');
+    const keys = forecast.days.map((day) => day.key);
+    assert.deepEqual(keys, [...keys].sort(), 'days must be chronological');
+    assert.equal(new Set(keys).size, keys.length, 'days must be unique');
+  });
+
+  it('marks today incomplete and the middle days complete', () => {
+    assert.equal(forecast.days[0].complete, false);
+    assert.equal(forecast.days[3].complete, true);
+  });
+
+  it('finds windows bracketing a high water on every day', () => {
+    const highs = raw.tide.events.filter((e) => e.type === 'high');
+
+    for (const day of forecast.days) {
+      assert.ok(day.windows.length >= 1, `no window on ${day.key}`);
+      assert.ok(day.windows.length <= MAX_WINDOWS_PER_DAY);
+
+      for (const window of day.windows) {
+        assert.ok(window.end > window.start);
+        assert.ok(window.peakScore <= day.peakScore);
+
+        const centre = (window.start + window.end) / 2;
+        const nearestHigh = Math.min(...highs.map((e) => Math.abs(e.time - centre)));
+        assert.ok(nearestHigh < 3 * HOUR, `window on ${day.key} is not near a high water`);
+      }
+    }
+  });
+
+  it('keeps each day’s windows chronological, separated and inside the day', () => {
+    for (const day of forecast.days) {
+      for (let i = 1; i < day.windows.length; i += 1) {
+        assert.ok(day.windows[i].start > day.windows[i - 1].start, 'windows out of order');
+        assert.ok(
+          day.windows[i].start - day.windows[i - 1].end >= WINDOW_SEPARATION_MS - 10 * MINUTE,
+          'windows are two halves of the same tide'
+        );
+      }
+
+      for (const window of day.windows) {
+        const dayOf = zonedDayKey(window.start, DEFAULT_SPOT.timezone);
+        assert.equal(dayOf, day.key, 'window leaked into a neighbouring day');
+      }
+    }
   });
 
   it('reports the next high and low tide', () => {
@@ -168,7 +213,111 @@ describe('buildForecast', () => {
   it('is serialisable, so it can be cached for offline use', () => {
     const roundTripped = JSON.parse(JSON.stringify(forecast));
     assert.equal(roundTripped.now.score, forecast.now.score);
-    assert.equal(roundTripped.bestWindow.start, forecast.bestWindow?.start);
+    assert.equal(roundTripped.days.length, forecast.days.length);
+    assert.equal(roundTripped.days[0].windows[0]?.start, forecast.days[0].windows[0]?.start);
+  });
+});
+
+describe('groupIntoDays', () => {
+  const tz = DEFAULT_SPOT.timezone;
+
+  it('splits on midnight in the spot timezone, not UTC', () => {
+    // 23:30 Paris on 30 July is 21:30 UTC — a UTC split would put these on the
+    // same day, a Paris split puts them either side of midnight.
+    const before = Date.UTC(2026, 6, 30, 21, 30);
+    const after = Date.UTC(2026, 6, 30, 22, 30);
+
+    const days = groupIntoDays(
+      [
+        { time: before, score: 70 },
+        { time: after, score: 70 },
+      ],
+      tz,
+      before
+    );
+
+    assert.equal(days.length, 2);
+    assert.equal(days[0].key, '2026-07-30');
+    assert.equal(days[1].key, '2026-07-31');
+  });
+
+  it('caps the number of days at the forecast horizon', () => {
+    const points = Array.from({ length: 20 * 24 }, (_, i) => ({
+      time: NOW + i * HOUR,
+      score: 60,
+    }));
+    assert.equal(groupIntoDays(points, tz, NOW).length, FORECAST_DAYS);
+    assert.equal(groupIntoDays(points, tz, NOW, 3).length, 3);
+  });
+
+  it('returns a day with no windows rather than dropping it', () => {
+    const points = Array.from({ length: 24 }, (_, i) => ({ time: NOW + i * HOUR, score: 10 }));
+    const days = groupIntoDays(points, tz, NOW);
+    assert.ok(days.length >= 1);
+    assert.deepEqual(days[0].windows, []);
+    assert.equal(days[0].peakScore, 10);
+  });
+
+  it('handles an empty timeline', () => {
+    assert.deepEqual(groupIntoDays([], tz, NOW), []);
+  });
+});
+
+describe('findWindows', () => {
+  it('separates two tides into two windows', () => {
+    // Two 90-minute humps six hours apart, like a pair of high waters.
+    const points = Array.from({ length: 6 * 12 + 1 }, (_, i) => {
+      const time = NOW + i * 10 * MINUTE;
+      const hours = i / 6;
+      const near = (centre: number) => Math.abs(hours - centre) <= 0.75;
+      return { time, score: near(1) || near(6) ? 80 : 40 };
+    });
+
+    const windows = findWindows(points, 3);
+    assert.equal(windows.length, 2);
+    assert.ok(windows[1].start - windows[0].end >= WINDOW_SEPARATION_MS - 10 * MINUTE);
+  });
+
+  it('does not split one plateau into several windows', () => {
+    const points = Array.from({ length: 25 }, (_, i) => ({
+      time: NOW + i * 10 * MINUTE,
+      score: i >= 6 && i <= 18 ? 80 : 30,
+    }));
+    assert.equal(findWindows(points, 3).length, 1);
+  });
+
+  /** Two humps of the given peak scores, six hours apart. */
+  function twoHumps(firstScore: number, secondScore: number) {
+    return Array.from({ length: 6 * 12 + 1 }, (_, i) => {
+      const hours = i / 6;
+      const near = (centre: number) => Math.abs(hours - centre) <= 0.75;
+      let score = 40;
+      if (near(1)) score = firstScore;
+      if (near(6)) score = secondScore;
+      return { time: NOW + i * 10 * MINUTE, score };
+    });
+  }
+
+  it('returns best-scoring first', () => {
+    const windows = findWindows(twoHumps(88, 95), 3);
+    assert.equal(windows.length, 2);
+    assert.equal(windows[0].peakScore, 95);
+    assert.equal(windows[1].peakScore, 88);
+  });
+
+  it('drops a second window that is far worse than the best', () => {
+    // 95 vs 70 is a 25-point drop — not a real second chance.
+    const windows = findWindows(twoHumps(70, 95), 3);
+    assert.equal(windows.length, 1);
+    assert.equal(windows[0].peakScore, 95);
+
+    // …but it is offered when the two tides are comparable.
+    assert.equal(findWindows(twoHumps(85, 95), 3).length, 2);
+  });
+
+  it('respects maxCount and degenerate inputs', () => {
+    assert.deepEqual(findWindows([], 3), []);
+    assert.deepEqual(findWindows([{ time: NOW, score: 90 }], 0), []);
   });
 });
 

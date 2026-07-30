@@ -4,20 +4,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BestWindowLabel } from '../components/BestWindowLabel';
+import { DayStrip } from '../components/DayStrip';
 import { ErrorState } from '../components/ErrorState';
 import { ScoreDial } from '../components/ScoreDial';
 import { SpotFooter } from '../components/SpotFooter';
+import { WindowList } from '../components/WindowList';
 import { DEFAULT_SPOT } from '../config/spots';
 import { useFishingScore } from '../hooks/useFishingScore';
+import { useSelectedDay } from '../hooks/useSelectedDay';
 import { getVerdict, VERDICT_LABELS } from '../scoring/computeScore';
 import { ACCENTS, accentForScore, backgroundGradient } from '../utils/theme';
 
 /**
- * The whole app: one score, one window, one place name.
+ * The whole app: pick a day, see one score, see when to go.
  *
- * Pull to refresh is the only interaction — no navigation, no menus, nothing
- * between opening the app and knowing whether to go.
+ * Today is always selected on open, so the original two-second promise is
+ * untouched — the date selector is there for planning, not for the common case.
  */
 export function ScoreScreen() {
   const spot = DEFAULT_SPOT;
@@ -25,11 +27,20 @@ export function ScoreScreen() {
   const { status, forecast, isStale, error, lastUpdated, refreshing, refresh } =
     useFishingScore(spot);
 
-  const score = forecast?.now.score ?? null;
+  const days = forecast?.days ?? [];
+  const { selectedKey, selectedDay, selectDay, isFirstDay } = useSelectedDay(days);
+
+  // Today shows the score right now — "should I go?". Any other day has no
+  // "now", so it shows the best the day will reach.
+  const showingNow = isFirstDay && forecast !== null;
+  const score = showingNow ? (forecast?.now.score ?? null) : (selectedDay?.peakScore ?? null);
+
   const accent = score === null ? ACCENTS.neutral : accentForScore(score);
   const gradient = useMemo(() => backgroundGradient(accent), [accent]);
 
   const verdict = score === null ? 'READING CONDITIONS' : VERDICT_LABELS[getVerdict(score)];
+  const caption = score === null ? undefined : showingNow ? 'RIGHT NOW' : 'BEST OF THE DAY';
+
   const showError = status === 'error' && !forecast;
   const isFirstLoad = status === 'loading' && !forecast;
 
@@ -38,16 +49,23 @@ export function ScoreScreen() {
       <StatusBar style="light" />
       <LinearGradient colors={gradient} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
 
+      {days.length > 1 && selectedKey ? (
+        <View style={[styles.strip, { paddingTop: insets.top + 10 }]}>
+          <DayStrip
+            days={days}
+            selectedKey={selectedKey}
+            onSelect={selectDay}
+            timeZone={spot.timezone}
+            now={forecast?.generatedAt ?? Date.now()}
+          />
+        </View>
+      ) : (
+        <View style={{ paddingTop: insets.top + 10 }} />
+      )}
+
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[
-          styles.content,
-          {
-            paddingTop: insets.top + 24,
-            // Leave room for the pinned footer.
-            paddingBottom: insets.bottom + 96,
-          },
-        ]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 92 }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={accent} />
@@ -57,13 +75,13 @@ export function ScoreScreen() {
           <ErrorState message={error ?? 'Unable to load conditions'} onRetry={refresh} />
         ) : (
           <>
-            <ScoreDial score={score} accent={accent} verdict={verdict} />
+            <ScoreDial score={score} accent={accent} verdict={verdict} caption={caption} />
 
             <View style={styles.windowBlock}>
-              <BestWindowLabel
-                window={forecast?.bestWindow ?? null}
+              <WindowList
+                windows={selectedDay?.windows ?? []}
                 timeZone={spot.timezone}
-                now={forecast?.generatedAt ?? Date.now()}
+                isToday={isFirstDay}
               />
             </View>
           </>
@@ -92,19 +110,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#04060A',
   },
+  strip: {
+    paddingBottom: 4,
+  },
   scroll: {
     flex: 1,
   },
   content: {
     flexGrow: 1,
     alignItems: 'center',
-    // Keeps the score optically centred: the hero group sits in the middle of
-    // the screen, with the spot name pinned separately below.
     justifyContent: 'center',
     paddingHorizontal: 24,
+    paddingTop: 16,
   },
   windowBlock: {
-    marginTop: 52,
+    marginTop: 40,
+    alignSelf: 'stretch',
   },
   footer: {
     position: 'absolute',

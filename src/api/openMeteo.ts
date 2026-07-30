@@ -1,4 +1,5 @@
 import type { MarineSample, Spot, WeatherSample } from '../types';
+import { FORECAST_DAYS } from '../config/env';
 import { parseUtcIso } from '../utils/time';
 import { isNum } from '../utils/math';
 import { buildUrl, getJson, HttpError } from './http';
@@ -53,7 +54,9 @@ export async function fetchWeather(spot: Spot, signal?: AbortSignal): Promise<We
     // not in the spot's timezone.
     timezone: 'UTC',
     past_days: 1,
-    forecast_days: 3,
+    // One day beyond the selectable range, so interpolation near the end of the
+    // last day still has a sample on both sides. The forecast API allows 16.
+    forecast_days: FORECAST_DAYS + 1,
   });
 
   const data = await getJson<HourlyEnvelope<WeatherHourly>>(url, signal);
@@ -81,7 +84,9 @@ function marineUrl(spot: Spot, variables: string[]): string {
     hourly: variables.join(','),
     timezone: 'UTC',
     past_days: 1,
-    forecast_days: 3,
+    // The marine model tops out at 7 days — this is the hard limit on how far
+    // ahead a date can be selected.
+    forecast_days: FORECAST_DAYS,
   });
 }
 

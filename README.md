@@ -8,14 +8,23 @@ You open it, you see a number from 0 to 100, and you know. There is no
 dashboard, no chart, no menu, no login.
 
 ```
+   TODAY   FRI 31   SAT 1   SUN 2 …
+     •        •       •       •
+
                 87
         EXCELLENT CONDITIONS
+             RIGHT NOW
 
             BEST WINDOW
-           19:10 – 21:00
+        19:10 – 21:00    97
 
       Dunkerque · Digue du Break
 ```
+
+Today is always selected on open, so the two-second promise is untouched. Tap
+any of the next 7 days to plan ahead: the ring then shows that day's **best**
+score and the list shows every window worth fishing in it. Each day's dot is
+coloured by its peak, so the whole week reads at a glance.
 
 ---
 
@@ -38,7 +47,7 @@ Checks:
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 62 unit tests over the scoring engine
+npm test           # 74 unit tests over the scoring engine
 npm run check      # both
 ```
 
@@ -172,13 +181,31 @@ Magnitude of the change over the previous 6 hours: ≤ 2 hPa → 1.0 (settled),
 | 50 – 69 | AVERAGE CONDITIONS | red |
 | 0 – 49 | POOR CONDITIONS | red |
 
-### Best window
+### Best windows
 
-The engine scores **every 10 minutes for the next 24 hours**, interpolating the
+The engine scores **every 10 minutes for the next 7 days**, interpolating the
 hourly API data (bearings as vectors, so 350° and 10° average to 0° and not
-180°). It takes the peak, grows outwards while the score stays within 5 points
-of it, and bounds the result to 45 minutes – 3 hours. That is what produces a
-precise `19:10 – 21:00` rather than a vague "this evening".
+180°). That timeline is then split into calendar days *in the spot's timezone*
+and searched day by day, so a mediocre Tuesday still surfaces its own best
+hours instead of being crowded out by a brilliant Friday.
+
+Within a day, each pass takes the highest remaining peak and grows outwards
+while the score stays within 5 points of it, then bounds the result to
+45 minutes – 3 hours. That produces a precise `19:10 – 21:00` rather than a
+vague "this evening". The whole plateau plus a 90-minute gap is then excluded,
+so two tides give two windows rather than two halves of the same one.
+
+Up to 3 windows are offered per day, and a secondary window is only kept if it
+comes within 12 points of the day's best — otherwise a day with one outstanding
+tide would also list the mediocre humps either side of it.
+
+### Why 7 days
+
+That is the ceiling of the **marine** model (`forecast_days` of 1/3/5/7), which
+supplies waves, sea temperature and the sea-level curve the tides are derived
+from. The atmospheric endpoint would go to 16, but a day without sea state is
+not a day this app can score honestly, so the horizon is set by the weaker
+source.
 
 ---
 
@@ -201,11 +228,12 @@ src/
 │   ├── weights.ts          the published weights
 │   ├── buildInputs.ts      raw series → ScoreInputs at an instant
 │   ├── computeScore.ts     the index itself
-│   ├── bestWindow.ts       peak detection over the score timeline
-│   └── forecast.ts         everything the screen needs
-├── components/             ScoreDial, BestWindowLabel, SpotFooter, ErrorState
+│   ├── bestWindow.ts       window detection over a score timeline
+│   └── forecast.ts         timeline + per-day grouping
+├── components/             ScoreDial, DayStrip, WindowList, SpotFooter, ErrorState
 ├── screens/ScoreScreen.tsx the whole UI
-├── hooks/                  useFishingScore (data), useCountUp (animation)
+├── hooks/                  useFishingScore (data), useSelectedDay (date),
+│                           useCountUp (animation)
 ├── utils/                  math, time, series, moon, theme, cache
 ├── config/                 spots.ts, env.ts
 └── types/                  shared domain types
@@ -214,7 +242,7 @@ src/
 The rule the layout enforces: **`src/scoring` never imports from `src/api`**
 except for tide geometry helpers, and never touches the network or the clock.
 `computeScore(inputs)` is deterministic, which is why the engine is covered by
-62 tests that need no mocking framework.
+74 tests that need no mocking framework.
 
 ### Data flow
 
@@ -223,7 +251,7 @@ launch
   └─ read AsyncStorage cache ──────────► show last known score immediately
   └─ Promise.all(weather, marine, tides)
         └─ buildForecast()
-              ├─ buildInputs() every 10 min for 24 h
+              ├─ buildInputs() every 10 min for 7 days
               ├─ computeScore() on each
               ├─ findBestWindow()
               └─ moon + next tides
@@ -240,8 +268,14 @@ launch
   neutral 0.5 for that factor, and sub-scores re-normalise over what is present
   (a missing current does not drag biological activity to zero).
 - **Timezones**: all API data is requested in UTC and parsed explicitly as UTC,
-  then rendered in `Europe/Paris`. The score is correct on a phone set to any
-  timezone — the tests run under `TZ=America/New_York` to prove it.
+  then rendered in `Europe/Paris`. Days are split on midnight *in the spot's
+  timezone*, never the device's, so the score and the date selector are correct
+  on a phone set anywhere — the tests run under `TZ=America/New_York` to prove
+  it.
+- **Date selection costs no network**: all 7 days come from the same fetch, so
+  switching days is instant and works offline. The selection is held as a date
+  key rather than an index, so a background refresh that rolls midnight over
+  keeps you on the date you chose instead of silently jumping a day.
 
 ---
 
@@ -268,7 +302,7 @@ Hardcoded in `src/config/spots.ts`:
 npm test
 ```
 
-62 tests, no mocking framework — the engine is pure, so the tests are just
+74 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -279,7 +313,12 @@ tables of inputs and expected outputs:
   high/low, coefficient 100 at the mean spring range
 - current estimated from the tide curve peaks at ≈1 m/s on a spring tide
 - vector interpolation of wind bearings across the 0°/360° wrap
-- best-window growth, minimum padding, and long-plateau trimming
+- window growth, minimum padding, and long-plateau trimming
+- window separation: two tides give two windows, one plateau gives one, and a
+  second window far below the day's best is dropped
+- day grouping: split on midnight in `Europe/Paris` and not UTC, capped at the
+  forecast horizon, days with no window kept rather than dropped
+- every day's windows are chronological, separated, and inside their own day
 - forecast round-trips through `JSON.stringify` (it must, to be cached)
 
 ---

@@ -29,8 +29,17 @@ export const REFRESH_INTERVAL_MS = 30 * 60 * 1000;
 /** Network timeout for a single API call. */
 export const REQUEST_TIMEOUT_MS = 15_000;
 
-/** Forecast horizon used to search for the best fishing window. */
-export const WINDOW_SEARCH_HOURS = 24;
+/**
+ * How many days the user can look ahead.
+ *
+ * 7 is a documented `forecast_days` value on both the Open-Meteo forecast and
+ * marine endpoints — the marine model only offers 1/3/5/7, so this is the
+ * longest horizon available for waves and sea level.
+ */
+export const FORECAST_DAYS = 7;
 
 /** Sampling resolution of the score timeline. */
 export const TIMELINE_STEP_MINUTES = 10;
+
+/** How many fishing windows to surface per day. */
+export const MAX_WINDOWS_PER_DAY = 3;
