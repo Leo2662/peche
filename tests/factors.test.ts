@@ -16,6 +16,9 @@ import { pressureScore } from '../src/scoring/factors/pressure';
 import type { ScoreInputs, SunTimes } from '../src/types';
 import { HOUR } from '../src/utils/time';
 
+/** The only calibrated sector table in the app. */
+const DUNKERQUE_SECTORS = DEFAULT_SPOT.windSectors!;
+
 const BASE_INPUTS: ScoreInputs = {
   time: Date.UTC(2026, 6, 30, 12),
   spot: DEFAULT_SPOT,
@@ -62,7 +65,7 @@ describe('current bands', () => {
 
 describe('tidal range', () => {
   it('scores relative to the spot mean spring range', () => {
-    const mean = DEFAULT_SPOT.meanSpringRange; // 5.5 m
+    const mean = DEFAULT_SPOT.meanSpringRange as number; // 5.5 m
     assert.equal(tidalRangeScore(5.4, mean), 1);
     assert.equal(tidalRangeScore(4.2, mean), 0.85);
     assert.equal(tidalRangeScore(3.2, mean), 0.7);
@@ -92,13 +95,13 @@ describe('tide window', () => {
 
 describe('wind', () => {
   it('favours the westerly quadrant at Dunkerque', () => {
-    assert.equal(windDirectionScore(270), 1); // W
-    assert.equal(windDirectionScore(315), 1); // NW
-    assert.equal(windDirectionScore(225), 1); // SW
-    assert.equal(windDirectionScore(0), 0.8); // N
-    assert.equal(windDirectionScore(360), 0.8); // wraps
-    assert.equal(windDirectionScore(180), 0.6); // S
-    assert.equal(windDirectionScore(90), 0.3); // E
+    assert.equal(windDirectionScore(270, DUNKERQUE_SECTORS), 1); // W
+    assert.equal(windDirectionScore(315, DUNKERQUE_SECTORS), 1); // NW
+    assert.equal(windDirectionScore(225, DUNKERQUE_SECTORS), 1); // SW
+    assert.equal(windDirectionScore(0, DUNKERQUE_SECTORS), 0.8); // N
+    assert.equal(windDirectionScore(360, DUNKERQUE_SECTORS), 0.8); // wraps
+    assert.equal(windDirectionScore(180, DUNKERQUE_SECTORS), 0.6); // S
+    assert.equal(windDirectionScore(90, DUNKERQUE_SECTORS), 0.3); // E
   });
 
   it('follows the speed bands', () => {

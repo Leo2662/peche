@@ -2,7 +2,7 @@ import type { TideData } from '../../types';
 import { isNum } from '../../utils/math';
 import { fetchSeaLevelSeries } from '../openMeteo';
 import {
-  coefficientFromRange,
+  coefficientFor,
   findTideExtrema,
   tidalRangeAt,
   type HeightPoint,
@@ -45,7 +45,7 @@ export const openMeteoTideProvider: TideProvider = {
       events,
       heights,
       range,
-      coefficient: range === null ? null : coefficientFromRange(range, spot),
+      coefficient: coefficientFor(spot, events, range),
       source: openMeteoTideProvider.id,
     };
   },

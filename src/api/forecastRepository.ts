@@ -4,6 +4,7 @@ import { buildForecast } from '../scoring/forecast';
 import { DAY, HOUR } from '../utils/time';
 import { fetchMarine, fetchWeather } from './openMeteo';
 import { fetchTides } from './tides';
+import { withTidalScale } from './tides/tideMath';
 
 /**
  * Single entry point for "give me the current forecast".
@@ -32,5 +33,7 @@ export async function loadForecast(spot: Spot, signal?: AbortSignal): Promise<Fo
     throw new Error('Weather provider returned an empty forecast');
   }
 
-  return buildForecast({ spot, weather, marine, tide }, now);
+  // A searched spot carries no tidal constants; estimate them from the curve we
+  // just fetched, so the engine has a local reference instead of Dunkerque's.
+  return buildForecast({ spot: withTidalScale(spot, tide.events), weather, marine, tide }, now);
 }

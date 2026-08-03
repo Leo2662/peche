@@ -1,4 +1,4 @@
-import type { FactorResult, ScoreInputs } from '../../types';
+import type { FactorResult, ScoreInputs, WindSectorScores } from '../../types';
 import { clamp, isNum } from '../../utils/math';
 import { NEUTRAL_FACTOR_VALUE, WEIGHTS } from '../weights';
 
@@ -12,27 +12,35 @@ import { NEUTRAL_FACTOR_VALUE, WEIGHTS } from '../weights';
  * The spec fixes W/NW/SW = 1, N = 0.8, S = 0.6, E = 0.3; NE and SE sit between
  * their neighbours.
  */
-const DIRECTION_SECTORS: Array<{ centre: number; score: number; name: string }> = [
-  { centre: 0, score: 0.8, name: 'N' },
-  { centre: 45, score: 0.5, name: 'NE' },
-  { centre: 90, score: 0.3, name: 'E' },
-  { centre: 135, score: 0.45, name: 'SE' },
-  { centre: 180, score: 0.6, name: 'S' },
-  { centre: 225, score: 1, name: 'SW' },
-  { centre: 270, score: 1, name: 'W' },
-  { centre: 315, score: 1, name: 'NW' },
-];
+const SECTOR_NAMES = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 
-/** Nearest 45° sector to the bearing the wind blows *from*. */
-export function windSector(direction: number): { score: number; name: string } {
+/** Index of the nearest 45° sector to the bearing the wind blows *from*. */
+export function windSectorIndex(direction: number): number {
   const normalised = ((direction % 360) + 360) % 360;
-  const index = Math.round(normalised / 45) % DIRECTION_SECTORS.length;
-  const sector = DIRECTION_SECTORS[index];
-  return { score: sector.score, name: sector.name };
+  return Math.round(normalised / 45) % 8;
 }
 
-export function windDirectionScore(direction: number): number {
-  return windSector(direction).score;
+/**
+ * Look a bearing up in a spot's sector table.
+ *
+ * Returns null when the spot has no table — for a shoreline the app has not
+ * been tuned for, inventing a direction preference would be worse than
+ * admitting there is none.
+ */
+export function windSector(
+  direction: number,
+  sectors: WindSectorScores | undefined
+): { score: number; name: string } | null {
+  const index = windSectorIndex(direction);
+  if (!sectors) return null;
+  return { score: sectors[index], name: SECTOR_NAMES[index] };
+}
+
+export function windDirectionScore(
+  direction: number,
+  sectors: WindSectorScores | undefined
+): number | null {
+  return windSector(direction, sectors)?.score ?? null;
 }
 
 /** Speed bands (spec), km/h. A dead calm is as unhelpful as a gale. */
@@ -53,7 +61,7 @@ export const GUST_PENALTY_THRESHOLD = 50;
 export const GUST_PENALTY_FACTOR = 0.7;
 
 export function windFactor(inputs: ScoreInputs): FactorResult {
-  const { windSpeed, windDirection, windGusts } = inputs;
+  const { windSpeed, windDirection, windGusts, spot } = inputs;
 
   const hasSpeed = isNum(windSpeed);
   const hasDirection = isNum(windDirection);
@@ -68,7 +76,9 @@ export function windFactor(inputs: ScoreInputs): FactorResult {
     };
   }
 
-  const sector = hasDirection ? windSector(windDirection) : null;
+  // Null for an uncalibrated spot: the factor then rests on strength alone,
+  // which the re-normalisation below handles like any other missing sub-score.
+  const sector = hasDirection ? windSector(windDirection, spot.windSectors) : null;
   const directionSub = sector ? sector.score : null;
 
   let speedSub = hasSpeed ? windSpeedScore(windSpeed) : null;
@@ -98,6 +108,7 @@ export function windFactor(inputs: ScoreInputs): FactorResult {
       speedScore: speedSub,
       gustPenaltyApplied: gusty ? 1 : 0,
     },
+    // Flags both a missing reading and an uncalibrated shoreline.
     estimated: available.length < parts.length,
   };
 }

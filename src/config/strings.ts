@@ -129,6 +129,19 @@ export const STRINGS = {
   footer: {
     offline: 'Hors ligne',
     lastUpdate: (time: string) => `dernière maj ${time}`,
+    a11yHint: 'Toucher pour changer de lieu',
+  },
+
+  spotPicker: {
+    heading: 'LIEU',
+    placeholder: 'Chercher en France',
+    empty: 'Aucun lieu trouvé',
+    error: 'Recherche indisponible',
+    /** Shown under a spot the scoring is not tuned for. */
+    estimated: 'Réglages estimés pour ce lieu',
+    reset: 'Revenir à Dunkerque',
+    a11ySelect: (name: string, context: string) =>
+      context ? `${name}, ${context}` : name,
   },
 
   error: {

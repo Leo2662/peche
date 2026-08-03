@@ -15,8 +15,27 @@
  *  - pressure           : hPa
  */
 
+/**
+ * How favourable each 45° wind sector is, starting at N and going clockwise:
+ * [N, NE, E, SE, S, SW, W, NW].
+ *
+ * This is empirical and local — it encodes which winds push bait against *this*
+ * shoreline — so it cannot be derived from coordinates. A spot without one is
+ * scored on wind strength alone.
+ */
+export type WindSectorScores = [
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+];
+
 export interface Spot {
-  /** Stable identifier — future-ready for a multi-spot picker. */
+  /** Stable identifier — a slug for built-ins, "geo:<id>" for searched places. */
   id: string;
   /** Full display name. */
   name: string;
@@ -29,10 +48,15 @@ export interface Spot {
   /**
    * "Unité de hauteur" of the harbour (SHOM). Half of the mean spring tidal
    * range, used to derive the French tidal coefficient from a tidal range.
+   *
+   * Only known for calibrated spots. For anywhere else it is estimated from the
+   * observed sea-level curve — see `deriveTidalScale`.
    */
-  tidalUnitHeight: number;
+  tidalUnitHeight?: number;
   /** Mean spring tidal range, used to normalise the tidal-range sub-score. */
-  meanSpringRange: number;
+  meanSpringRange?: number;
+  /** Local wind preference. Absent for spots the app has not been tuned for. */
+  windSectors?: WindSectorScores;
 }
 
 /** Atmospheric conditions at one instant. */

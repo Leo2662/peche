@@ -46,7 +46,12 @@ export function biologicalActivityFactor(inputs: ScoreInputs): FactorResult {
 
   const coefficientSub = isNum(tideCoefficient) ? tideCoefficientScore(tideCoefficient) : null;
   const currentSub = isNum(currentVelocity) ? currentScore(currentVelocity) : null;
-  const rangeSub = isNum(tidalRange) ? tidalRangeScore(tidalRange, spot.meanSpringRange) : null;
+  // Needs a reference range for the spot; without one the sub-score drops out
+  // and the remaining two are re-normalised.
+  const rangeSub =
+    isNum(tidalRange) && isNum(spot.meanSpringRange)
+      ? tidalRangeScore(tidalRange, spot.meanSpringRange)
+      : null;
 
   const parts: Array<{ value: number | null; weight: number }> = [
     { value: coefficientSub, weight: 0.4 },

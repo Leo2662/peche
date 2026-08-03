@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { STRINGS } from '../config/strings';
 import { COLORS, TYPE } from '../utils/theme';
@@ -11,13 +11,22 @@ export interface SpotFooterProps {
   lastUpdated: number | null;
   isStale: boolean;
   error: string | null;
+  /** Tapping the place name opens the spot picker. */
+  onPress: () => void;
 }
 
 /**
  * Spot name, plus the smallest possible honesty about data freshness.
  * Nothing here should compete with the score for attention.
  */
-export function SpotFooter({ label, timeZone, lastUpdated, isStale, error }: SpotFooterProps) {
+export function SpotFooter({
+  label,
+  timeZone,
+  lastUpdated,
+  isStale,
+  error,
+  onPress,
+}: SpotFooterProps) {
   const status = (() => {
     if (!isStale) return null;
     const stamp = lastUpdated ? formatTime(lastUpdated, timeZone) : null;
@@ -27,7 +36,16 @@ export function SpotFooter({ label, timeZone, lastUpdated, isStale, error }: Spo
 
   return (
     <View style={styles.container}>
-      <Text style={styles.spot}>{label}</Text>
+      <Pressable
+        onPress={onPress}
+        hitSlop={14}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        accessibilityHint={STRINGS.footer.a11yHint}
+        style={({ pressed }) => pressed && styles.pressed}
+      >
+        <Text style={styles.spot}>{label}</Text>
+      </Pressable>
       {status ? <Text style={styles.status}>{status}</Text> : null}
     </View>
   );
@@ -36,6 +54,9 @@ export function SpotFooter({ label, timeZone, lastUpdated, isStale, error }: Spo
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+  },
+  pressed: {
+    opacity: 0.5,
   },
   spot: {
     color: COLORS.textSecondary,

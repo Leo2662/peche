@@ -13,6 +13,8 @@ import {
 import { DEFAULT_SPOT } from '../src/config/spots';
 import { HOUR, MINUTE } from '../src/utils/time';
 
+const UNIT_HEIGHT = DEFAULT_SPOT.tidalUnitHeight as number;
+
 const START = Date.UTC(2026, 6, 30, 0, 0);
 /** Mean semi-diurnal (M2) period. */
 const TIDAL_PERIOD = 12.42 * HOUR;
@@ -75,14 +77,14 @@ describe('tidalRangeAt', () => {
 
 describe('coefficientFromRange', () => {
   it('maps the mean spring range to ≈100', () => {
-    const coefficient = coefficientFromRange(DEFAULT_SPOT.meanSpringRange, DEFAULT_SPOT);
+    const coefficient = coefficientFromRange(DEFAULT_SPOT.meanSpringRange as number, UNIT_HEIGHT);
     assert.equal(coefficient, 100);
   });
 
   it('maps a small neap range low and clamps to the 20–120 scale', () => {
-    assert.ok(coefficientFromRange(2.6, DEFAULT_SPOT) < 55);
-    assert.equal(coefficientFromRange(0.1, DEFAULT_SPOT), 20);
-    assert.equal(coefficientFromRange(20, DEFAULT_SPOT), 120);
+    assert.ok(coefficientFromRange(2.6, UNIT_HEIGHT) < 55);
+    assert.equal(coefficientFromRange(0.1, UNIT_HEIGHT), 20);
+    assert.equal(coefficientFromRange(20, UNIT_HEIGHT), 120);
   });
 });
 

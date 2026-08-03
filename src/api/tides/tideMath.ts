@@ -98,10 +98,65 @@ export function tidalRangeAt(events: TideEvent[], time: number): number | null {
  * "unité de hauteur" (half the mean spring range). The scale is conventionally
  * bounded to 20–120.
  */
-export function coefficientFromRange(range: number, spot: Spot): number {
+export function coefficientFromRange(range: number, unitHeight: number): number {
+  if (unitHeight <= 0) return 20;
   const semiRange = range / 2;
-  const coefficient = (100 * semiRange) / spot.tidalUnitHeight;
+  const coefficient = (100 * semiRange) / unitHeight;
   return Math.round(clamp(coefficient, 20, 120));
+}
+
+/**
+ * Tidal constants for a spot the app has no calibration for.
+ *
+ * The largest range in the forecast window is taken as a proxy for the mean
+ * spring range. Over 7 days that is a decent estimate near springs and an
+ * under-estimate near neaps, so the coefficient it yields is *relative to the
+ * week*, not the SHOM scale.
+ *
+ * Crude, but far better than reusing Dunkerque's 5.5 m: on the Mediterranean,
+ * where the range is a few tens of centimetres, the fixed value would peg every
+ * tide sub-score to its floor and make the index meaningless.
+ */
+export function deriveTidalScale(events: TideEvent[]): {
+  meanSpringRange: number;
+  tidalUnitHeight: number;
+} | null {
+  let largest = 0;
+  for (let i = 0; i < events.length - 1; i += 1) {
+    if (events[i].type === events[i + 1].type) continue;
+    largest = Math.max(largest, Math.abs(events[i].height - events[i + 1].height));
+  }
+
+  if (largest <= 0) return null;
+  return { meanSpringRange: largest, tidalUnitHeight: largest / 2 };
+}
+
+/**
+ * Tidal coefficient for a spot, calibrated where possible and derived from the
+ * observed curve where not.
+ */
+export function coefficientFor(
+  spot: Spot,
+  events: TideEvent[],
+  range: number | null
+): number | null {
+  if (range === null) return null;
+  const unitHeight = spot.tidalUnitHeight ?? deriveTidalScale(events)?.tidalUnitHeight;
+  return unitHeight === undefined ? null : coefficientFromRange(range, unitHeight);
+}
+
+/** Fill in whatever the spot does not already specify. */
+export function withTidalScale(spot: Spot, events: TideEvent[]): Spot {
+  if (spot.tidalUnitHeight !== undefined && spot.meanSpringRange !== undefined) return spot;
+
+  const derived = deriveTidalScale(events);
+  if (!derived) return spot;
+
+  return {
+    ...spot,
+    tidalUnitHeight: spot.tidalUnitHeight ?? derived.tidalUnitHeight,
+    meanSpringRange: spot.meanSpringRange ?? derived.meanSpringRange,
+  };
 }
 
 /**

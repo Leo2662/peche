@@ -12,6 +12,8 @@ import { compassPoint, formatMetric } from '../src/utils/format';
 import { HOUR } from '../src/utils/time';
 import type { MarineSample, ScoreInputs, WeatherSample } from '../src/types';
 
+const UNIT_HEIGHT = DEFAULT_SPOT.tidalUnitHeight as number;
+
 const NOW = Date.UTC(2026, 6, 30, 19, 0);
 
 const PEAK: ScoreInputs = {
@@ -156,7 +158,7 @@ describe('factor series', () => {
         events,
         heights,
         range,
-        coefficient: range === null ? null : coefficientFromRange(range, DEFAULT_SPOT),
+        coefficient: range === null ? null : coefficientFromRange(range, UNIT_HEIGHT),
         source: 'test',
       },
     },

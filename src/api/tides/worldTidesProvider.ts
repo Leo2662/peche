@@ -2,7 +2,7 @@ import type { TideData, TideEvent } from '../../types';
 import { ENV } from '../../config/env';
 import { isNum } from '../../utils/math';
 import { buildUrl, getJson } from '../http';
-import { coefficientFromRange, tidalRangeAt, type HeightPoint } from './tideMath';
+import { coefficientFor, tidalRangeAt, type HeightPoint } from './tideMath';
 import type { TideProvider, TideRequest } from './types';
 
 const ENDPOINT = 'https://www.worldtides.info/api/v3';
@@ -66,7 +66,7 @@ export const worldTidesProvider: TideProvider = {
       events,
       heights,
       range,
-      coefficient: range === null ? null : coefficientFromRange(range, spot),
+      coefficient: coefficientFor(spot, events, range),
       source: worldTidesProvider.id,
     };
   },

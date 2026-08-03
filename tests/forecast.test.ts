@@ -18,6 +18,8 @@ import { getMoonInfo, getSunTimes } from '../src/utils/moon';
 import { HOUR, MINUTE, parseUtcIso, zonedDayKey } from '../src/utils/time';
 import type { MarineSample, TideData, WeatherSample } from '../src/types';
 
+const UNIT_HEIGHT = DEFAULT_SPOT.tidalUnitHeight as number;
+
 const NOW = Date.UTC(2026, 6, 30, 12, 0);
 const TIDAL_PERIOD = 12.42 * HOUR;
 
@@ -65,7 +67,7 @@ function buildFixture(): { weather: WeatherSample[]; marine: MarineSample[]; tid
       events,
       heights,
       range,
-      coefficient: range === null ? null : coefficientFromRange(range, DEFAULT_SPOT),
+      coefficient: range === null ? null : coefficientFromRange(range, UNIT_HEIGHT),
       source: 'test',
     },
   };

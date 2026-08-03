@@ -54,7 +54,7 @@ Checks:
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 111 unit tests over the scoring engine
+npm test           # 133 unit tests over the scoring engine
 npm run check      # both
 ```
 
@@ -73,6 +73,7 @@ phone (or a simulator).
 | Waves, wave period, sea temperature | [Open-Meteo Marine API](https://open-meteo.com/en/docs/marine-weather-api) | no |
 | Tides (highs, lows, coefficient) | Open-Meteo `sea_level_height_msl`, peak-detected locally | no |
 | Sunrise, sunset, moon phase | [SunCalc](https://github.com/mourner/suncalc), computed on device | no |
+| Place search | [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api) | no |
 
 Open-Meteo is free for non-commercial use without registration. If you ship
 this commercially, take one of their paid plans and point `FORECAST_ENDPOINT` /
@@ -132,7 +133,9 @@ flagged `partial`.
 | < 40 | 0.3 | | | |
 
 Tidal range is scored against the spot's mean spring range (5.5 m at
-Dunkerque): ≥ 90 % → 1.0, down to 0.3 for a small neap.
+Dunkerque): ≥ 90 % → 1.0, down to 0.3 for a small neap. For a searched spot
+that reference is estimated from the observed sea-level curve rather than
+assumed — see [The spot](#the-spot).
 
 ### 2. Tide window — 20 %
 
@@ -149,6 +152,10 @@ out to ±3 h, 0.5 out to ±4 h, and 0.2 beyond that (around low water).
 Direction is tuned to Dunkerque's north-facing coast: **W / NW / SW = 1.0**,
 N = 0.8, S = 0.6, **E = 0.3** (offshore, flattens and clears the water). NE and
 SE interpolate between their neighbours.
+
+This table is per-spot and does not generalise — see [The spot](#the-spot).
+Somewhere the app has not been calibrated for, the direction term is dropped
+entirely and the factor rests on speed alone.
 
 Speed (km/h): 15–30 → 1.0 · 10–15 → 0.8 · 30–40 → 0.6 · < 10 → 0.5 · > 40 → 0.2
 
@@ -299,6 +306,7 @@ src/
 ├── api/                    I/O only — no scoring logic
 │   ├── http.ts             fetch with timeout, typed errors
 │   ├── openMeteo.ts        weather + marine, normalised to SI units
+│   ├── geocoding.ts        French place search
 │   ├── forecastRepository.ts   fans out the three calls concurrently
 │   └── tides/              swappable tide providers
 │       ├── types.ts            the TideProvider interface
@@ -316,10 +324,11 @@ src/
 │   ├── factorMetrics.ts    the raw readings behind each factor
 │   └── forecast.ts         timeline + per-day grouping
 ├── components/             ScoreDial, DayStrip, WindowList, WindowDetailSheet,
-│                           ReasonDetail, FactorChart,
+│                           ReasonDetail, FactorChart, SpotPicker,
 │                           SpotFooter, ErrorState
 ├── screens/ScoreScreen.tsx the whole UI
 ├── hooks/                  useFishingScore (data), useSelectedDay (date),
+│                           useSpot + usePlaceSearch (location),
 │                           useCountUp (animation)
 ├── utils/                  math, time, series, moon, theme, cache, format
 ├── config/                 spots.ts, env.ts, strings.ts (all French copy)
@@ -329,7 +338,7 @@ src/
 The rule the layout enforces: **`src/scoring` never imports from `src/api`**
 except for tide geometry helpers, and never touches the network or the clock.
 `computeScore(inputs)` is deterministic, which is why the engine is covered by
-111 tests that need no mocking framework.
+133 tests that need no mocking framework.
 
 ### Data flow
 
@@ -368,7 +377,12 @@ launch
 
 ## The spot
 
-Hardcoded in `src/config/spots.ts`:
+Tapping the place name at the bottom of the screen opens a search over **any
+place in France**, using Open-Meteo's geocoding index — free, keyless, and the
+same provider the forecast comes from, so anything that can be found can be
+scored. The choice is persisted; the app reopens where you left it.
+
+The app ships pointing at, and calibrated for, one spot:
 
 ```ts
 {
@@ -378,8 +392,40 @@ Hardcoded in `src/config/spots.ts`:
   timezone: 'Europe/Paris',
   tidalUnitHeight: 2.75,   // SHOM "unité de hauteur", for the coefficient
   meanSpringRange: 5.5,    // m, normalises the tidal-range sub-score
+  windSectors: [...],      // which winds work on this shoreline
 }
 ```
+
+### What travels, and what does not
+
+Three of the engine's inputs were tuned for Dunkerque, and they do not all
+generalise. The picker shows **"Réglages estimés pour ce lieu"** whenever you
+are somewhere the app has not been calibrated for.
+
+**The tidal scale is estimated, and that matters.** `meanSpringRange` and
+`tidalUnitHeight` are re-derived from the largest range in the actual forecast
+window (`deriveTidalScale`). Reusing Dunkerque's 5.5 m on the Mediterranean —
+where the range is a few tens of centimetres — would peg the tidal-range
+sub-score to its floor and the coefficient to 20, permanently. The estimate is
+crude: over 7 days it is decent near springs and an under-estimate near neaps,
+so the coefficient it yields is relative to *that week* rather than the SHOM
+scale. It is still far better than the alternative.
+
+**Wind direction does not travel at all.** `windSectors` encodes which winds
+push bait and coloured water against *this* shoreline; it cannot be derived
+from coordinates, because it depends on the orientation of the coast and of the
+structure you are standing on. A spot without a table is therefore scored on
+**wind strength alone** — the direction sub-score drops out and the factor is
+re-normalised, exactly like any other missing reading, and the result is flagged
+`partial`.
+
+That is a deliberate refusal to guess: at Dunkerque an easterly is the worst
+wind there is, and applying that belief to a west-facing Atlantic beach would
+produce a confidently wrong score. Adding a calibrated spot is a matter of
+filling in the three fields in `src/config/spots.ts`.
+
+Everything else — the tide window, waves, light, water temperature, pressure —
+is physical rather than local, and applies anywhere.
 
 ---
 
@@ -389,7 +435,7 @@ Hardcoded in `src/config/spots.ts`:
 npm test
 ```
 
-111 tests, no mocking framework — the engine is pure, so the tests are just
+133 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -414,6 +460,12 @@ tables of inputs and expected outputs:
   `SO` at 240° but `O` at 250°), signed pressure trends
 - factor curves: hourly, in range, one per factor per day, aligned with the
   window they highlight, and the whole forecast still small enough to cache
+- location: geocoding results mapped and filtered to France, short queries never
+  sent, API and transport errors surfaced
+- calibration: an uncalibrated spot is scored on wind strength alone and does
+  not inherit Dunkerque's easterly penalty; its tidal scale is derived from the
+  observed curve, which is what rescues the range sub-score on a microtidal
+  coast (0.3 → 1.0 for the same 33 cm tide)
 - French formatting: times and dates rendered in `Europe/Paris` across a DST
   boundary, day pills labelled from the spot's timezone and not the device's,
   no empty copy, every template interpolating what it is given
@@ -430,8 +482,9 @@ no articles. The product is: *open app → know if you should go fishing.*
 
 The seams are already in place:
 
-- **Multiple spots** — `Spot` is threaded through every layer and `SPOTS` is an
-  array; adding a picker is a UI change only.
+- **More calibrated spots** — the picker already reaches anywhere in France;
+  what a spot gains by being added to `SPOTS` is its `windSectors` table and its
+  SHOM tidal constants.
 - **Other tide/data providers** — implement `TideProvider` and add it to the
   registry in `src/api/tides/index.ts`.
 - **Species selection** — the factor thresholds are per-file constants

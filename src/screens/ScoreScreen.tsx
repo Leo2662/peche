@@ -12,10 +12,11 @@ import { ScoreDial } from '../components/ScoreDial';
 import { SpotFooter } from '../components/SpotFooter';
 import { WindowDetailSheet } from '../components/WindowDetailSheet';
 import { WindowList } from '../components/WindowList';
-import { DEFAULT_SPOT } from '../config/spots';
+import { SpotPicker } from '../components/SpotPicker';
 import { STRINGS } from '../config/strings';
 import { useFishingScore } from '../hooks/useFishingScore';
 import { useSelectedDay } from '../hooks/useSelectedDay';
+import { useSpot } from '../hooks/useSpot';
 import { getVerdict, VERDICT_LABELS } from '../scoring/computeScore';
 import { ACCENTS, accentForScore, backgroundGradient } from '../utils/theme';
 
@@ -26,8 +27,8 @@ import { ACCENTS, accentForScore, backgroundGradient } from '../utils/theme';
  * untouched — the date selector is there for planning, not for the common case.
  */
 export function ScoreScreen() {
-  const spot = DEFAULT_SPOT;
   const insets = useSafeAreaInsets();
+  const { spot, selectSpot } = useSpot();
   const { status, forecast, isStale, error, lastUpdated, refreshing, refresh } =
     useFishingScore(spot);
 
@@ -35,10 +36,11 @@ export function ScoreScreen() {
   const { selectedKey, selectedDay, selectDay, isFirstDay } = useSelectedDay(days);
 
   const [detailWindow, setDetailWindow] = useState<BestWindow | null>(null);
+  const [pickingSpot, setPickingSpot] = useState(false);
 
   // A background refresh replaces every window object, so an open sheet would
-  // otherwise keep showing a stale one. Switching day should close it too.
-  useEffect(() => setDetailWindow(null), [selectedKey, forecast?.generatedAt]);
+  // otherwise keep showing a stale one. Switching day or spot closes it too.
+  useEffect(() => setDetailWindow(null), [selectedKey, forecast?.generatedAt, spot.id]);
 
   // Today shows the score right now — "should I go?". Any other day has no
   // "now", so it shows the best the day will reach.
@@ -104,7 +106,9 @@ export function ScoreScreen() {
         )}
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 26 }]} pointerEvents="none">
+      {/* `box-none` and not `none`: the bar itself must stay transparent to
+          scroll gestures, but the place name inside it has to be tappable. */}
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 26 }]} pointerEvents="box-none">
         {isFirstLoad ? (
           <ActivityIndicator color={ACCENTS.neutral} />
         ) : (
@@ -114,6 +118,7 @@ export function ScoreScreen() {
             lastUpdated={lastUpdated}
             isStale={isStale}
             error={error}
+            onPress={() => setPickingSpot(true)}
           />
         )}
       </View>
@@ -123,6 +128,13 @@ export function ScoreScreen() {
         series={selectedDay?.series ?? null}
         timeZone={spot.timezone}
         onClose={() => setDetailWindow(null)}
+      />
+
+      <SpotPicker
+        visible={pickingSpot}
+        currentSpot={spot}
+        onSelect={selectSpot}
+        onClose={() => setPickingSpot(false)}
       />
     </View>
   );

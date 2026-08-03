@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { Forecast } from '../types';
+import type { Forecast, Spot } from '../types';
 
 /**
  * Bump the version whenever `Forecast` changes shape: a cached payload from an
@@ -41,5 +41,31 @@ export async function writeCachedForecast(spotId: string, forecast: Forecast): P
     await AsyncStorage.setItem(KEY_PREFIX + spotId, JSON.stringify(envelope));
   } catch (error) {
     console.warn('[cache] failed to persist forecast:', error);
+  }
+}
+
+const SPOT_KEY = 'bassscore:spot:v1';
+
+/** The spot the user last chose, so the app reopens where they left it. */
+export async function readSavedSpot(): Promise<Spot | null> {
+  try {
+    const raw = await AsyncStorage.getItem(SPOT_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as Spot;
+    // Coordinates are the one thing the app cannot work without.
+    if (typeof parsed?.latitude !== 'number' || typeof parsed?.longitude !== 'number') return null;
+    return parsed;
+  } catch (error) {
+    console.warn('[cache] failed to read saved spot:', error);
+    return null;
+  }
+}
+
+export async function writeSavedSpot(spot: Spot): Promise<void> {
+  try {
+    await AsyncStorage.setItem(SPOT_KEY, JSON.stringify(spot));
+  } catch (error) {
+    console.warn('[cache] failed to persist spot:', error);
   }
 }
