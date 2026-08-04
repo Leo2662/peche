@@ -64,6 +64,53 @@ describe('searchPlaces', () => {
     assert.match(url, /name=Biarritz/);
   });
 
+  it('never offers an inland city', async () => {
+    // The exact bug this guards: searching a city with no shore used to hand
+    // back a spot, and the engine scored it as if it were on the beach.
+    stubFetch({
+      results: [
+        { ...DUNKERQUE, id: 1, name: 'Lyon', latitude: 45.76, longitude: 4.83 },
+        { ...DUNKERQUE, id: 2, name: 'Clermont-Ferrand', latitude: 45.78, longitude: 3.08 },
+        { ...DUNKERQUE, id: 3, name: 'Bordeaux', latitude: 44.84, longitude: -0.58 },
+      ],
+    });
+    assert.deepEqual(await searchPlaces('Lyon'), []);
+  });
+
+  it('keeps coastal towns and tags them with their sea', async () => {
+    stubFetch({
+      results: [
+        DUNKERQUE,
+        { ...DUNKERQUE, id: 5, name: 'Biarritz', latitude: 43.48, longitude: -1.56 },
+      ],
+    });
+
+    const found = await searchPlaces('test');
+    assert.equal(found.length, 2);
+
+    const dunkerque = found.find((f) => f.spot.name === 'Dunkerque');
+    assert.equal(dunkerque?.area.code, 'CIEM 4.c');
+    assert.equal(dunkerque?.spot.areaId, 'north-sea');
+
+    const biarritz = found.find((f) => f.spot.name === 'Biarritz');
+    assert.equal(biarritz?.area.code, 'CIEM 8.b');
+    assert.ok(biarritz && biarritz.distanceKm < 5);
+  });
+
+  it('offers the town closest to the water first', async () => {
+    stubFetch({
+      results: [
+        // Caen is a quarter of an hour inland; Ouistreham is its beach.
+        { ...DUNKERQUE, id: 6, name: 'Caen', latitude: 49.18, longitude: -0.37 },
+        { ...DUNKERQUE, id: 7, name: 'Ouistreham', latitude: 49.28, longitude: -0.25 },
+      ],
+    });
+
+    const found = await searchPlaces('test');
+    assert.equal(found[0].spot.name, 'Ouistreham');
+    assert.ok(found[0].distanceKm < found[1].distanceKm);
+  });
+
   it('drops anything the API returns from another country', async () => {
     stubFetch({
       results: [DUNKERQUE, { ...DUNKERQUE, id: 99, name: 'Dunkerque', country_code: 'BE' }],

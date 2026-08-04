@@ -1,4 +1,6 @@
 import type { Spot } from '../types';
+import type { FishingArea } from '../config/coastline';
+import { checkCoastal } from '../scoring/coastalCheck';
 import { buildUrl, getJson } from './http';
 
 const ENDPOINT = 'https://geocoding-api.open-meteo.com/v1/search';
@@ -31,12 +33,16 @@ export interface PlaceSuggestion {
   spot: Spot;
   /** Region and department, for telling two same-named villages apart. */
   context: string;
+  /** The sea it sits on, and its stock assessment area. */
+  area: FishingArea;
+  /** Distance to the coast, in km. */
+  distanceKm: number;
 }
 
 /** Shortest query worth sending. */
 export const MIN_QUERY_LENGTH = 2;
 
-function toSpot(result: GeocodingResult): Spot {
+function toSpot(result: GeocodingResult, areaId: Spot['areaId']): Spot {
   return {
     // Namespaced so a searched place can never collide with a built-in slug.
     id: `geo:${result.id}`,
@@ -44,6 +50,7 @@ function toSpot(result: GeocodingResult): Spot {
     label: result.name,
     latitude: result.latitude,
     longitude: result.longitude,
+    areaId,
     // Everywhere in metropolitan France is Europe/Paris; the API value wins
     // when present so overseas départements still render correctly.
     timezone: result.timezone ?? 'Europe/Paris',
@@ -80,8 +87,23 @@ export async function searchPlaces(
   const data = await getJson<GeocodingResponse>(url, signal);
   if (data.error) throw new Error(data.reason ?? 'Geocoding request failed');
 
-  return (data.results ?? [])
-    // `countryCode` is a filter, not a guarantee — check it.
-    .filter((result) => (result.country_code ?? COUNTRY_CODE) === COUNTRY_CODE)
-    .map((result) => ({ spot: toSpot(result), context: contextOf(result) }));
+  return (
+    (data.results ?? [])
+      // `countryCode` is a filter, not a guarantee — check it.
+      .filter((result) => (result.country_code ?? COUNTRY_CODE) === COUNTRY_CODE)
+      .map((result) => ({ result, coast: checkCoastal(result) }))
+      // The app scores surfcasting. An inland town has no sea state, no tide
+      // and no shore to cast from, so it is never offered — the alternative is
+      // letting someone pick Lyon and handing them a confident, meaningless
+      // score.
+      .filter((candidate) => candidate.coast.fishable && candidate.coast.area !== null)
+      .map(({ result, coast }) => ({
+        spot: toSpot(result, coast.area!.id),
+        context: contextOf(result),
+        area: coast.area!,
+        distanceKm: coast.distanceKm,
+      }))
+      // Closest to the water first: that is the better surfcasting town.
+      .sort((a, b) => a.distanceKm - b.distanceKm)
+  );
 }

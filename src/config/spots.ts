@@ -24,6 +24,8 @@ export const DUNKERQUE_DIGUE_DU_BREAK: Spot = {
   tidalUnitHeight: 2.75,
   meanSpringRange: 5.5,
   windSectors: DUNKERQUE_WIND_SECTORS,
+  // Southern North Sea — the northern sea bass stock.
+  areaId: 'north-sea',
 };
 
 export const SPOTS: Spot[] = [DUNKERQUE_DIGUE_DU_BREAK];

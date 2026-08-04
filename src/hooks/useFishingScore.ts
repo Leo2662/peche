@@ -27,6 +27,10 @@ export interface FishingScoreState {
  */
 function describeError(error: unknown): string {
   if (error instanceof Error && error.name === 'NetworkError') return STRINGS.error.network;
+  // Retrying will not help here — the model simply has nothing at this point.
+  if (error instanceof Error && error.name === 'NoMarineDataError') {
+    return STRINGS.error.noMarineData;
+  }
   console.warn('[forecast] load failed:', error);
   return STRINGS.error.generic;
 }

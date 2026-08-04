@@ -1,8 +1,9 @@
 # BassScore
 
-A single-screen mobile app that answers one question about one place:
+A single-screen mobile app for **surfcasting sea bass from the French coast**.
+It answers one question:
 
-> **Should I go fishing for sea bass at Dunkerque – Digue du Break right now?**
+> **Should I go surfcasting for sea bass right now?**
 
 You open it, you see a number from 0 to 100, and you know. There is no
 dashboard, no chart, no menu, no login.
@@ -58,7 +59,7 @@ Checks:
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 158 unit tests over the scoring engine
+npm test           # 177 unit tests over the scoring engine
 npm run check      # both
 ```
 
@@ -431,7 +432,7 @@ src/
 ├── api/                    I/O only — no scoring logic
 │   ├── http.ts             fetch with timeout, typed errors
 │   ├── openMeteo.ts        weather + marine, normalised to SI units
-│   ├── geocoding.ts        French place search
+│   ├── geocoding.ts        coastal place search
 │   ├── forecastRepository.ts   fans out the three calls concurrently
 │   └── tides/              swappable tide providers
 │       ├── types.ts            the TideProvider interface
@@ -446,6 +447,7 @@ src/
 │   ├── computeScore.ts     the index itself
 │   ├── bestWindow.ts       window detection over a score timeline
 │   ├── explain.ts          why a window is good, as reason ids
+│   ├── coastalCheck.ts     is this place fishable, and which sea
 │   ├── factorMetrics.ts    the raw readings behind each factor
 │   └── forecast.ts         timeline + per-day grouping
 ├── components/             ScoreDial, DayStrip, WindowList, WindowDetailSheet,
@@ -455,8 +457,9 @@ src/
 ├── hooks/                  useFishingScore (data), useSelectedDay (date),
 │                           useSpot + usePlaceSearch (location),
 │                           useCountUp (animation)
-├── utils/                  math, time, series, moon, theme, cache, format
-├── config/                 spots.ts, env.ts, strings.ts (all French copy)
+├── utils/                  math, time, series, moon, theme, cache, format, geo
+├── config/                 spots.ts, coastline.ts (coast + ICES areas),
+│                           env.ts, strings.ts (all French copy)
 └── ../public/              index.html template, sitemap, robots, manifest,
                             share card and icons
 └── types/                  shared domain types
@@ -465,7 +468,7 @@ src/
 The rule the layout enforces: **`src/scoring` never imports from `src/api`**
 except for tide geometry helpers, and never touches the network or the clock.
 `computeScore(inputs)` is deterministic, which is why the engine is covered by
-158 tests that need no mocking framework.
+177 tests that need no mocking framework.
 
 ### Data flow
 
@@ -504,10 +507,78 @@ launch
 
 ## The spot
 
-Tapping the place name at the bottom of the screen opens a search over **any
-place in France**, using Open-Meteo's geocoding index — free, keyless, and the
-same provider the forecast comes from, so anything that can be found can be
-scored. The choice is persisted; the app reopens where you left it.
+Tapping the place name at the bottom of the screen opens a search over the
+**coastal towns of France**, using Open-Meteo's geocoding index. The choice is
+persisted; the app reopens where you left it.
+
+### Only places you can actually surfcast from
+
+The app is for surfcasting: you stand on a beach and cast into the surf.
+Searching an inland town has to return nothing, not a confident score built on
+a sea that is not there.
+
+Every geocoding result is checked against a coastline traced in
+`src/config/coastline.ts` and rejected beyond **20 km** from the shore. It runs
+on device, so an inland town never reaches the network and the user never waits
+on a request that was doomed. Results are then ordered by distance to the water,
+because that is the better surfcasting town.
+
+The line is deliberately coarse — roughly 10 km between vertices, following the
+open coast rather than every ria. That is the right resolution for the question
+it answers, and it has a useful side effect: estuaries are cut across rather
+than followed, so Bordeaux, Nantes and Rouen measure 30 km or more from the
+line and are rejected. They are on tidal water, but you cannot surfcast there.
+
+20 km keeps a coastal town whose centre sits a few kilometres back. Caen, for
+instance, is 13 km out and kept — its beach is Ouistreham, a quarter of an hour
+away. A test checks 34 real coastal towns and 22 inland cities.
+
+### Fishing areas — ICES and GFCM
+
+Each stretch of coast carries the stock assessment area it belongs to, shown
+under every search result:
+
+| Coast | Area | Tidal |
+| --- | --- | --- |
+| Dunkerque → Calais | CIEM 4.c, mer du Nord | yes |
+| Calais → Cotentin | CIEM 7.d, Manche Est | yes |
+| Cotentin → sud Finistère | CIEM 7.e, Manche Ouest | yes |
+| Bretagne sud → Gironde | CIEM 8.a, Gascogne Nord | yes |
+| Gironde → Hendaye | CIEM 8.b, Gascogne Sud | yes |
+| Cerbère → Menton | CGPM GSA 7, Méditerranée | **no** |
+| Corse | CGPM GSA 8 | **no** |
+
+These are the divisions the northern and Biscay sea bass stocks are assessed
+in, which is why they are the natural way to name a coast for this app. The
+boundaries here are drawn at the nearest headland rather than at the offshore
+meridians ICES actually uses — the shore-side equivalent, accurate to a few
+tens of kilometres. Calais sits in the Dover Strait, exactly where 4.c meets
+7.d, and the test accepts either.
+
+`tidal: false` on the Mediterranean records something the score should
+eventually act on: the range there is a few tens of centimetres, so the tide
+factors — 55 % of the index — barely move. The spots are offered and the
+estimated tidal scale keeps them from bottoming out, but a Mediterranean score
+leans much harder on wind, waves and light than an Atlantic one.
+
+### Why not SHOM
+
+The SHOM is the right authority for French tides, and its harbour constants are
+what `tidalUnitHeight` should come from everywhere rather than only at
+Dunkerque. It is not wired in because there is **no free public API**: the tide
+predictions and the port list are licensed products, and `data.shom.fr` needs
+credentials. Adding it means a licence and a key, and it slots in behind the
+existing `TideProvider` interface with no change to the engine.
+
+### The coast check is not a data check
+
+`checkCoastal` answers "is this on the coast". Whether the marine model
+actually covers the point is a different question, and only the model can
+answer it — an enclosed bay or a lagoon can be perfectly coastal and still have
+no sea state. So `loadForecast` verifies that waves or a sea-level curve came
+back, and raises `NoMarineDataError` if not. The screen then says **"Pas de
+données marines ici"** rather than the generic failure, because retrying will
+not help: the fix is to pick somewhere else.
 
 The app ships pointing at, and calibrated for, one spot:
 
@@ -562,7 +633,7 @@ is physical rather than local, and applies anywhere.
 npm test
 ```
 
-158 tests, no mocking framework — the engine is pure, so the tests are just
+177 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -602,6 +673,9 @@ tables of inputs and expected outputs:
 - meta tags: title and description within their length budgets and still on
   subject, og:image present at the dimensions it declares, manifest colours and
   icon sizes matching the page and the files on disk
+- coastline: 34 real coastal towns accepted and placed in the right sea, 22
+  inland cities rejected, estuary cities more than 30 km from the traced line,
+  no gap between vertices wide enough to let a town slip through
 - French formatting: times and dates rendered in `Europe/Paris` across a DST
   boundary, day pills labelled from the spot's timezone and not the device's,
   no empty copy, every template interpolating what it is given

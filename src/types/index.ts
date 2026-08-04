@@ -34,6 +34,8 @@ export type WindSectorScores = [
   number,
 ];
 
+import type { FishingAreaId } from '../config/coastline';
+
 export interface Spot {
   /** Stable identifier — a slug for built-ins, "geo:<id>" for searched places. */
   id: string;
@@ -57,6 +59,11 @@ export interface Spot {
   meanSpringRange?: number;
   /** Local wind preference. Absent for spots the app has not been tuned for. */
   windSectors?: WindSectorScores;
+  /**
+   * Which sea and stock assessment area the spot sits in — an ICES division on
+   * the Atlantic coasts, a GFCM sub-area in the Mediterranean.
+   */
+  areaId?: FishingAreaId;
 }
 
 /** Atmospheric conditions at one instant. */

@@ -114,7 +114,14 @@ export function SpotPicker({ visible, currentSpot, onSelect, onClose }: SpotPick
 
         {searching ? <ActivityIndicator style={styles.spinner} color={ACCENTS.neutral} /> : null}
         {error ? <Text style={styles.notice}>{error}</Text> : null}
-        {showEmpty ? <Text style={styles.notice}>{STRINGS.spotPicker.empty}</Text> : null}
+        {showEmpty ? (
+          <View>
+            <Text style={styles.notice}>{STRINGS.spotPicker.empty}</Text>
+            {/* The filter is invisible otherwise: someone searching "Lyon"
+                needs to know why nothing came back. */}
+            <Text style={styles.noticeHint}>{STRINGS.spotPicker.emptyHint}</Text>
+          </View>
+        ) : null}
 
         <FlatList
           data={results}
@@ -136,6 +143,11 @@ export function SpotPicker({ visible, currentSpot, onSelect, onClose }: SpotPick
                   {item.context}
                 </Text>
               ) : null}
+              {/* Second line, in the brand tone: what matters for fishing
+                  rather than for finding the town on a map. */}
+              <Text style={styles.resultSea} numberOfLines={1}>
+                {item.area.label} · {STRINGS.spotPicker.distance(item.distanceKm)}
+              </Text>
             </Pressable>
           )}
         />
@@ -207,8 +219,13 @@ const styles = StyleSheet.create({
   },
   notice: {
     marginTop: 26,
+    color: COLORS.textSecondary,
+    fontSize: 15,
+  },
+  noticeHint: {
+    marginTop: 6,
     color: COLORS.textTertiary,
-    fontSize: 14,
+    fontSize: 13,
   },
   result: {
     paddingVertical: 14,
@@ -227,6 +244,12 @@ const styles = StyleSheet.create({
     marginTop: 3,
     color: COLORS.textTertiary,
     fontSize: 12,
+  },
+  resultSea: {
+    marginTop: 4,
+    color: withAlpha(PALETTE.turquoise, 0.72),
+    fontSize: 11,
+    letterSpacing: 0.4,
   },
   estimated: {
     color: COLORS.textTertiary,

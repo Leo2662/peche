@@ -134,9 +134,13 @@ export const STRINGS = {
 
   spotPicker: {
     heading: 'LIEU',
-    placeholder: 'Chercher en France',
-    empty: 'Aucun lieu trouvé',
+    placeholder: 'Chercher un spot en France',
+    /** Only coastal towns are offered, so "not found" needs explaining. */
+    empty: 'Aucun spot côtier trouvé',
+    emptyHint: 'Seules les communes du littoral sont proposées.',
     error: 'Recherche indisponible',
+    /** Distance to the shore, shown next to each result. */
+    distance: (km: number) => (km < 1 ? 'bord de mer' : `${Math.round(km)} km du littoral`),
     /** Shown under a spot the scoring is not tuned for. */
     estimated: 'Réglages estimés pour ce lieu',
     reset: 'Revenir à Dunkerque',
@@ -154,5 +158,7 @@ export const STRINGS = {
      * are developer-facing, stay in English, and go to the console instead.
      */
     generic: 'Conditions indisponibles',
+    /** The spot is coastal but the marine model does not reach it. */
+    noMarineData: 'Pas de données marines ici',
   },
 } as const;
