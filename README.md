@@ -363,6 +363,25 @@ installs the app to their home screen wants the tool, not the sales page; the
 wider scope keeps the landing page inside the installed app so a back-link out
 of the tool does not kick them into the browser.
 
+### Deploying
+
+`vercel.json` pins the two settings that decide what lands at `/`:
+
+```json
+{ "buildCommand": "npm run build:web", "outputDirectory": "dist" }
+```
+
+`expo export` on its own puts the **app** at `dist/index.html`. Only
+`npm run build:web` runs `build-site.mjs` afterwards to swap it with the landing
+page, so a host configured with the bare Expo preset — or with a build command
+set once in a dashboard and never revisited — will keep serving the old site
+with no error to show for it. The file is checked in so the setting travels with
+the repo; `framework: null` stops Vercel's preset from overriding it.
+
+The site is a pile of static files, so anything that serves a directory works.
+The two rules: build with `npm run build:web`, publish `dist/`. And whatever the
+host, the deployed branch has to be the one carrying these commits.
+
 ### Meta tags
 
 These live in `public/landing.html` — the indexed page.
