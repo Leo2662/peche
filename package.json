@@ -28,7 +28,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "sitemap": "node scripts/generate-sitemap.mjs",
-    "build:web": "npm run sitemap && expo export --platform web",
+    "build:web": "npm run sitemap && expo export --platform web && node scripts/build-site.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tests",
     "test": "tsx --test tests/*.test.ts",
     "check": "npm run typecheck && npm test"

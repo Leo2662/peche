@@ -79,20 +79,30 @@ describe('the committed public/ files', () => {
     assert.ok(!/^Disallow: \/_expo/m.test(robots));
   });
 
-  it('agrees with index.html on the domain', () => {
-    const html = read('index.html');
+  it('agrees with landing.html on the domain', () => {
+    const html = read('landing.html');
     assert.match(html, /<link rel="canonical" href="https:\/\/pecheaubar\.fr\/" \/>/);
     assert.match(html, /<meta property="og:url" content="https:\/\/pecheaubar\.fr\/" \/>/);
 
-    // Every absolute URL in the head must be on our domain.
-    for (const [, url] of html.matchAll(/(?:href|content)="(https?:\/\/[^"]+)"/g)) {
-      if (url.includes('necolas.github.io')) continue; // reset stylesheet credit
+    // Every absolute URL the crawler is told to follow must be on our domain.
+    // Only the head: the body legitimately links out (the Open-Meteo credit).
+    const head = html.slice(0, html.indexOf('</head>'));
+    assert.ok(head.length > 0, 'landing.html has no head');
+    for (const [, url] of head.matchAll(/(?:href|content)="(https?:\/\/[^"]+)"/g)) {
       assert.ok(url.startsWith(DOMAIN), `${url} is not on the site domain`);
     }
+
+    // The JSON-LD vocabulary is the one Google reads, and the entity it
+    // describes is the site itself.
+    const jsonLd = JSON.parse(
+      html.match(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/)?.[1] ?? 'null'
+    );
+    assert.equal(jsonLd?.['@context'], 'https://schema.org');
+    assert.equal(jsonLd?.url, `${DOMAIN}/`);
   });
 
   it('is a French page with the metadata an indexed page needs', () => {
-    const html = read('index.html');
+    const html = read('landing.html');
     assert.match(html, /<html lang="fr">/);
     assert.match(html, /<meta property="og:locale" content="fr_FR" \/>/);
     assert.match(html, /hreflang="fr"/);
@@ -114,7 +124,7 @@ describe('the committed public/ files', () => {
    * drift away from it, the meta tags stop doing their job.
    */
   it('states the purpose, in the words the domain is built on', () => {
-    const html = read('index.html');
+    const html = read('landing.html');
     const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
     const description = html.match(/name="description"\s+content="([^"]+)"/s)?.[1] ?? '';
 
@@ -131,7 +141,7 @@ describe('the committed public/ files', () => {
   });
 
   it('ships a share card the meta tags actually point at', () => {
-    const html = read('index.html');
+    const html = read('landing.html');
     assert.match(html, /property="og:image" content="https:\/\/pecheaubar\.fr\/og-image\.png"/);
     assert.match(html, /property="og:image:width" content="1200"/);
     assert.match(html, /property="og:image:height" content="630"/);
@@ -162,12 +172,14 @@ describe('the committed public/ files', () => {
   });
 
   it('has a manifest consistent with the page', () => {
-    const html = read('index.html');
+    const html = read('landing.html');
     assert.match(html, /<link rel="manifest" href="\/manifest\.webmanifest" \/>/);
 
     const manifest = JSON.parse(read('manifest.webmanifest'));
     assert.equal(manifest.lang, 'fr');
-    assert.equal(manifest.start_url, '/');
+    // Someone who installs the app wants the tool, not the sales page.
+    assert.equal(manifest.start_url, '/app/');
+    assert.equal(manifest.scope, '/');
     // Must match the page, or the splash flashes a different colour.
     assert.equal(manifest.theme_color, '#030A12');
     assert.match(html, /name="theme-color" content="#030A12"/);

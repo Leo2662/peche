@@ -4,13 +4,17 @@
   "description": "Prévoir les meilleures conditions de pêche au bar : un score de 0 à 100 et vos créneaux sur 7 jours.",
   "lang": "fr",
   "dir": "ltr",
-  "start_url": "/",
+  "start_url": "/app/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#030A12",
   "theme_color": "#030A12",
-  "categories": ["weather", "sports", "utilities"],
+  "categories": [
+    "weather",
+    "sports",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "/icon-512.png",
