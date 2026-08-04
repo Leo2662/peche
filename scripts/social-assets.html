@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<!--
+  Source for the social share image and the app icons.
+
+  Rendered to PNG by scripts/generate-social-assets.mjs. Kept as HTML so the
+  artwork is versioned and editable rather than an opaque binary, and so it
+  stays in step with src/utils/theme.ts by hand-copying the same hex values.
+
+  Each .frame is captured separately by its id.
+-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        --surface: #0c2438;
+        --deep: #071726;
+        --abyss: #030a12;
+        --turquoise: #2fe0c8;
+        --text: #eaf6fa;
+        --text-dim: rgba(184, 214, 232, 0.68);
+        --font: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #222;
+        font-family: var(--font);
+      }
+
+      .frame {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        /* Same three-stop sink as the app: lit surface down to the abyss. */
+        background: linear-gradient(160deg, #14405a 0%, var(--deep) 52%, var(--abyss) 100%);
+      }
+
+      /* The turquoise glow that sits behind the score in the app. */
+      .glow {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(47, 224, 200, 0.2) 0%,
+          rgba(47, 224, 200, 0.05) 55%,
+          transparent 72%
+        );
+      }
+
+      .ring {
+        position: relative;
+        flex: none;
+      }
+
+      .ring svg {
+        display: block;
+      }
+
+      .ring .value {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text);
+        font-weight: 200;
+        letter-spacing: -0.04em;
+      }
+
+      /* ---- 1200x630 share card ---- */
+      #og {
+        width: 1200px;
+        height: 630px;
+        gap: 60px;
+        padding: 0 80px;
+      }
+      #og .glow {
+        width: 560px;
+        height: 560px;
+        left: 20px;
+        top: 35px;
+      }
+      #og .ring {
+        width: 284px;
+        height: 284px;
+      }
+      #og .ring .value {
+        font-size: 132px;
+      }
+      #og .copy {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+      #og .kicker {
+        color: var(--turquoise);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.22em;
+      }
+      #og h1 {
+        color: var(--text);
+        font-size: 50px;
+        font-weight: 300;
+        line-height: 1.12;
+        letter-spacing: -0.01em;
+      }
+      #og p {
+        color: var(--text-dim);
+        font-size: 27px;
+        font-weight: 400;
+      }
+      #og .domain {
+        margin-top: 12px;
+        color: var(--text-dim);
+        font-size: 21px;
+        letter-spacing: 0.16em;
+      }
+
+      /* ---- square icon, captured at 512 and 180 ---- */
+      #icon {
+        width: 512px;
+        height: 512px;
+        justify-content: center;
+        background: linear-gradient(160deg, #103449 0%, var(--deep) 55%, var(--abyss) 100%);
+      }
+      #icon .glow {
+        width: 460px;
+        height: 460px;
+        left: 26px;
+        top: 26px;
+      }
+      #icon .ring {
+        width: 340px;
+        height: 340px;
+      }
+      #icon .ring .value {
+        font-size: 158px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="frame" id="og">
+      <div class="glow"></div>
+
+      <div class="ring">
+        <svg viewBox="0 0 320 320">
+          <circle cx="160" cy="160" r="146" fill="none" stroke="rgba(79,182,217,0.12)" stroke-width="16" />
+          <circle
+            cx="160" cy="160" r="146" fill="none" stroke="#2FE0C8" stroke-width="16"
+            stroke-linecap="round" stroke-dasharray="917.3" stroke-dashoffset="119.2"
+            transform="rotate(-90 160 160)"
+          />
+        </svg>
+        <div class="value">87</div>
+      </div>
+
+      <div class="copy">
+        <div class="kicker">CONDITIONS EXCELLENTES</div>
+        <h1>Les meilleures conditions<br />de pêche au bar</h1>
+        <p>Un score de 0 à 100, et le créneau à la minute.</p>
+        <div class="domain">PECHEAUBAR.FR</div>
+      </div>
+    </div>
+
+    <div class="frame" id="icon">
+      <div class="glow"></div>
+      <div class="ring">
+        <svg viewBox="0 0 340 340">
+          <circle cx="170" cy="170" r="152" fill="none" stroke="rgba(79,182,217,0.12)" stroke-width="20" />
+          <circle
+            cx="170" cy="170" r="152" fill="none" stroke="#2FE0C8" stroke-width="20"
+            stroke-linecap="round" stroke-dasharray="955.0" stroke-dashoffset="124.2"
+            transform="rotate(-90 170 170)"
+          />
+        </svg>
+        <div class="value">87</div>
+      </div>
+    </div>
+  </body>
+</html>

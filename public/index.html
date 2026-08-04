@@ -5,28 +5,58 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
 
-    <title>BassScore — Conditions de pêche du bar en direct</title>
+    <!-- Leads with the purpose and the exact phrase the domain is built on.
+         49 characters, so Google shows it whole. -->
+    <title>Prévoir les meilleures conditions de pêche au bar</title>
     <meta
       name="description"
-      content="Le score de 0 à 100 qui dit si les conditions sont bonnes pour pêcher le bar, et les meilleurs créneaux des 7 prochains jours, partout en France."
+      content="Le score de 0 à 100 qui prévoit les meilleures conditions de pêche au bar : marée, vent, houle et lumière. Vos créneaux sur 7 jours, partout en France."
     />
     <link rel="canonical" href="https://pecheaubar.fr/" />
 
-    <!-- The app is a single-page client-side app: there is one URL to index. -->
-    <meta name="robots" content="index, follow" />
+    <!-- A single-page client-side app: there is one URL to index. -->
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="alternate" hreflang="fr" href="https://pecheaubar.fr/" />
+    <link rel="alternate" hreflang="x-default" href="https://pecheaubar.fr/" />
+
+    <meta name="application-name" content="BassScore" />
     <meta name="theme-color" content="#030A12" />
     <meta name="color-scheme" content="dark" />
+    <!-- The screen is full of times and scores; without this iOS turns
+         "19:10 – 21:00" and three-digit numbers into phone links. -->
+    <meta name="format-detection" content="telephone=no,date=no,address=no" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="BassScore" />
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:url" content="https://pecheaubar.fr/" />
-    <meta property="og:title" content="BassScore — Conditions de pêche du bar en direct" />
+    <meta property="og:title" content="Prévoir les meilleures conditions de pêche au bar" />
     <meta
       property="og:description"
-      content="Le score de 0 à 100 qui dit si les conditions sont bonnes pour pêcher le bar, et les meilleurs créneaux des 7 prochains jours, partout en France."
+      content="Un score de 0 à 100 sur la marée, le vent, la houle et la lumière — et le créneau à la minute, partout en France."
     />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content="https://pecheaubar.fr/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Score de 87 sur 100, conditions excellentes pour la pêche au bar"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Prévoir les meilleures conditions de pêche au bar" />
+    <meta
+      name="twitter:description"
+      content="Un score de 0 à 100 sur la marée, le vent, la houle et la lumière — et le créneau à la minute, partout en France."
+    />
+    <meta name="twitter:image" content="https://pecheaubar.fr/og-image.png" />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="BassScore" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <!-- The `react-native-web` recommended style reset:
          https://necolas.github.io/react-native-web/docs/setup/#root-element -->
