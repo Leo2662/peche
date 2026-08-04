@@ -1,0 +1,10 @@
+# BassScore — https://pecheaubar.fr
+#
+# One page, no private areas: everything is open to crawlers.
+# `/_expo/` holds the hashed JS bundle — nothing to index, and blocking it
+# would stop Google rendering the page at all, so it stays crawlable.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://pecheaubar.fr/sitemap.xml

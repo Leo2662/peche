@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+
+    <title>BassScore — Conditions de pêche du bar en direct</title>
+    <meta
+      name="description"
+      content="Le score de 0 à 100 qui dit si les conditions sont bonnes pour pêcher le bar, et les meilleurs créneaux des 7 prochains jours, partout en France."
+    />
+    <link rel="canonical" href="https://pecheaubar.fr/" />
+
+    <!-- The app is a single-page client-side app: there is one URL to index. -->
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#030A12" />
+    <meta name="color-scheme" content="dark" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BassScore" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:url" content="https://pecheaubar.fr/" />
+    <meta property="og:title" content="BassScore — Conditions de pêche du bar en direct" />
+    <meta
+      property="og:description"
+      content="Le score de 0 à 100 qui dit si les conditions sont bonnes pour pêcher le bar, et les meilleurs créneaux des 7 prochains jours, partout en France."
+    />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- The `react-native-web` recommended style reset:
+         https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        overflow: hidden;
+        /* Matches PALETTE.abyss, so there is no white flash before the JS loads. */
+        background-color: #030a12;
+      }
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>
+      BassScore a besoin de JavaScript : le score est calculé sur votre appareil à
+      partir des prévisions marines.
+    </noscript>
+    <div id="root"></div>
+  </body>
+</html>
