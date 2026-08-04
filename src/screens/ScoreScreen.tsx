@@ -18,7 +18,7 @@ import { useFishingScore } from '../hooks/useFishingScore';
 import { useSelectedDay } from '../hooks/useSelectedDay';
 import { useSpot } from '../hooks/useSpot';
 import { getVerdict, VERDICT_LABELS } from '../scoring/computeScore';
-import { ACCENTS, accentForScore, backgroundGradient } from '../utils/theme';
+import { ACCENTS, accentForScore, backgroundGradient, PALETTE } from '../utils/theme';
 
 /**
  * The whole app: pick a day, see one score, see when to go.
@@ -143,7 +143,7 @@ export function ScoreScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#04060A',
+    backgroundColor: PALETTE.abyss,
   },
   strip: {
     paddingBottom: 4,

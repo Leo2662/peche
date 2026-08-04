@@ -3,7 +3,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { BestWindow, FactorSeries, Reason } from '../types';
 import { STRINGS } from '../config/strings';
-import { accentForScore, COLORS } from '../utils/theme';
+import { accentForScore, COLORS, PALETTE } from '../utils/theme';
 import { formatTime } from '../utils/time';
 import { ReasonDetail } from './ReasonDetail';
 
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     // Fully opaque. Translucency was tried at 0.86 and 0.975 and both left the
     // ring and the window times ghosting behind the words — on a screen whose
     // whole point is one word per line, that is noise.
-    backgroundColor: '#04060A',
+    backgroundColor: PALETTE.sheet,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,

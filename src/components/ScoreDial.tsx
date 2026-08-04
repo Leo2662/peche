@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
+import Svg, { Circle, Defs, LinearGradient, RadialGradient, Stop } from 'react-native-svg';
 
 import { STRINGS } from '../config/strings';
 import { useCountUp } from '../hooks/useCountUp';
@@ -56,7 +56,22 @@ export function ScoreDial({
               <Stop offset="0" stopColor={accent} stopOpacity={0.72} />
               <Stop offset="1" stopColor={accent} stopOpacity={1} />
             </LinearGradient>
+
+            <RadialGradient id="dialGlow" cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor={accent} stopOpacity={0.17} />
+              <Stop offset="0.55" stopColor={accent} stopOpacity={0.05} />
+              <Stop offset="1" stopColor={accent} stopOpacity={0} />
+            </RadialGradient>
           </Defs>
+
+          {/* Light in the water: lifts the number off the background without a
+              blur filter, which react-native-svg renders unevenly on Android. */}
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius - strokeWidth / 2}
+            fill="url(#dialGlow)"
+          />
 
           <Circle
             cx={size / 2}

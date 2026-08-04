@@ -92,10 +92,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'transparent',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    backgroundColor: COLORS.fill,
   },
   pillPressed: {
-    backgroundColor: 'rgba(255, 255, 255, 0.09)',
+    backgroundColor: COLORS.fillPressed,
   },
   label: {
     color: COLORS.textSecondary,

@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "scheme": "bassscore",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#04060A",
+    "backgroundColor": "#030A12",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bassscore.app"
@@ -15,7 +15,7 @@
     "android": {
       "package": "com.bassscore.app",
       "adaptiveIcon": {
-        "backgroundColor": "#04060A",
+        "backgroundColor": "#030A12",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

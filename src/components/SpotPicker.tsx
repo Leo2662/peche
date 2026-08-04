@@ -19,7 +19,7 @@ import type { PlaceSuggestion } from '../api/geocoding';
 import { DEFAULT_SPOT, isCalibrated } from '../config/spots';
 import { STRINGS } from '../config/strings';
 import { usePlaceSearch } from '../hooks/usePlaceSearch';
-import { ACCENTS, COLORS, withAlpha } from '../utils/theme';
+import { ACCENTS, COLORS, PALETTE, withAlpha } from '../utils/theme';
 
 /**
  * React Native Web renders a TextInput as an `<input>`, which draws the
@@ -153,7 +153,7 @@ export function SpotPicker({ visible, currentSpot, onSelect, onClose }: SpotPick
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#04060A',
+    backgroundColor: PALETTE.sheet,
     paddingHorizontal: 24,
   },
   header: {
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   result: {
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255, 255, 255, 0.06)',
+    borderBottomColor: COLORS.divider,
   },
   resultPressed: {
     opacity: 0.5,

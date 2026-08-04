@@ -26,6 +26,10 @@ any of the next 7 days to plan ahead: the ring then shows that day's **best**
 score and the list shows every window worth fishing in it. Each day's dot is
 coloured by its peak, so the whole week reads at a glance.
 
+**The look is deep water.** The whole chrome — backgrounds, charts, day pills,
+dividers, text — lives in a stack of deep blues, and turquoise is the brand
+colour. See [Visual identity](#visual-identity).
+
 **The interface is in French.** Every user-facing string lives in
 `src/config/strings.ts`; dates, times and weekdays are formatted with `Intl`
 using `fr-FR` and the spot's timezone. Exception messages are *not* translated
@@ -54,7 +58,7 @@ Checks:
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 133 unit tests over the scoring engine
+npm test           # 144 unit tests over the scoring engine
 npm run check      # both
 ```
 
@@ -190,10 +194,10 @@ Magnitude of the change over the previous 6 hours: ≤ 2 hPa → 1.0 (settled),
 
 | Score | Verdict | Accent |
 | --- | --- | --- |
-| 90 – 100 | CONDITIONS EXCELLENTES | green |
-| 70 – 89 | BONNES CONDITIONS | yellow |
-| 50 – 69 | CONDITIONS MOYENNES | red |
-| 0 – 49 | MAUVAISES CONDITIONS | red |
+| 90 – 100 | CONDITIONS EXCELLENTES | turquoise `#2FE0C8` |
+| 70 – 89 | BONNES CONDITIONS | gold `#F5C63D` |
+| 50 – 69 | CONDITIONS MOYENNES | coral `#F4677E` |
+| 0 – 49 | MAUVAISES CONDITIONS | coral `#F4677E` |
 
 ### Best windows
 
@@ -299,6 +303,45 @@ source.
 
 ---
 
+## Visual identity
+
+Deep water. Everything lives in `src/utils/theme.ts`.
+
+```
+PALETTE.surface  #0C2438   navy, the lit surface at the top of the screen
+PALETTE.deep     #071726   mid water
+PALETTE.abyss    #030A12   the floor of the screen, and the app background
+PALETTE.sheet    #040D17   flat background for modal sheets
+
+PALETTE.turquoise #2FE0C8  brand, and the top of the score scale
+PALETTE.aqua      #4FB6D9  chrome that must not compete with the score
+PALETTE.steel     #6E93AE  anything with no state to report
+```
+
+The background is a three-stop gradient that sinks from the lit surface to the
+abyss, so the score sits in the light and the chrome falls away below it. The
+top stop carries the current accent — but a constant wash of aqua goes in
+first, because mixing amber straight into navy turned a good day olive, which
+read as a different app entirely. Behind the number, a radial turquoise glow
+adds depth without a blur filter, which `react-native-svg` renders unevenly on
+Android.
+
+### Why the score accents are not all blue
+
+The three bands still have to be told apart at a glance, so they are three
+colour families rather than three shades of the same blue: **turquoise** takes
+over from green at the top, **gold** and **coral** are pitched to sit on deep
+blue rather than on black. A test asserts they stay at least 45° apart in hue —
+enough to separate turquoise, gold and red-pink, and enough to reject two
+neighbouring blues, which is the failure mode it guards against.
+
+Contrast is tested too: every accent clears 4.5:1 on the abyss and 3:1 on the
+lit surface, and the primary text clears 7:1 on all three backgrounds. Text is
+a cooled white (`#EAF6FA`) rather than pure white — on deep blue, pure white
+reads as a different design system.
+
+---
+
 ## Architecture
 
 ```
@@ -338,7 +381,7 @@ src/
 The rule the layout enforces: **`src/scoring` never imports from `src/api`**
 except for tide geometry helpers, and never touches the network or the clock.
 `computeScore(inputs)` is deterministic, which is why the engine is covered by
-133 tests that need no mocking framework.
+144 tests that need no mocking framework.
 
 ### Data flow
 
@@ -435,7 +478,7 @@ is physical rather than local, and applies anywhere.
 npm test
 ```
 
-133 tests, no mocking framework — the engine is pure, so the tests are just
+144 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -466,6 +509,9 @@ tables of inputs and expected outputs:
   not inherit Dunkerque's easterly penalty; its tidal scale is derived from the
   observed curve, which is what rescues the range sub-score on a microtidal
   coast (0.3 → 1.0 for the same 33 cm tide)
+- identity: accents match the verdict bands exactly, stay 45° apart in hue,
+  clear 4.5:1 on the abyss and 3:1 on the lit surface, and the background
+  gradient always sinks rather than rising
 - French formatting: times and dates rendered in `Europe/Paris` across a DST
   boundary, day pills labelled from the spot's timezone and not the device's,
   no empty copy, every template interpolating what it is given
