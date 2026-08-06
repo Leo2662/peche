@@ -16,7 +16,7 @@ import { existsSync, mkdirSync, renameSync, rmSync, writeFileSync, readFileSync 
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { GA_MEASUREMENT_ID, missingTagReason } from './analytics.mjs';
+import { CLARITY_PROJECT_ID, GA_MEASUREMENT_ID, missingTagReason } from './analytics.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = resolve(root, process.argv[2] ?? 'dist');
@@ -50,16 +50,16 @@ if (!app.includes('id="root"')) fail('the app page lost its mount point');
 if (!/src="\/_expo\//.test(app)) fail('the app page does not load the bundle from an absolute path');
 if (!/noindex/.test(app)) fail('the app page should not be indexed — the landing page is');
 
-// The Google tag is written into both templates by hand. Expo re-serialises
-// the app's HTML on export, so this asserts the tag actually survived that —
-// and a tag on only one of the two pages would under-count the site without
-// ever looking broken.
+// The measurement tags are written into both templates by hand. Expo
+// re-serialises the app's HTML on export, so this asserts they actually
+// survived that — and a tag on only one of the two pages would under-count the
+// site without ever looking broken.
 for (const [page, html] of [
   ['landing page', landing],
   ['app page', app],
 ]) {
   const missing = missingTagReason(html);
-  if (missing) fail(`the ${page} has an incomplete Google tag: ${missing}`);
+  if (missing) fail(`${page}: ${missing}`);
 }
 
 // 4. A host that serves /app (no trailing slash) without redirecting would 404.
@@ -67,4 +67,6 @@ for (const [page, html] of [
 writeFileSync(resolve(dist, 'app.html'), app, 'utf8');
 
 console.log(`build-site: landing at /, app at /app/ (${dist})`);
-console.log(`build-site: Google tag ${GA_MEASUREMENT_ID} on both pages`);
+console.log(
+  `build-site: Google tag ${GA_MEASUREMENT_ID} and Clarity ${CLARITY_PROJECT_ID} on both pages`
+);
