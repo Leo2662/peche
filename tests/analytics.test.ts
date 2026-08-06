@@ -5,151 +5,115 @@ import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
 import {
-  analyticsTag,
-  injectAnalytics,
-  MEASUREMENT_ID_PATTERN,
-  readMeasurementId,
+  GA_MEASUREMENT_ID,
+  missingTagReason,
   TAG_MARKER,
+  TAG_REQUIREMENTS,
 } from '../scripts/analytics.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const readPublic = (name: string) => readFileSync(resolve(ROOT, 'public', name), 'utf8');
 
-const ID = 'G-ABC1234567';
+/** Both pages the site serves: landing.html becomes /, index.html becomes /app/. */
+const PAGES = ['landing.html', 'index.html'];
 
-describe('the measurement id read from the environment', () => {
-  it('is null when unset, blank or whitespace — analytics are simply off', () => {
-    assert.equal(readMeasurementId({}), null);
-    assert.equal(readMeasurementId({ GA_MEASUREMENT_ID: '' }), null);
-    assert.equal(readMeasurementId({ GA_MEASUREMENT_ID: '   ' }), null);
-  });
-
-  it('accepts a real measurement id, trimmed', () => {
-    assert.equal(readMeasurementId({ GA_MEASUREMENT_ID: ID }), ID);
-    assert.equal(readMeasurementId({ GA_MEASUREMENT_ID: `  ${ID}\n` }), ID);
+describe('the Google tag', () => {
+  it('names the property behind pecheaubar.fr', () => {
+    assert.equal(GA_MEASUREMENT_ID, 'G-VYBEV628Q0');
+    assert.match(GA_MEASUREMENT_ID, /^G-[A-Z0-9]+$/);
   });
 
   /**
-   * A typo must stop the build. The alternative is a deploy that looks fine and
-   * collects nothing until someone thinks to check Realtime.
+   * Tag Assistant only ever says "detected" or not. These are the parts that
+   * make it work, pinned one by one, so a broken snippet says which half went
+   * missing instead of failing as a whole.
    */
-  it('throws on anything that is not one', () => {
-    for (const value of [
-      'UA-12345-1', // Universal Analytics, retired
-      'GTM-ABC123', // a Tag Manager container
-      'G-abc1234567', // lowercase
-      'G-123', // too short
-      'G-ABC1234567 G-XYZ', // two ids
-      "G-ABC1234567'});alert(1);//", // a quote that would break out of the script
-    ]) {
-      assert.throws(
-        () => readMeasurementId({ GA_MEASUREMENT_ID: value }),
-        /not a GA4 measurement id/,
-        `${value} should have been rejected`
-      );
-    }
-  });
-
-  it('only matches the id form the tag interpolates safely', () => {
-    assert.ok(MEASUREMENT_ID_PATTERN.test(ID));
-    for (const unsafe of ['G-A"B', "G-A'B", 'G-A<B', 'G-A B']) {
-      assert.ok(!MEASUREMENT_ID_PATTERN.test(unsafe), `${unsafe} must not pass`);
-    }
-  });
-});
-
-describe('the analytics tag', () => {
-  const tag = analyticsTag(ID);
-
-  it('loads gtag.js for the configured property and configures it', () => {
-    assert.match(tag, /<script async src="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=G-ABC1234567"><\/script>/);
-    assert.match(tag, /gtag\('config', 'G-ABC1234567'/);
-    assert.ok(tag.includes(TAG_MARKER), 'the marker must identify a tagged page');
-  });
-
-  it('sets up dataLayer before anything pushes to it', () => {
-    assert.ok(
-      tag.indexOf('window.dataLayer = window.dataLayer || []') < tag.indexOf("gtag('consent'"),
-      'dataLayer must exist before the first gtag call'
+  it('reports which part of the snippet is missing', () => {
+    assert.equal(missingTagReason(''), 'no the gtag.js loader, async');
+    assert.equal(
+      missingTagReason(`<script async src="${TAG_MARKER}"></script>`),
+      'no the dataLayer bootstrap'
     );
-  });
-
-  /**
-   * Consent defaults are only defaults if they land in dataLayer before the
-   * library reads it. Ordering is the whole mechanism, so it is pinned.
-   */
-  it('declares consent defaults before the config and before the loader', () => {
-    const consent = tag.indexOf("gtag('consent', 'default'");
-    const config = tag.indexOf("gtag('config'");
-    const loader = tag.indexOf(TAG_MARKER);
-
-    assert.ok(consent !== -1, 'no consent defaults');
-    assert.ok(consent < config, 'consent defaults must precede config');
-    assert.ok(consent < loader, 'consent defaults must precede the gtag.js loader');
-  });
-
-  it('denies every advertising grant and turns Google Signals off', () => {
-    for (const denied of ['ad_storage', 'ad_user_data', 'ad_personalization']) {
-      assert.match(
-        tag,
-        new RegExp(`${denied}: 'denied'`),
-        `${denied} must default to denied — the site runs no advertising`
-      );
-    }
-    assert.match(tag, /analytics_storage: 'granted'/);
-    assert.match(tag, /allow_google_signals: false/);
-    assert.match(tag, /allow_ad_personalization_signals: false/);
-  });
-
-  it('refuses to build a tag for an id that is not one', () => {
-    assert.throws(() => analyticsTag('G-abc'), /not a GA4 measurement id/);
+    assert.ok(TAG_REQUIREMENTS.length >= 5, 'the snippet has five moving parts');
   });
 });
 
-describe('injecting the tag into a built page', () => {
-  it('puts it last in the head, leaving </head> where it was', () => {
-    const html = '<html>\n  <head>\n    <title>x</title>\n  </head>\n  <body></body>\n</html>\n';
-    const out = injectAnalytics(html, ID);
-
-    assert.ok(out.indexOf(TAG_MARKER) < out.indexOf('</head>'), 'the tag must be inside the head');
-    assert.ok(out.indexOf('<title>x</title>') < out.indexOf(TAG_MARKER), 'it goes last');
-    assert.match(out, /\n {2}<\/head>/, '</head> kept its own line and indentation');
-    assert.ok(out.includes('<body></body>'), 'the body is untouched');
-  });
-
-  it('never tags a page twice', () => {
-    assert.throws(
-      () => injectAnalytics(injectAnalytics('<head></head>', ID), ID),
-      /already carries a gtag/
-    );
-  });
-
-  it('fails loudly on a page with no head', () => {
-    assert.throws(() => injectAnalytics('<html><body></body></html>', ID), /no <\/head>/);
-  });
-
-  it('tags both of the pages the site actually ships', () => {
-    // The app template is what Expo exports to /app/; landing.html becomes /.
-    for (const page of ['index.html', 'landing.html']) {
-      const out = injectAnalytics(readPublic(page), ID);
-      const head = out.slice(0, out.indexOf('</head>'));
-      assert.ok(head.includes(TAG_MARKER), `${page} was not tagged inside its head`);
-      assert.ok(head.includes(`gtag('config', '${ID}'`), `${page} has no config call`);
+describe('every page the site serves', () => {
+  it('carries the complete gtag.js snippet', () => {
+    for (const page of PAGES) {
+      assert.equal(missingTagReason(readPublic(page)), null, `${page} has an incomplete tag`);
     }
   });
-});
 
-describe('the committed public/ files', () => {
   /**
-   * The id belongs in the host's environment, injected at build time. A hard
-   * coded one would also fire from `expo start --web`, filling the property
-   * with development traffic.
+   * Google's instruction is "juste après l'élément <head>". Position does not
+   * change whether the tag fires, but it does decide whether a hit is recorded
+   * for a visitor who leaves before the rest of the head has parsed.
    */
-  it('carry no analytics tag of their own', () => {
-    for (const page of ['index.html', 'landing.html']) {
+  it('puts it immediately after <head>, ahead of everything else', () => {
+    for (const page of PAGES) {
       const html = readPublic(page);
-      assert.ok(!html.includes(TAG_MARKER), `${page} has a hard-coded gtag`);
-      assert.ok(!/\bG-[A-Z0-9]{4,16}\b/.test(html), `${page} has a hard-coded measurement id`);
+      const headOpen = html.indexOf('<head>');
+      const tag = html.indexOf('<!-- Google tag (gtag.js) -->');
+
+      assert.ok(headOpen !== -1, `${page} has no <head>`);
+      assert.ok(tag !== -1, `${page} is missing the Google tag comment`);
+
+      const between = html.slice(headOpen + '<head>'.length, tag);
+      assert.match(between, /^\s*$/, `${page} has markup between <head> and the tag: ${between}`);
     }
+  });
+
+  it('keeps the charset declaration inside the first 1024 bytes', () => {
+    // The tag now sits above <meta charset>, and a declaration the parser finds
+    // too late is a declaration it ignores.
+    for (const page of PAGES) {
+      const charset = readPublic(page).indexOf('<meta charset="utf-8" />');
+      assert.ok(charset !== -1, `${page} has no charset declaration`);
+      assert.ok(charset < 1024, `${page} declares its charset at byte ${charset}`);
+    }
+  });
+
+  it('loads gtag.js asynchronously, so the tag never blocks the render', () => {
+    for (const page of PAGES) {
+      assert.match(readPublic(page), /<script async src="https:\/\/www\.googletagmanager\.com/);
+    }
+  });
+
+  it('tags each page exactly once', () => {
+    for (const page of PAGES) {
+      const html = readPublic(page);
+      assert.equal(
+        html.split(TAG_MARKER).length - 1,
+        1,
+        `${page} loads gtag.js more than once — hits would be double-counted`
+      );
+      assert.equal(html.split(`gtag('config'`).length - 1, 1, `${page} configures twice`);
+    }
+  });
+
+  it('measures one property, never a second id', () => {
+    for (const page of PAGES) {
+      const ids = new Set(readPublic(page).match(/\bG-[A-Z0-9]{6,}\b/g) ?? []);
+      assert.deepEqual([...ids], [GA_MEASUREMENT_ID], `${page} mentions a foreign measurement id`);
+    }
+  });
+});
+
+describe('the landing page, whose head is also its SEO surface', () => {
+  /**
+   * `tests/web.test.ts` asserts every absolute URL in the head is on our own
+   * domain — the tag is the one deliberate exception, and it is a script rather
+   * than something a crawler is told to follow.
+   */
+  it('adds no crawlable link to a third-party domain', () => {
+    const html = readPublic('landing.html');
+    const head = html.slice(0, html.indexOf('</head>'));
+
+    for (const [, url] of head.matchAll(/(?:href|content)="(https?:\/\/[^"]+)"/g)) {
+      assert.ok(url.startsWith('https://pecheaubar.fr'), `${url} is not on the site domain`);
+    }
+    // The tag reaches Google through src=, which is not a crawl instruction.
+    assert.ok(head.includes(`src="${TAG_MARKER}"`));
   });
 });

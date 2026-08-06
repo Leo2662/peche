@@ -322,7 +322,7 @@ the HTML template Expo injects the bundle into.
 | `public/manifest.webmanifest` | installable web app: name, colours, icons |
 | `public/og-image.png` | 1200×630 share card |
 | `public/icon-512.png`, `public/apple-touch-icon.png` | home-screen icons |
-| `scripts/analytics.mjs` | the GA4 tag, injected into both pages at build time |
+| `scripts/analytics.mjs` | the GA4 measurement id, and what a working tag needs |
 
 ### Landing page at `/`, tool at `/app/`
 
@@ -385,59 +385,45 @@ host, the deployed branch has to be the one carrying these commits.
 
 ### Google Analytics 4
 
-```bash
-GA_MEASUREMENT_ID=G-XXXXXXXXXX npm run build:web
-```
+Property `G-VYBEV628Q0`. The standard `gtag.js` snippet, exactly as Google
+hands it out, sits immediately after `<head>` in **both** page templates —
+`public/landing.html` (which becomes `/`) and `public/index.html` (which
+becomes `/app/` and its `/app.html` copy). GA4 reads the URL itself, so the two
+appear as separate pages in the same property with no extra configuration.
 
-One variable, set once in the host — on Vercel, *Settings → Environment
-Variables*, Production only. `build-site.mjs` then injects the `gtag.js` tag at
-the end of the `<head>` of **both** pages: the landing page at `/` and the app
-at `/app/` (and its `/app.html` copy). GA4 reads the URL itself, so the two show
-up as separate pages in the same property with no extra configuration.
+It is committed into the templates rather than injected from a build-time
+environment variable. A tag that depends on a host setting is a tag that is
+missing the day nobody sets that variable, and the only thing Tag Assistant
+reports back is *not detected* — no clue as to why. In the templates it travels
+with the repo and is visible in a diff.
 
-The tag is deliberately **not** committed into `public/*.html`:
+The cost of that choice is that `expo start --web` also fires the tag, so local
+development shows up in the property. Filter it out with a *Developer traffic*
+internal-traffic rule (Admin → Data Streams → Configure tag settings → Define
+internal traffic) if it becomes noticeable.
 
-- With the id in the environment, `expo start --web` and local builds carry no
-  tag at all, so development traffic never reaches the property. Unset the
-  variable and the output is byte-for-byte what it was before.
-- Preview deploys stay out of the numbers for the same reason — give the
-  variable to the Production environment only.
-- The id lives in one place instead of being duplicated across the landing page
-  and the app template, where the two could drift apart.
+`scripts/analytics.mjs` holds the measurement id and the five things the
+snippet must contain to work: the async loader, the `dataLayer` bootstrap, the
+`gtag` shim, `gtag('js')` and `gtag('config')`. `build-site.mjs` checks the
+built output against that list and fails the build naming the missing part —
+Expo re-serialises the app's HTML during export, and a page that quietly loses
+its tag would otherwise only surface as a hole in the reports weeks later.
 
-A value that is not a measurement id (`UA-…`, `GTM-…`, a truncated paste) fails
-the build. The failure mode it prevents is the quiet one: a deploy that looks
-perfectly healthy and collects nothing until somebody thinks to open Realtime.
-That same regex is what makes the id safe to interpolate into a `<script>` — it
-cannot contain a quote or an angle bracket. And because analytics that reach
-only one of the two pages would under-count the site without ever looking
-broken, `build-site.mjs` re-checks both pages for the id before it finishes,
-alongside its other structural assertions.
+`tests/analytics.test.ts` pins the rest: the tag is complete on both pages,
+immediately after `<head>` with nothing before it, present exactly once so hits
+are not double-counted, loading `async` so it never blocks the render, and
+naming no measurement id other than this one. It also checks the charset
+declaration still lands inside the first 1024 bytes — the tag sits above
+`<meta charset>`, and a declaration the parser finds too late is one it
+ignores.
 
-What the tag is configured to do, and not do:
-
-- **Consent defaults first.** `ad_storage`, `ad_user_data` and
-  `ad_personalization` are denied outright — the site runs no advertising and
-  never will — with `analytics_storage` granted. The inline block is written
-  above the `gtag/js` loader so the ordering requirement is visible in the
-  source: `gtag/js` is `async` and would run second regardless, but consent
-  defaults are only defaults if they are in `dataLayer` before the library
-  reads it.
-- **Google Signals off** (`allow_google_signals: false`,
-  `allow_ad_personalization_signals: false`): no cross-device advertising
-  identifiers, no remarketing audiences. Page views and sessions, nothing else.
-
-That is the privacy floor, not GDPR compliance. GA4 in this form still writes a
-first-party `_ga` cookie, and the CNIL does not treat it as exempt from consent
-— an audience-measurement exemption needs a configuration that GA4 does not
-offer out of the box. A visible French audience means a consent banner that
-calls `gtag('consent', 'update', …)`, or a measurement tool designed for the
-exemption. The hook is already in place: flip `analytics_storage` to `'denied'`
-in the defaults and have the banner grant it.
-
-Tests in `tests/analytics.test.ts` pin the id validation, the ordering of the
-consent defaults, the denied grants, and the fact that nothing in `public/`
-carries a hard-coded measurement id.
+**On consent.** This is the plain snippet, so `ad_storage` and friends default
+to granted and GA4 writes a first-party `_ga` cookie on arrival. The CNIL does
+not treat GA4 as exempt from consent, so a French audience needs a banner
+before the tag is compliant. The change when you add one is to declare consent
+defaults ahead of the loader — `gtag('consent', 'default', { analytics_storage:
+'denied', ad_storage: 'denied', … })` — and have the banner call
+`gtag('consent', 'update', …)` when the visitor accepts.
 
 ### Meta tags
 
@@ -752,7 +738,7 @@ is physical rather than local, and applies anywhere.
 npm test
 ```
 
-191 tests, no mocking framework — the engine is pure, so the tests are just
+186 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -794,11 +780,10 @@ tables of inputs and expected outputs:
   subject, og:image present at the dimensions it declares, manifest colours and
   icon sizes matching the page and the files on disk, `start_url` pointing at
   the tool rather than the landing page
-- analytics: a `UA-…`, a `GTM-…` or a truncated id rejects the build, the
-  consent defaults land in `dataLayer` before the config and before the loader,
-  every advertising grant is denied, the tag goes last inside the `<head>` of
-  both real pages, no page is ever tagged twice, and nothing committed under
-  `public/` carries a measurement id of its own
+- analytics: both pages carry the complete gtag.js snippet — loader, dataLayer,
+  shim, `js` and `config` — immediately after `<head>` with nothing before it,
+  exactly once, loaded `async`, naming no measurement id but ours, and with the
+  charset declaration still inside the first 1024 bytes
 - coastline: 34 real coastal towns accepted and placed in the right sea, 22
   inland cities rejected, estuary cities more than 30 km from the traced line,
   no gap between vertices wide enough to let a town slip through
