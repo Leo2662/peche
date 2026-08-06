@@ -59,7 +59,7 @@ Checks:
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 177 unit tests over the scoring engine
+npm test           # 189 unit tests over the scoring engine and the built site
 npm run check      # both
 ```
 
@@ -322,7 +322,7 @@ the HTML template Expo injects the bundle into.
 | `public/manifest.webmanifest` | installable web app: name, colours, icons |
 | `public/og-image.png` | 1200×630 share card |
 | `public/icon-512.png`, `public/apple-touch-icon.png` | home-screen icons |
-| `scripts/analytics.mjs` | the GA4 measurement id, and what a working tag needs |
+| `scripts/analytics.mjs` | the GA4 and Clarity ids, and what a working tag needs |
 
 ### Landing page at `/`, tool at `/app/`
 
@@ -383,47 +383,70 @@ The site is a pile of static files, so anything that serves a directory works.
 The two rules: build with `npm run build:web`, publish `dist/`. And whatever the
 host, the deployed branch has to be the one carrying these commits.
 
-### Google Analytics 4
+### Measurement — Google Analytics 4 and Microsoft Clarity
 
-Property `G-VYBEV628Q0`. The standard `gtag.js` snippet, exactly as Google
-hands it out, sits immediately after `<head>` in **both** page templates —
-`public/landing.html` (which becomes `/`) and `public/index.html` (which
-becomes `/app/` and its `/app.html` copy). GA4 reads the URL itself, so the two
-appear as separate pages in the same property with no extra configuration.
+Two tags, answering different questions:
 
-It is committed into the templates rather than injected from a build-time
-environment variable. A tag that depends on a host setting is a tag that is
-missing the day nobody sets that variable, and the only thing Tag Assistant
-reports back is *not detected* — no clue as to why. In the templates it travels
-with the repo and is visible in a diff.
+- **Google Analytics 4** (`G-VYBEV628Q0`) — how many people, arriving from
+  where.
+- **Microsoft Clarity** (`xy5pox99ey`) — what they do once here: scroll depth, rage clicks,
+  dead clicks, session replay. On the landing page that says which sections get
+  read and where people stop before the CTA; on the app it says whether the
+  score, the day strip and the window list are understood without help. That is
+  the question no amount of GA4 can answer.
 
-The cost of that choice is that `expo start --web` also fires the tag, so local
-development shows up in the property. Filter it out with a *Developer traffic*
-internal-traffic rule (Admin → Data Streams → Configure tag settings → Define
-internal traffic) if it becomes noticeable.
+Both are the vendors' own snippets, committed at the top of the `<head>` in
+**both** page templates — `public/landing.html` (which becomes `/`) and
+`public/index.html` (which becomes `/app/` and its `/app.html` copy). Each
+vendor keys on the URL, so `/` and `/app/` separate on their own with no extra
+configuration.
 
-`scripts/analytics.mjs` holds the measurement id and the five things the
-snippet must contain to work: the async loader, the `dataLayer` bootstrap, the
-`gtag` shim, `gtag('js')` and `gtag('config')`. `build-site.mjs` checks the
-built output against that list and fails the build naming the missing part —
-Expo re-serialises the app's HTML during export, and a page that quietly loses
-its tag would otherwise only surface as a hole in the reports weeks later.
+They are committed rather than injected from build-time environment variables.
+A tag that depends on a host setting is a tag that is missing the day nobody
+sets that variable, and all the vendor console reports back is *not detected* —
+no clue as to why. In the templates the tags travel with the repo and show up
+in a diff.
 
-`tests/analytics.test.ts` pins the rest: the tag is complete on both pages,
-immediately after `<head>` with nothing before it, present exactly once so hits
-are not double-counted, loading `async` so it never blocks the render, and
-naming no measurement id other than this one. It also checks the charset
-declaration still lands inside the first 1024 bytes — the tag sits above
-`<meta charset>`, and a declaration the parser finds too late is one it
-ignores.
+The cost is that `expo start --web` fires them too, so local development lands
+in both properties. Filter it out if it becomes noticeable: GA4 has
+*Admin → Data Streams → Configure tag settings → Define internal traffic*, and
+Clarity has an IP-blocking filter under *Settings → IP blocking*.
 
-**On consent.** This is the plain snippet, so `ad_storage` and friends default
-to granted and GA4 writes a first-party `_ga` cookie on arrival. The CNIL does
-not treat GA4 as exempt from consent, so a French audience needs a banner
-before the tag is compliant. The change when you add one is to declare consent
-defaults ahead of the loader — `gtag('consent', 'default', { analytics_storage:
-'denied', ad_storage: 'denied', … })` — and have the banner call
-`gtag('consent', 'update', …)` when the visitor accepts.
+#### Head order
+
+One thing sits above the tags: `<meta charset="utf-8" />`. The two snippets are
+about 700 bytes, and a charset declaration the parser meets after the first
+1024 is one it ignores — which on a page this full of accents is not a
+subtlety. Everything else in the head comes after them, because a visitor who
+leaves early should still be counted, and for Clarity the replay only covers
+what the tag was loaded in time to see.
+
+#### The build checks them
+
+`scripts/analytics.mjs` holds both ids and the parts each snippet needs to
+actually work — for GA4 the async loader, the `dataLayer` bootstrap, the `gtag`
+shim, `gtag('js')` and `gtag('config')`; for Clarity the queue shim, the
+`clarity.ms` loader, the `async` flag and the project id. `build-site.mjs`
+checks the built pages against that list and fails naming whichever part went
+missing. Expo re-serialises the app's HTML during export, and a page that
+quietly loses a tag would otherwise only surface as a hole in the reports weeks
+later. An id still set to its placeholder fails the build too — a tag that
+ships, looks fine and reports to nobody is the failure that already happened
+once here.
+
+`tests/analytics.test.ts` pins the rest: both snippets complete on both pages,
+in the right order behind the charset, present exactly once per vendor so hits
+are not double-counted, every third-party script loaded asynchronously and from
+no host but these two, and no foreign measurement id anywhere.
+
+**On consent.** These are the plain snippets. GA4 writes `_ga` on arrival;
+Clarity writes `_clck`/`_clsk` and, being session replay, records rather more.
+The CNIL exempts neither, so a French audience needs a banner before this is
+compliant — and Clarity is the one to gate first, since a replay captures far
+more than a page view. Both vendors have the hook for it: declare
+`gtag('consent', 'default', { analytics_storage: 'denied', … })` above the
+loader and call `gtag('consent', 'update', …)` on accept, and start Clarity
+with consent withheld, calling `clarity('consent')` when the visitor agrees.
 
 ### Meta tags
 
@@ -738,7 +761,7 @@ is physical rather than local, and applies anywhere.
 npm test
 ```
 
-186 tests, no mocking framework — the engine is pure, so the tests are just
+189 tests, no mocking framework — the engine is pure, so the tests are just
 tables of inputs and expected outputs:
 
 - every factor's bands, against the published spec
@@ -780,10 +803,12 @@ tables of inputs and expected outputs:
   subject, og:image present at the dimensions it declares, manifest colours and
   icon sizes matching the page and the files on disk, `start_url` pointing at
   the tool rather than the landing page
-- analytics: both pages carry the complete gtag.js snippet — loader, dataLayer,
-  shim, `js` and `config` — immediately after `<head>` with nothing before it,
-  exactly once, loaded `async`, naming no measurement id but ours, and with the
-  charset declaration still inside the first 1024 bytes
+- analytics: both pages carry the complete GA4 and Clarity snippets — every
+  part each vendor needs to work — at the top of the head behind only the
+  charset, exactly once per vendor, every third-party script `async` and from
+  no host but those two, no foreign measurement id anywhere, and the charset
+  declaration still inside the first 1024 bytes; a placeholder id fails rather
+  than deploying a tag that reports to nobody
 - coastline: 34 real coastal towns accepted and placed in the right sea, 22
   inland cities rejected, estuary cities more than 30 km from the traced line,
   no gap between vertices wide enough to let a town slip through
