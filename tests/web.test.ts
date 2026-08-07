@@ -4,12 +4,17 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
+import { missingTagReason } from '../scripts/analytics.mjs';
+import { checkGuideRoutes, GUIDE_PAGES } from '../scripts/build-site.mjs';
 import { buildSitemap, isoDate, ROUTES, SITE_URL } from '../scripts/generate-sitemap.mjs';
 
 const PUBLIC_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const read = (name: string) => readFileSync(resolve(PUBLIC_DIR, name), 'utf8');
 
 const DOMAIN = 'https://pecheaubar.fr';
+
+/** The head is where the crawler-facing metadata lives, and only there. */
+const headOf = (html: string) => html.slice(0, html.indexOf('</head>'));
 
 /** Width and height straight out of a PNG's IHDR chunk. */
 function pngSize(buffer: Buffer): { width: number; height: number } {
@@ -23,10 +28,28 @@ describe('sitemap generation', () => {
     assert.ok(!SITE_URL.endsWith('/'), 'SITE_URL must not end in a slash — paths add it');
   });
 
-  it('lists only routes the app actually serves', () => {
-    // A single-route SPA. Listing anything else would hand Google soft-404s.
-    assert.equal(ROUTES.length, 1);
+  it('lists only routes the site actually serves', () => {
+    // The landing page, then one entry per editorial guide. The app itself is
+    // client-rendered and carries a noindex — listing it would be a soft-404.
     assert.equal(ROUTES[0].path, '/');
+    assert.equal(ROUTES.length, 1 + GUIDE_PAGES.length);
+
+    for (const route of ROUTES.slice(1)) {
+      // `vercel.json` sets trailingSlash: true, so the slash-less form is a 308.
+      assert.match(route.path, /^\/[a-z0-9-]+\/$/, `${route.path} is not a clean guide path`);
+      const slug = route.path.slice(1, -1);
+      assert.ok(GUIDE_PAGES.includes(slug), `${route.path} has no page behind it`);
+      assert.doesNotThrow(
+        () => readFileSync(resolve(PUBLIC_DIR, `${slug}.html`)),
+        `public/${slug}.html is missing`
+      );
+    }
+  });
+
+  it('agrees with the build about which guides exist', () => {
+    // The two lists are edited by hand in different files; this is the check
+    // that stops one of them being forgotten.
+    assert.equal(checkGuideRoutes(), null);
   });
 
   it('produces well-formed XML with the sitemaps.org namespace', () => {
@@ -197,4 +220,129 @@ describe('the committed public/ files', () => {
     assert.match(html, /<div id="root"><\/div>/);
     assert.match(html, /id="expo-reset"/);
   });
+});
+
+/**
+ * The per-spot guides.
+ *
+ * These are the pages that actually rank: unlike the app they are real text a
+ * crawler can read, and unlike the landing page they answer a question someone
+ * types ("pêche au bar à Boulogne-sur-Mer"). What follows holds every guide to
+ * the same bar, so the second one cannot be written to a lower standard than
+ * the first.
+ */
+describe('the spot guides', () => {
+  for (const slug of GUIDE_PAGES) {
+    const html = read(`${slug}.html`);
+    const head = headOf(html);
+    const url = `${DOMAIN}/${slug}/`;
+
+    describe(slug, () => {
+      it('claims its own path, and asks to be indexed', () => {
+        assert.match(html, /<html lang="fr">/);
+        assert.ok(head.length > 0, 'the page has no head');
+        assert.ok(
+          head.includes(`<link rel="canonical" href="${url}" />`),
+          `canonical does not point at ${url}`
+        );
+        assert.match(head, /<meta name="robots" content="index, follow/);
+        assert.ok(head.includes(`<meta property="og:url" content="${url}" />`));
+
+        // Both alternates must land on this page, not on the site root — the
+        // attributes are wrapped across lines in the source, hence the \s+.
+        for (const lang of ['fr', 'x-default']) {
+          const alternate = new RegExp(`hreflang="${lang}"\\s+href="([^"]+)"`).exec(head);
+          assert.ok(alternate, `no ${lang} alternate`);
+          assert.equal(alternate[1], url, `the ${lang} alternate points elsewhere`);
+        }
+        assert.match(head, /<meta property="og:locale" content="fr_FR" \/>/);
+      });
+
+      it('keeps every absolute URL in the head on our own domain', () => {
+        for (const [, found] of head.matchAll(/(?:href|content)="(https?:\/\/[^"]+)"/g)) {
+          assert.ok(found.startsWith(DOMAIN), `${found} is not on the site domain`);
+        }
+      });
+
+      it('has a title and description sized for a search result', () => {
+        const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
+        // Google truncates a title around 60 characters.
+        assert.ok(title.length > 0 && title.length <= 60, `title is ${title.length} chars`);
+
+        const description = head.match(/name="description"\s+content="([^"]+)"/s)?.[1] ?? '';
+        assert.ok(
+          description.length >= 70 && description.length <= 160,
+          `description is ${description.length} chars`
+        );
+
+        // A guide that never names its subject or its place is not a guide.
+        for (const field of [title, description]) {
+          assert.match(field.toLowerCase(), /bar/, `"${field}" does not name the species`);
+        }
+        assert.match(title, /Boulogne-sur-Mer/);
+      });
+
+      it('carries exactly one h1, naming the place', () => {
+        const h1s = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)];
+        assert.equal(h1s.length, 1, 'a page with two h1s has no main heading');
+        assert.match(h1s[0][1], /Boulogne-sur-Mer/);
+      });
+
+      /**
+       * Internal linking is the whole reason a guide exists next to the app:
+       * it collects the search traffic and hands it on. A guide that links
+       * nowhere is a leaf, and one nothing links to is an orphan.
+       */
+      it('links into the tool and back to the landing page', () => {
+        assert.ok(html.includes('href="/app/"'), 'no link to the app');
+        assert.ok(html.includes('href="/"'), 'no link back to the landing page');
+        assert.ok(html.includes('href="/#comment"'), 'no deep link into the explanation');
+
+        // …and the landing page links here, or the guide is unreachable by
+        // crawl from the site root.
+        const landing = read('landing.html');
+        assert.ok(
+          landing.includes(`href="/${slug}/"`),
+          `landing.html does not link to /${slug}/ — the guide is an orphan`
+        );
+      });
+
+      it('ships structured data Google can read', () => {
+        const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/g)]
+          .map(([, body]) => JSON.parse(body));
+
+        assert.ok(blocks.length >= 2, 'a guide should describe itself and its breadcrumb');
+        for (const block of blocks) assert.equal(block['@context'], 'https://schema.org');
+
+        const breadcrumb = blocks.find((block) => block['@type'] === 'BreadcrumbList');
+        assert.ok(breadcrumb, 'no BreadcrumbList');
+        // The trail has to end on this page, or it describes someone else's.
+        const trail = breadcrumb.itemListElement;
+        assert.equal(trail[0].item, `${DOMAIN}/`);
+        assert.equal(trail.at(-1).item, url);
+        trail.forEach((step: { position: number }, index: number) => {
+          assert.equal(step.position, index + 1, 'breadcrumb positions are not 1-based and ordered');
+        });
+
+        const faq = blocks.find((block) => block['@type'] === 'FAQPage');
+        assert.ok(faq, 'no FAQPage');
+        assert.ok(faq.mainEntity.length >= 3, 'an FAQ of one or two is not worth marking up');
+        for (const question of faq.mainEntity) {
+          assert.ok(question.acceptedAnswer?.text?.length > 40, `"${question.name}" has no answer`);
+          // Marking up an answer the visitor cannot see is what Google calls
+          // hidden content, and penalises. The question must be on the page.
+          assert.ok(
+            html.includes(`<summary>${question.name}</summary>`),
+            `"${question.name}" is in the structured data but not on the page`
+          );
+        }
+      });
+
+      it('shares the share card and the measurement tags', () => {
+        assert.match(head, /property="og:image" content="https:\/\/pecheaubar\.fr\/og-image\.png"/);
+        assert.match(head, /name="twitter:card" content="summary_large_image"/);
+        assert.equal(missingTagReason(html), null);
+      });
+    });
+  }
 });

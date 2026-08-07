@@ -405,6 +405,20 @@
         color: var(--dim);
         font-size: 14.5px;
       }
+      /* One card per guide, at a fixed readable width rather than stretched to
+         the full column — there is one guide today and there will be more. */
+      #spots .grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 340px));
+        justify-content: start;
+      }
+      .tile-link {
+        color: var(--turquoise);
+        text-decoration-color: rgba(47, 224, 200, 0.4);
+        text-underline-offset: 3px;
+      }
+      .tile-link:hover {
+        text-decoration-color: var(--turquoise);
+      }
 
       /* steps */
       .steps {
@@ -544,6 +558,11 @@
         gap: 10px 26px;
         justify-content: space-between;
         align-items: center;
+      }
+      footer nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 20px;
       }
       footer a {
         color: var(--dim);
@@ -787,6 +806,27 @@
         </div>
       </section>
 
+      <!-- ===================== SPOT GUIDES ===================== -->
+      <section id="spots">
+        <div class="wrap">
+          <h2>Guides par spot</h2>
+          <p class="section-lede">
+            Le score marche partout sur le littoral. Ces pages disent ce qu’il faut savoir
+            d’un secteur en particulier : ses marées, ses vents, sa saison.
+          </p>
+
+          <div class="grid">
+            <article class="tile">
+              <h3><a class="tile-link" href="/peche-bar-boulogne-sur-mer/">Boulogne-sur-Mer</a></h3>
+              <p>
+                Huit mètres de marnage et une côte plein ouest. Les meilleurs horaires de
+                marée, le vent de la Côte d’Opale et la saison du bar, mois par mois.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <!-- ===================== CLOSING ===================== -->
       <section class="closing">
         <div class="wrap">
@@ -799,7 +839,10 @@
     <footer>
       <div class="wrap">
         <span>BassScore — pecheaubar.fr</span>
-        <span>Pêche du bar en surfcasting · littoral français</span>
+        <nav aria-label="Liens du site">
+          <a href="/peche-bar-boulogne-sur-mer/">Pêche au bar à Boulogne-sur-Mer</a>
+          <a href="/app/">Ouvrir l’outil</a>
+        </nav>
       </div>
     </footer>
   </body>

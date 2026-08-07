@@ -2,10 +2,9 @@
 /**
  * Regenerate public/sitemap.xml.
  *
- * BassScore is a single-route client-side app, so the sitemap has exactly one
- * URL. That is not an oversight — listing paths the app does not serve would
- * hand Google soft-404s. What the file is actually for is telling crawlers the
- * site exists and when it last changed.
+ * Only the pages that are real server-rendered HTML belong here: the landing
+ * page and the per-spot guides. The app itself is a single client-rendered
+ * route carrying a `noindex`, so listing it would hand Google a soft-404.
  *
  * `lastmod` is the point of running this at build time rather than committing a
  * date by hand: a stale one is worse than none, because Google learns to ignore
@@ -18,10 +17,16 @@ import { fileURLToPath } from 'node:url';
 export const SITE_URL = 'https://pecheaubar.fr';
 
 /**
- * Every URL the deployed site answers on.
+ * Every indexable URL the deployed site answers on.
  *
- * Add an entry here only when the app genuinely serves that path. If per-spot
- * or per-day URLs are ever added, this is where they belong.
+ * Add an entry here only when the site genuinely serves that path — and add the
+ * page to `GUIDE_PAGES` in `build-site.mjs` at the same time, which is what
+ * puts the file at that path in the first place.
+ *
+ * Trailing slashes are deliberate: `vercel.json` sets `trailingSlash: true`, so
+ * `/peche-bar-boulogne-sur-mer` redirects to `/peche-bar-boulogne-sur-mer/`.
+ * Pointing the sitemap at the pre-redirect form would spend crawl budget on a
+ * 308 for every guide.
  */
 export const ROUTES = [
   {
@@ -29,6 +34,11 @@ export const ROUTES = [
     // The score is recomputed from fresh forecasts continuously; the page
     // itself is worth re-crawling daily.
     changefreq: 'daily',
+  },
+  {
+    path: '/peche-bar-boulogne-sur-mer/',
+    // An editorial guide: the tide and wind rules it describes do not move.
+    changefreq: 'monthly',
   },
 ];
 
