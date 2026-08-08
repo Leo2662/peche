@@ -35,11 +35,9 @@ export const ROUTES = [
     // itself is worth re-crawling daily.
     changefreq: 'daily',
   },
-  {
-    path: '/peche-bar-boulogne-sur-mer/',
-    // An editorial guide: the tide and wind rules it describes do not move.
-    changefreq: 'monthly',
-  },
+  // Editorial guides: the tide and wind rules they describe do not move.
+  { path: '/peche-bar-boulogne-sur-mer/', changefreq: 'monthly' },
+  { path: '/peche-bar-dunkerque/', changefreq: 'monthly' },
 ];
 
 /** YYYY-MM-DD, the W3C date form the sitemap spec asks for. */

@@ -2,12 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://pecheaubar.fr/</loc>
-    <lastmod>2026-08-07</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>daily</changefreq>
   </url>
   <url>
     <loc>https://pecheaubar.fr/peche-bar-boulogne-sur-mer/</loc>
-    <lastmod>2026-08-07</lastmod>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://pecheaubar.fr/peche-bar-dunkerque/</loc>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
   </url>
 </urlset>

@@ -23,7 +23,7 @@ const readPublic = (name: string) => readFileSync(resolve(ROOT, 'public', name),
  * /app/, and each guide becomes /<slug>/. A tag missing from one of them
  * under-counts the site without ever looking broken.
  */
-const PAGES = ['landing.html', 'index.html', ...GUIDE_PAGES.map((slug) => `${slug}.html`)];
+const PAGES = ['landing.html', 'index.html', ...GUIDE_PAGES.map(({ slug }) => `${slug}.html`)];
 
 /** Every third-party loader the pages are allowed to pull in. */
 const LOADERS = [
