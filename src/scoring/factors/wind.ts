@@ -6,7 +6,7 @@ import { NEUTRAL_FACTOR_VALUE, WEIGHTS } from '../weights';
  * Wind (15 %) — WindScore = 0.6·Direction + 0.4·Speed
  *
  * Direction scores are specific to Dunkerque's north-facing coastline: onshore
- * westerlies stir the sand and push bait against the Digue du Break, while an
+ * westerlies stir the sand and push bait against the Digue du Braek, while an
  * easterly blows offshore and flattens/clears the water.
  *
  * The spec fixes W/NW/SW = 1, N = 0.8, S = 0.6, E = 0.3; NE and SE sit between

@@ -19,7 +19,7 @@ dashboard, no chart, no menu, no login.
             MEILLEUR CRÉNEAU
          19:10 – 21:00    97
 
-      Dunkerque · Digue du Break
+      Dunkerque · Digue du Braek
 ```
 
 Today is always selected on open, so the two-second promise is untouched. Tap
@@ -712,7 +712,7 @@ The app ships pointing at, and calibrated for, one spot:
 
 ```ts
 {
-  name: 'Dunkerque – Digue du Break',
+  name: 'Dunkerque – Digue du Braek',
   latitude: 51.05,
   longitude: 2.30,
   timezone: 'Europe/Paris',

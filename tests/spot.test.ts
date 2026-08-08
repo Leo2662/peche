@@ -63,6 +63,30 @@ describe('calibration', () => {
   });
 });
 
+describe('the default spot', () => {
+  /**
+   * The dyke is the Braek, after the polder. "Break" is a common misspelling
+   * and was the app's own for a while, so this pins the corrected form rather
+   * than leaving it to drift back.
+   */
+  it('names the Braek the way the dyke is actually spelt', () => {
+    assert.match(DEFAULT_SPOT.name, /Digue du Braek/);
+    assert.match(DEFAULT_SPOT.label, /Digue du Braek/);
+    for (const field of [DEFAULT_SPOT.name, DEFAULT_SPOT.label]) {
+      assert.ok(!/Break/.test(field), `"${field}" still uses the old spelling`);
+    }
+  });
+
+  /**
+   * The id is not a name. It keys the forecast cache and is persisted inside
+   * the saved spot, so correcting the spelling there would orphan both for
+   * every existing user — with nothing gained, since the id is never shown.
+   */
+  it('keeps an id stable across the rename', () => {
+    assert.equal(DEFAULT_SPOT.id, 'dunkerque-digue-du-break');
+  });
+});
+
 describe('wind at an uncalibrated spot', () => {
   it('has no direction preference to apply', () => {
     assert.equal(windDirectionScore(270, SEARCHED.windSectors), null);

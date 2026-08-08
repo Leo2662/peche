@@ -222,6 +222,18 @@ describe('the committed public/ files', () => {
     assert.match(html, /<div id="root"><\/div>/);
     assert.match(html, /id="expo-reset"/);
   });
+
+  /**
+   * The landing page's hero card is a hand-drawn mock of the app's screen. It
+   * names the default spot, so it is the one string on the site that can
+   * silently contradict the app it is advertising.
+   */
+  it('mocks the app with the spot label the app actually shows', () => {
+    assert.ok(
+      read('landing.html').includes(DEFAULT_SPOT.label),
+      `the hero card does not name the default spot as "${DEFAULT_SPOT.label}"`
+    );
+  });
 });
 
 /**

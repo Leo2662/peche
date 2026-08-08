@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { SPOTS } from '../config/spots';
 import type { Forecast, Spot } from '../types';
 
 /**
@@ -55,7 +56,13 @@ export async function readSavedSpot(): Promise<Spot | null> {
     const parsed = JSON.parse(raw) as Spot;
     // Coordinates are the one thing the app cannot work without.
     if (typeof parsed?.latitude !== 'number' || typeof parsed?.longitude !== 'number') return null;
-    return parsed;
+
+    // A shipped spot is stored as a snapshot of what it looked like the day it
+    // was chosen. Prefer today's definition: otherwise a user who once picked
+    // Dunkerque keeps its old name and — worse — its old calibration constants
+    // for good. A searched spot matches nothing here and keeps its snapshot,
+    // which is correct: there is no newer definition of it to prefer.
+    return SPOTS.find((spot) => spot.id === parsed.id) ?? parsed;
   } catch (error) {
     console.warn('[cache] failed to read saved spot:', error);
     return null;
