@@ -22,13 +22,21 @@ import { CLARITY_PROJECT_ID, GA_MEASUREMENT_ID, missingTagReason } from './analy
 import { ROUTES, SITE_URL } from './generate-sitemap.mjs';
 
 /**
- * The editorial pages, by slug. `public/<slug>.html` becomes `/<slug>/`.
+ * The editorial pages. `public/<slug>.html` becomes `/<slug>/`.
+ *
+ * `place` is the commune the guide is about, spelled as the page spells it. It
+ * is here so the tests can hold every guide to naming its own subject in its
+ * title and its h1 — the one mistake that would quietly turn a spot page into
+ * a copy of its neighbour.
  *
  * Adding one here is half the job — the other half is an entry in `ROUTES` in
  * `generate-sitemap.mjs`, so the page is actually announced to crawlers.
  * `checkGuideRoutes` refuses to build if the two lists disagree.
  */
-export const GUIDE_PAGES = ['peche-bar-boulogne-sur-mer'];
+export const GUIDE_PAGES = [
+  { slug: 'peche-bar-boulogne-sur-mer', place: 'Boulogne-sur-Mer' },
+  { slug: 'peche-bar-dunkerque', place: 'Dunkerque' },
+];
 
 /**
  * Why the sitemap and the build disagree about the guides, or null when they
@@ -40,7 +48,7 @@ export const GUIDE_PAGES = ['peche-bar-boulogne-sur-mer'];
  * build.
  */
 export function checkGuideRoutes() {
-  const built = GUIDE_PAGES.map((slug) => `/${slug}/`).sort();
+  const built = GUIDE_PAGES.map(({ slug }) => `/${slug}/`).sort();
   const routed = ROUTES.map((route) => route.path)
     .filter((path) => path !== '/')
     .sort();
@@ -76,7 +84,7 @@ function buildSite(dist) {
 
   // 3. Give each guide its own directory, so it serves from a clean path rather
   //    than a .html its canonical URL would then disagree with.
-  const guides = GUIDE_PAGES.map((slug) => {
+  const guides = GUIDE_PAGES.map(({ slug }) => {
     const source = resolve(dist, `${slug}.html`);
     if (!existsSync(source)) fail(`no ${slug}.html in the export — is public/${slug}.html there?`);
 
@@ -134,7 +142,7 @@ function buildSite(dist) {
   writeFileSync(resolve(dist, 'app.html'), app, 'utf8');
   for (const { slug, html } of guides) writeFileSync(resolve(dist, `${slug}.html`), html, 'utf8');
 
-  const paths = GUIDE_PAGES.map((slug) => `/${slug}/`).join(', ');
+  const paths = GUIDE_PAGES.map(({ slug }) => `/${slug}/`).join(', ');
   console.log(
     `build-site: landing at /, app at /app/, ${guides.length} guide(s) at ${paths} (${dist})`
   );

@@ -7,6 +7,7 @@ import { describe, it } from 'node:test';
 import { missingTagReason } from '../scripts/analytics.mjs';
 import { checkGuideRoutes, GUIDE_PAGES } from '../scripts/build-site.mjs';
 import { buildSitemap, isoDate, ROUTES, SITE_URL } from '../scripts/generate-sitemap.mjs';
+import { DEFAULT_SPOT, isCalibrated } from '../src/config/spots';
 
 const PUBLIC_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const read = (name: string) => readFileSync(resolve(PUBLIC_DIR, name), 'utf8');
@@ -34,11 +35,12 @@ describe('sitemap generation', () => {
     assert.equal(ROUTES[0].path, '/');
     assert.equal(ROUTES.length, 1 + GUIDE_PAGES.length);
 
+    const slugs = GUIDE_PAGES.map(({ slug }) => slug);
     for (const route of ROUTES.slice(1)) {
       // `vercel.json` sets trailingSlash: true, so the slash-less form is a 308.
       assert.match(route.path, /^\/[a-z0-9-]+\/$/, `${route.path} is not a clean guide path`);
       const slug = route.path.slice(1, -1);
-      assert.ok(GUIDE_PAGES.includes(slug), `${route.path} has no page behind it`);
+      assert.ok(slugs.includes(slug), `${route.path} has no page behind it`);
       assert.doesNotThrow(
         () => readFileSync(resolve(PUBLIC_DIR, `${slug}.html`)),
         `public/${slug}.html is missing`
@@ -232,7 +234,7 @@ describe('the committed public/ files', () => {
  * the first.
  */
 describe('the spot guides', () => {
-  for (const slug of GUIDE_PAGES) {
+  for (const { slug, place } of GUIDE_PAGES) {
     const html = read(`${slug}.html`);
     const head = headOf(html);
     const url = `${DOMAIN}/${slug}/`;
@@ -275,17 +277,38 @@ describe('the spot guides', () => {
           `description is ${description.length} chars`
         );
 
-        // A guide that never names its subject or its place is not a guide.
+        // A guide that names neither its species nor its commune is not a
+        // guide — it is the landing page with extra words.
         for (const field of [title, description]) {
           assert.match(field.toLowerCase(), /bar/, `"${field}" does not name the species`);
+          assert.ok(field.includes(place), `"${field}" does not name ${place}`);
         }
-        assert.match(title, /Boulogne-sur-Mer/);
       });
 
       it('carries exactly one h1, naming the place', () => {
         const h1s = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)];
         assert.equal(h1s.length, 1, 'a page with two h1s has no main heading');
-        assert.match(h1s[0][1], /Boulogne-sur-Mer/);
+        assert.ok(h1s[0][1].includes(place), `the h1 does not name ${place}`);
+      });
+
+      /**
+       * Two spot guides built from the same template will read as near
+       * duplicates unless each is actually written for its own coast. Google
+       * calls that thin content and picks one to rank; the other is wasted.
+       */
+      it('is written for its own coast, not copied from a sibling', () => {
+        for (const other of GUIDE_PAGES) {
+          if (other.slug === slug) continue;
+          // Naming a neighbour in a link or a comparison is the point of the
+          // sibling section. Being *about* it is the failure.
+          const body = html.slice(html.indexOf('<h1'));
+          const mentions = body.split(other.place).length - 1;
+          const own = body.split(place).length - 1;
+          assert.ok(
+            own > mentions,
+            `${slug} names ${other.place} ${mentions}× but ${place} only ${own}×`
+          );
+        }
       });
 
       /**
@@ -305,6 +328,16 @@ describe('the spot guides', () => {
           landing.includes(`href="/${slug}/"`),
           `landing.html does not link to /${slug}/ — the guide is an orphan`
         );
+
+        // The guides link to each other too. A hub-and-spoke with no rim makes
+        // every guide a one-hop dead end from the root.
+        for (const other of GUIDE_PAGES) {
+          if (other.slug === slug) continue;
+          assert.ok(
+            html.includes(`href="/${other.slug}/"`),
+            `${slug} does not link to its sibling /${other.slug}/`
+          );
+        }
       });
 
       it('ships structured data Google can read', () => {
@@ -345,4 +378,46 @@ describe('the spot guides', () => {
       });
     });
   }
+});
+
+/**
+ * The Dunkerque guide publishes the app's wind sector table as a fact about
+ * the spot. That is the one claim on the site that is a verbatim copy of a
+ * constant in `src/`, so it is the one that can silently become a lie: change
+ * `DUNKERQUE_WIND_SECTORS` and the page keeps advertising the old numbers.
+ */
+describe('the Dunkerque wind table', () => {
+  const html = read('peche-bar-dunkerque.html');
+  const table = html.slice(html.indexOf('id="vent"'), html.indexOf('id="horaires"'));
+
+  /** The scores as the page prints them: two decimals, French comma. */
+  const printed = [...table.matchAll(/class="rank[^"]*">\s*([01],\d{2})/g)].map(([, value]) =>
+    Number(value.replace(',', '.'))
+  );
+
+  it('is published at all, and only because the spot is calibrated', () => {
+    assert.ok(isCalibrated(DEFAULT_SPOT), 'Dunkerque is no longer the calibrated spot');
+    assert.ok(table.length > 0, 'the #vent section is gone');
+    assert.ok(printed.length > 0, 'the wind table publishes no scores');
+  });
+
+  it('prints every distinct score the config holds, and invents none', () => {
+    const sectors = DEFAULT_SPOT.windSectors;
+    assert.ok(sectors, 'the default spot lost its wind sectors');
+
+    for (const score of new Set(sectors)) {
+      assert.ok(
+        printed.includes(score),
+        `the config scores a sector ${score} but the page never prints it`
+      );
+    }
+    for (const value of printed) {
+      assert.ok(sectors.includes(value), `the page prints ${value}, which is in no sector`);
+    }
+  });
+
+  it('lists the sectors worst-last, so the bar chart reads down the page', () => {
+    const descending = [...printed].sort((a, b) => b - a);
+    assert.deepEqual(printed, descending, 'the wind table is not ordered best to worst');
+  });
 });
