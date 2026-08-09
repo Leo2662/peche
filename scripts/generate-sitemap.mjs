@@ -38,6 +38,10 @@ export const ROUTES = [
   // Editorial guides: the tide and wind rules they describe do not move.
   { path: '/peche-bar-boulogne-sur-mer/', changefreq: 'monthly' },
   { path: '/peche-bar-dunkerque/', changefreq: 'monthly' },
+  { path: '/peche-bar-calais/', changefreq: 'monthly' },
+  { path: '/peche-bar-normandie/', changefreq: 'monthly' },
+  { path: '/peche-bar-bretagne/', changefreq: 'monthly' },
+  { path: '/peche-bar-vendee/', changefreq: 'monthly' },
 ];
 
 /** YYYY-MM-DD, the W3C date form the sitemap spec asks for. */

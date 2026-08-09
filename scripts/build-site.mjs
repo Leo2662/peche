@@ -24,10 +24,10 @@ import { ROUTES, SITE_URL } from './generate-sitemap.mjs';
 /**
  * The editorial pages. `public/<slug>.html` becomes `/<slug>/`.
  *
- * `place` is the commune the guide is about, spelled as the page spells it. It
- * is here so the tests can hold every guide to naming its own subject in its
- * title and its h1 — the one mistake that would quietly turn a spot page into
- * a copy of its neighbour.
+ * `place` is what the guide is about — a commune for the spot pages, a region
+ * for the wider ones — spelled as the page spells it. It is here so the tests
+ * can hold every guide to naming its own subject in its title and its h1 — the
+ * one mistake that would quietly turn a spot page into a copy of its neighbour.
  *
  * Adding one here is half the job — the other half is an entry in `ROUTES` in
  * `generate-sitemap.mjs`, so the page is actually announced to crawlers.
@@ -36,6 +36,10 @@ import { ROUTES, SITE_URL } from './generate-sitemap.mjs';
 export const GUIDE_PAGES = [
   { slug: 'peche-bar-boulogne-sur-mer', place: 'Boulogne-sur-Mer' },
   { slug: 'peche-bar-dunkerque', place: 'Dunkerque' },
+  { slug: 'peche-bar-calais', place: 'Calais' },
+  { slug: 'peche-bar-normandie', place: 'Normandie' },
+  { slug: 'peche-bar-bretagne', place: 'Bretagne' },
+  { slug: 'peche-bar-vendee', place: 'Vendée' },
 ];
 
 /**
