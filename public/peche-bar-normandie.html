@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <!--
-  pecheaubar.fr — guide de spot : Boulogne-sur-Mer.
+  pecheaubar.fr — guide de région : Normandie. Le premier qui couvre une région
+  et non une commune. Le score, lui, reste communal : le rôle de la page est de
+  dire laquelle chercher, et pourquoi la même formule se lit différemment selon
+  l'exposition du secteur.
 
-  Le premier des guides par spot. Même parti pris que la landing : du HTML et
-  du CSS, pas de bundle, du contenu qu'un robot peut lire. `scripts/build-site.mjs`
-  le déplace en /peche-bar-boulogne-sur-mer/.
+  Fichier autonome, comme les autres pages du site. `scripts/build-site.mjs`
+  le déplace en /peche-bar-normandie/.
 
-  Le style est réécrit ici plutôt que partagé : chaque page du site est un
-  fichier autonome qui se charge d'un seul aller-retour — c'est déjà le choix
-  fait pour les balises de mesure, dupliquées volontairement dans chaque
-  gabarit (voir scripts/analytics.mjs).
-
-  Tout ce que la page affirme sur le score vient de src/scoring/ : les poids de
-  weights.ts, les bandes de marée de factors/tideWindow.ts, les seuils de vent
-  de factors/wind.ts, l'optimum à 16 °C de factors/waterTemperature.ts. Si un
-  seuil bouge là-bas, il bouge ici.
+  Les seuils viennent de src/scoring/factors/ — dont la normalisation du
+  marnage sur le spot lui-même, sujet de la section « marnage ». Le découpage
+  Manche Est / Manche Ouest à Barfleur vient de config/coastline.ts.
 -->
 <html lang="fr">
   <head>
@@ -44,22 +40,22 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-    <title>Pêche au bar à Boulogne-sur-Mer : horaires et conditions</title>
+    <title>Pêche au bar en Normandie : horaires et conditions</title>
     <meta
       name="description"
-      content="Les meilleurs horaires pour pêcher le bar à Boulogne-sur-Mer : fenêtre de marée, coefficient, vent de la Côte d’Opale et saison — avec le score sur 7 jours."
+      content="Les meilleurs horaires pour pêcher le bar en Normandie : marée, coefficient, vent selon l’exposition de la côte et saison — avec le score sur 7 jours."
     />
-    <link rel="canonical" href="https://pecheaubar.fr/peche-bar-boulogne-sur-mer/" />
+    <link rel="canonical" href="https://pecheaubar.fr/peche-bar-normandie/" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link
       rel="alternate"
       hreflang="fr"
-      href="https://pecheaubar.fr/peche-bar-boulogne-sur-mer/"
+      href="https://pecheaubar.fr/peche-bar-normandie/"
     />
     <link
       rel="alternate"
       hreflang="x-default"
-      href="https://pecheaubar.fr/peche-bar-boulogne-sur-mer/"
+      href="https://pecheaubar.fr/peche-bar-normandie/"
     />
 
     <meta name="application-name" content="BassScore" />
@@ -70,14 +66,14 @@
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="BassScore" />
     <meta property="og:locale" content="fr_FR" />
-    <meta property="og:url" content="https://pecheaubar.fr/peche-bar-boulogne-sur-mer/" />
+    <meta property="og:url" content="https://pecheaubar.fr/peche-bar-normandie/" />
     <meta
       property="og:title"
-      content="Pêche au bar à Boulogne-sur-Mer : horaires et conditions"
+      content="Pêche au bar en Normandie : horaires et conditions"
     />
     <meta
       property="og:description"
-      content="Marée, coefficient, vent et saison sur la Côte d’Opale — et le créneau à la minute pour les 7 prochains jours."
+      content="Marée, marnage, vent et saison, de la Côte d’Albâtre au Mont-Saint-Michel — et le créneau à la minute pour les 7 prochains jours."
     />
     <meta property="og:image" content="https://pecheaubar.fr/og-image.png" />
     <meta property="og:image:type" content="image/png" />
@@ -91,11 +87,11 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="Pêche au bar à Boulogne-sur-Mer : horaires et conditions"
+      content="Pêche au bar en Normandie : horaires et conditions"
     />
     <meta
       name="twitter:description"
-      content="Marée, coefficient, vent et saison sur la Côte d’Opale — et le créneau à la minute pour les 7 prochains jours."
+      content="Marée, marnage, vent et saison, de la Côte d’Albâtre au Mont-Saint-Michel — et le créneau à la minute pour les 7 prochains jours."
     />
     <meta name="twitter:image" content="https://pecheaubar.fr/og-image.png" />
 
@@ -117,8 +113,8 @@
           {
             "@type": "ListItem",
             "position": 2,
-            "name": "Boulogne-sur-Mer",
-            "item": "https://pecheaubar.fr/peche-bar-boulogne-sur-mer/"
+            "name": "Normandie",
+            "item": "https://pecheaubar.fr/peche-bar-normandie/"
           }
         ]
       }
@@ -128,21 +124,24 @@
       {
         "@context": "https://schema.org",
         "@type": "Article",
-        "headline": "Pêche au bar à Boulogne-sur-Mer : meilleurs horaires et conditions",
+        "headline": "Pêche au bar en Normandie : meilleurs horaires et conditions",
         "inLanguage": "fr-FR",
-        "url": "https://pecheaubar.fr/peche-bar-boulogne-sur-mer/",
-        "mainEntityOfPage": "https://pecheaubar.fr/peche-bar-boulogne-sur-mer/",
+        "url": "https://pecheaubar.fr/peche-bar-normandie/",
+        "mainEntityOfPage": "https://pecheaubar.fr/peche-bar-normandie/",
         "image": "https://pecheaubar.fr/og-image.png",
         "about": {
           "@type": "Place",
-          "name": "Boulogne-sur-Mer",
+          "name": "Normandie",
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": "Boulogne-sur-Mer",
-            "addressRegion": "Pas-de-Calais",
+            "addressRegion": "Normandie",
             "addressCountry": "FR"
           },
-          "geo": { "@type": "GeoCoordinates", "latitude": 50.726, "longitude": 1.614 }
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 49.35,
+            "longitude": -0.6
+          }
         },
         "publisher": {
           "@type": "Organization",
@@ -159,50 +158,49 @@
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "Quelle est la meilleure heure pour pêcher le bar à Boulogne-sur-Mer ?",
+            "name": "Quelle est la meilleure heure pour pêcher le bar en Normandie ?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "La fenêtre qui compte va de deux heures avant la pleine mer à deux heures après. Elle vaut double quand elle tombe dans l’heure qui entoure le lever ou le coucher du soleil : c’est le moment où le bar chasse au bord. Une pleine mer au crépuscule en vive-eau est la meilleure combinaison possible sur la Côte d’Opale."
+              "text": "La fenêtre utile va de deux heures avant la pleine mer à deux heures après, et elle vaut double quand elle tombe dans l’heure qui entoure le lever ou le coucher du soleil. Une exception locale mérite d’être connue : au fond de la baie de Seine, la pleine mer « tient » deux à trois heures au lieu de basculer d’un coup, ce qui allonge d’autant le créneau utile."
             }
           },
           {
             "@type": "Question",
-            "name": "Quel coefficient de marée pour pêcher le bar à Boulogne-sur-Mer ?",
+            "name": "Quel coefficient de marée pour pêcher le bar en Normandie ?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "À partir de 80, et pleinement à 100 et au-dessus. Boulogne-sur-Mer a un marnage de l’ordre de 8 mètres en vive-eau : le courant y porte fort et met le bar en chasse. En dessous de 40, l’eau bouge peu et la note s’effondre."
+              "text": "À partir de 80, et pleinement à 100 et au-dessus. Le score note le marnage du jour relativement au marnage de vive-eau du spot lui-même : un coefficient de 100 vaut donc la même note à Dieppe, où le marnage atteint neuf mètres, qu’à Granville où il en fait quatorze. Ce qui change réellement d’un secteur à l’autre, c’est la vitesse du courant que ce marnage engendre."
             }
           },
           {
             "@type": "Question",
-            "name": "Quel vent pour pêcher le bar sur la Côte d’Opale ?",
+            "name": "Quel vent pour pêcher le bar en Normandie ?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Un vent de secteur ouest à sud-ouest, entre 15 et 30 km/h : il vient du large, trouble l’eau et pousse la nourriture contre le bord. Un vent d’est souffle de terre et aplatit tout. Au-delà de 40 km/h, ou avec des rafales de plus de 50 km/h, la mer devient impêchable du bord."
+              "text": "Cela dépend entièrement de la façade. La Côte d’Albâtre regarde vers le nord-ouest, la Côte de Nacre plein nord, le Val de Saire vers l’est et la côte des Havres plein ouest. Le vent porteur est toujours celui qui vient de la mer : il trouble l’eau et pousse la nourriture au bord. La bonne force, elle, ne change pas : 15 à 30 km/h, et au-delà de 40 km/h la mer devient impêchable du bord."
             }
           },
           {
             "@type": "Question",
-            "name": "Quelle est la meilleure saison pour le bar à Boulogne-sur-Mer ?",
+            "name": "Où trouve-t-on les plus grandes marées de Normandie ?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "D’août à octobre. L’eau passe alors par les 16 °C, l’optimum du bar, les premières houles d’automne brassent les plages et le poisson se nourrit avant l’hiver. Avril à juillet donnent des sorties régulières ; février et mars sont fermés à la détention."
+              "text": "Dans la baie du Mont-Saint-Michel et sur la côte ouest du Cotentin. Le marnage y dépasse quatorze mètres en grande vive-eau à Granville, le plus fort d’Europe continentale. À l’autre extrémité de la région, la pointe du Cotentin et le secteur de Cherbourg tournent autour de six mètres. Le courant du raz Blanchard, au cap de la Hague, compte parmi les plus violents d’Europe."
             }
           },
           {
             "@type": "Question",
-            "name": "Peut-on garder un bar pêché à Boulogne-sur-Mer ?",
+            "name": "Peut-on garder un bar pêché en Normandie ?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Boulogne-sur-Mer est au nord du 48e parallèle. En 2026, la détention est interdite du 1er février au 31 mars — pêche en no-kill uniquement — et limitée à trois bars par pêcheur et par jour le reste de l’année. La taille minimale de capture est de 42 cm. Vérifiez la réglementation en vigueur avant chaque sortie : elle est révisée tous les ans."
+              "text": "Toute la côte normande est au nord du 48ᵉ parallèle. En 2026, la détention est interdite du 1ᵉʳ février au 31 mars — pêche à la canne et remise à l’eau uniquement — et limitée à trois bars par pêcheur et par jour le reste de l’année. La taille minimale de capture est de 42 cm. Vérifiez la réglementation en vigueur avant chaque sortie : elle est révisée tous les ans."
             }
           }
         ]
       }
     </script>
 
-    <style>
-      :root {
+    <style>      :root {
         --surface: #0c2438;
         --deep: #071726;
         --abyss: #030a12;
@@ -249,7 +247,6 @@
         color: inherit;
       }
 
-      /* Inline links in prose. */
       .prose a,
       .fact a,
       .note a {
@@ -548,6 +545,23 @@
         font-weight: 600;
       }
 
+      /* a highlighted opening section */
+      .flagship {
+        background: linear-gradient(180deg, rgba(47, 224, 200, 0.045), transparent 62%);
+      }
+      .badge {
+        display: inline-block;
+        margin-bottom: 16px;
+        padding: 5px 13px;
+        border-radius: 999px;
+        border: 1px solid rgba(47, 224, 200, 0.32);
+        background: rgba(47, 224, 200, 0.1);
+        color: var(--turquoise);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+      }
+
       .grid {
         margin-top: 40px;
         display: grid;
@@ -638,6 +652,21 @@
         color: var(--coral);
       }
 
+      /* a score bar inside a table cell, so the table reads at a glance */
+      .bar {
+        display: block;
+        height: 6px;
+        margin-top: 7px;
+        border-radius: 3px;
+        background: rgba(79, 182, 217, 0.14);
+      }
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: 3px;
+        background: currentColor;
+      }
+
       /* ---------- steps ---------- */
       .steps {
         margin-top: 40px;
@@ -694,7 +723,6 @@
         flex: none;
       }
 
-      /* a boxed caveat */
       .note {
         margin-top: 30px;
         max-width: 64ch;
@@ -863,6 +891,9 @@
           letter-spacing: 0.08em;
           text-transform: uppercase;
         }
+        .bar {
+          max-width: 180px;
+        }
       }
 
       @media (max-width: 880px) {
@@ -909,27 +940,26 @@
             <nav class="crumbs" aria-label="Fil d’Ariane">
               <ol>
                 <li><a href="/">Pêche au bar</a></li>
-                <li>Boulogne-sur-Mer</li>
+                <li>Normandie</li>
               </ol>
             </nav>
 
             <div class="hero-grid">
               <div>
                 <h1>
-                  Pêche au bar à Boulogne-sur-Mer :
-                  <strong>les meilleurs horaires</strong> et les bonnes conditions.
+                  Pêche au bar en Normandie :
+                  <strong>les meilleurs horaires</strong>, côte par côte.
                 </h1>
                 <p class="lede">
-                  Huit mètres de marnage, un courant qui porte et une côte tournée plein
-                  ouest : Boulogne-sur-Mer coche les cases que le bar réclame. Reste à
-                  savoir <em>quand</em> y aller. Voici ce qui fait la différence sur la Côte
-                  d’Opale — et le créneau à la minute, calculé pour les 7 prochains jours.
+                  Six cents kilomètres de trait de côte qui tournent sur plus de cent
+                  quatre-vingts degrés, du Tréport au Mont-Saint-Michel. Le même bar, la
+                  même formule — mais un vent porteur, un marnage et une saison qui
+                  changent d’un secteur à l’autre. Voici comment lire chacun d’eux, et le
+                  créneau à la minute pour les 7 prochains jours.
                 </p>
                 <div class="hero-actions">
-                  <a class="cta" href="/app/"
-                    >Voir les conditions à Boulogne <span class="arrow">→</span></a
-                  >
-                  <a class="cta ghost" href="#horaires">Les meilleurs horaires</a>
+                  <a class="cta" href="/app/">Voir les conditions chez vous <span class="arrow">→</span></a>
+                  <a class="cta ghost" href="#facades">Trouver votre façade</a>
                 </div>
                 <p class="hero-note">Gratuit · sans compte · sans publicité</p>
               </div>
@@ -941,18 +971,97 @@
                     <circle cx="89" cy="89" r="80" fill="none" stroke="rgba(79,182,217,.12)" stroke-width="9" />
                     <circle
                       cx="89" cy="89" r="80" class="arc" fill="none" stroke-width="9"
-                      stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="45.2"
+                      stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="50.3"
                       transform="rotate(-90 89 89)"
                     />
                   </svg>
-                  <div class="val">91</div>
+                  <div class="val">90</div>
                 </div>
                 <div class="verdict">CONDITIONS EXCELLENTES</div>
                 <div class="slot-label">MEILLEUR CRÉNEAU</div>
-                <div class="slot">20:05 – 22:00</div>
-                <div class="reasons">MONTANTE · SUD-OUEST · CRÉPUSCULE</div>
-                <div class="place">Boulogne-sur-Mer · Côte d’Opale</div>
+                <div class="slot">06:15 – 08:05</div>
+                <div class="reasons">MONTANTE · VIVE-EAU · AUBE</div>
+                <div class="place">Ouistreham · Normandie</div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== LES FACADES ===================== -->
+        <section id="facades" class="flagship">
+          <div class="wrap">
+            <span class="badge">UNE RÉGION, QUATRE EXPOSITIONS</span>
+            <h2>Le même score, quatre façons de le lire</h2>
+            <div class="prose">
+              <p>
+                C’est ce qui rend la Normandie difficile à résumer : sa côte ne regarde pas
+                dans une direction, elle regarde dans toutes. Elle part vers le nord-ouest au
+                Tréport, se retourne plein nord dans la baie de Seine, contourne le Cotentin
+                pour faire face à l’est, puis bascule plein ouest sur la côte des Havres.
+              </p>
+              <p>
+                Conséquence directe sur le score : les cinq facteurs météo — vent, houle,
+                lumière, température, pression — ne changent pas de formule, mais le
+                <strong>vent porteur change de nom</strong> selon l’endroit où vous êtes. Un
+                sud-ouest qui trouble l’eau à Agon-Coutainville souffle de terre à
+                Courseulles.
+              </p>
+            </div>
+
+            <div class="table-scroll">
+              <table>
+                <caption>Les façades normandes, du nord-est au sud-ouest</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Secteur</th>
+                    <th scope="col">Orientation et caractère</th>
+                    <th scope="col">Vent de mer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Côte d’Albâtre</th>
+                    <td>
+                      Du Tréport au Havre. Falaises de craie, valleuses, platiers de galets et
+                      de silex qui découvrent. Marnage de l’ordre de neuf mètres à Dieppe.
+                    </td>
+                    <td class="rank top">Nord-ouest</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Baie de Seine et Côte de Nacre</th>
+                    <td>
+                      Du Havre à Courseulles. Sable, estuaire, plages du Débarquement. La
+                      pleine mer y « tient » deux à trois heures au lieu de basculer.
+                    </td>
+                    <td class="rank top">Nord</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Val de Saire et Cotentin est</th>
+                    <td>
+                      De Grandcamp à Barfleur. Rochers, parcs à huîtres, courant du raz de
+                      Barfleur. Marnage plus modeste, autour de six mètres.
+                    </td>
+                    <td class="rank top">Est à nord-est</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Côte des Havres et baie du Mont</th>
+                    <td>
+                      De la Hague à Granville. Longues plages, havres, estrans immenses — et
+                      les plus grandes marées d’Europe continentale.
+                    </td>
+                    <td class="rank top">Ouest à sud-ouest</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="note">
+              <strong>À savoir</strong> — l’outil n’a de préférence de direction du vent que
+              pour une seule digue, celle du Braek à Dunkerque. Partout ailleurs, y compris
+              sur toute la côte normande, il affiche « réglages estimés » et note le vent
+              <em>sur sa force uniquement</em>, sans supposer connaître l’orientation de
+              votre plage. Le tableau ci-dessus est exactement la lecture qu’il vous laisse
+              faire — et vu la géographie de la région, c’était la seule honnête.
             </div>
           </div>
         </section>
@@ -963,18 +1072,16 @@
             <h2>Les meilleurs horaires : la marée d’abord, la lumière ensuite</h2>
             <div class="prose">
               <p>
-                À Boulogne-sur-Mer, la question n’est pas « quelle heure », c’est
-                « où en est la marée à cette heure-là ». La fenêtre utile s’ouvre
+                Partout en Normandie, la fenêtre utile s’ouvre
                 <strong>deux heures avant la pleine mer</strong> et se referme
                 <strong>deux heures après</strong>. C’est l’intervalle où le courant porte
-                encore, où l’eau monte sur des zones que le bar ne peut pas atteindre le
-                reste du temps, et où la nourriture décollée du sable circule au bord.
+                encore, où l’eau monte sur des estrans que le bar ne peut pas atteindre le
+                reste du temps, et où la nourriture décollée du fond circule au bord.
               </p>
               <p>
                 Au-delà, ça décroche vite : entre deux et trois heures de la pleine mer, le
-                courant tient encore. Entre trois et quatre, on approche de l’étale de basse
-                mer. Passé quatre heures, autant rentrer manger — c’est le moment le plus
-                creux du cycle.
+                courant tient encore ; entre trois et quatre, on approche de l’étale de basse
+                mer ; passé quatre heures, c’est le moment le plus creux du cycle.
               </p>
             </div>
 
@@ -1009,7 +1116,7 @@
                   </tr>
                   <tr>
                     <th scope="row">Plus de 4 h</th>
-                    <td>Basse mer. Le bar est parti chercher plus au large.</td>
+                    <td>Basse mer. Sur les grands estrans, la mer est loin — très loin.</td>
                     <td class="rank low">Faible</td>
                   </tr>
                 </tbody>
@@ -1017,49 +1124,62 @@
             </div>
 
             <div class="prose" style="margin-top: 36px">
-              <h3>Puis la lumière, qui décide du meilleur des deux</h3>
+              <h3>L’exception de la baie de Seine</h3>
               <p>
-                Il y a deux pleines mers par jour. Celle qui vaut le déplacement est celle
-                qui tombe dans <strong>l’heure qui entoure le lever ou le coucher du
-                soleil</strong>. Le bar est un chasseur crépusculaire : à la bascule du
-                jour, il monte sur les petits fonds. La nuit reste bonne. Le plein jour, à
-                marée égale, vaut nettement moins.
+                Au fond de la baie, du Havre à l’embouchure de l’Orne, la marée ne se comporte
+                pas comme ailleurs. La pleine mer n’y est pas un instant mais un palier :
+                <strong>l’eau reste haute deux à trois heures</strong> — ce que les marins
+                appellent la tenue du plein. Le créneau à noter 1 n’y dure donc pas quatre
+                heures mais facilement six, et une pleine mer qui commence une heure avant le
+                coucher du soleil couvre tout le crépuscule.
               </p>
               <p>
-                Un ciel couvert allonge le créneau : sous 70 % de nuages, la basse lumière
-                dure une bonne partie de la journée. Sur la Côte d’Opale, ce n’est pas la
-                situation la plus rare — c’est même ce qui sauve beaucoup de sorties de
-                milieu de journée.
+                C’est le seul endroit de la région où l’écart à la pleine mer, tel que le
+                score le lit, sous-estime franchement la réalité. Ailleurs, la courbe est
+                sinusoïdale et le modèle colle.
+              </p>
+              <h3>Puis la lumière, qui décide du meilleur des deux</h3>
+              <p>
+                Il y a deux pleines mers par jour et une seule vaut le déplacement : celle
+                qui tombe dans <strong>l’heure qui entoure le lever ou le coucher du
+                soleil</strong>. Un ciel couvert allonge le créneau — au-dessus de 70 % de
+                nuages, la basse lumière dure une bonne partie de la journée.
               </p>
               <p>
                 <strong>La combinaison à guetter :</strong> une pleine mer au crépuscule, en
-                vive-eau, avec un vent d’ouest modéré. C’est le profil des journées à 90 et
-                plus. Elle ne se présente que quelques fois par mois, et
-                <a href="/app/">l’outil</a> la repère sur sept jours d’un coup d’œil.
+                vive-eau, avec un vent de mer modéré. C’est le profil des journées à 90 et
+                plus, et <a href="/app/">l’outil</a> la repère sur sept jours d’un coup
+                d’œil.
               </p>
             </div>
           </div>
         </section>
 
         <!-- ===================== MARNAGE ===================== -->
-        <section>
+        <section id="marnage">
           <div class="wrap">
-            <h2>Le marnage boulonnais, l’atout du secteur</h2>
+            <h2>De six à quatorze mètres — et pourquoi le score ne s’en émeut pas</h2>
             <div class="prose">
               <p>
-                Boulogne-sur-Mer est un <strong>port de référence du SHOM</strong> : les
-                marées y sont prédites directement, pas déduites d’un port voisin. Et elles
-                sont fortes. Le marnage atteint <strong>de l’ordre de 8 mètres en
-                vive-eau</strong>, contre environ 5,5 m à Dunkerque, une centaine de
-                kilomètres plus au nord-est.
+                La Normandie couvre presque tout l’éventail des marées européennes. À
+                Cherbourg, le marnage de vive-eau tourne autour de <strong>six
+                mètres</strong>. À Dieppe, autour de <strong>neuf</strong>. Dans la baie du
+                Mont-Saint-Michel et à Granville, il dépasse <strong>quatorze mètres</strong>
+                en grande vive-eau : le plus fort d’Europe continentale.
               </p>
               <p>
-                Ce n’est pas un détail de bulletin. Plus l’eau monte et descend, plus le
-                courant qui l’accompagne est vif, et c’est le courant qui met le bar en
-                chasse le long du bord. C’est pour ça que
-                <strong>l’activité biologique pèse 35 % du score</strong>, plus que
-                n’importe quel autre facteur — coefficient, vitesse du courant et marnage
-                du jour réunis.
+                On pourrait croire que le score favorise mécaniquement Granville. Il ne le
+                fait pas, et c’est délibéré : le sous-facteur de marnage est
+                <strong>normalisé sur le marnage de vive-eau du spot lui-même</strong>, une
+                valeur que l’outil déduit de la courbe de niveau de la mer quand il ne l’a
+                pas en dur. Un coefficient de 100 vaut donc la même note partout. Le score ne
+                compare pas votre plage à sa voisine ; il compare la journée d’aujourd’hui
+                aux meilleures journées de votre plage.
+              </p>
+              <p>
+                Ce qui change vraiment d’un secteur à l’autre, c’est le
+                <strong>courant</strong> que ce marnage engendre, et là les écarts sont
+                énormes.
               </p>
             </div>
 
@@ -1068,8 +1188,8 @@
                 <span class="weight">Coef. 100+</span>
                 <h3>Vive-eau franche</h3>
                 <p>
-                  Le maximum sur ce sous-score. Courant fort, eau chargée, bar actif — mais
-                  il faut du plomb et un poste tenable.
+                  Le maximum sur ce sous-score. Sur les grands estrans de la côte ouest, c’est
+                  aussi le jour où la mer part le plus loin — et revient le plus vite.
                 </p>
               </article>
               <article class="tile">
@@ -1081,86 +1201,79 @@
                 </p>
               </article>
               <article class="tile">
-                <span class="weight">Coef. 60 – 79</span>
-                <h3>Correct</h3>
+                <span class="weight">0,5 – 1,2 m/s</span>
+                <h3>L’optimum de courant</h3>
                 <p>
-                  Ça se pêche, surtout si le vent et la lumière compensent. La sortie tient
-                  sur les autres facteurs.
+                  La plage que le score récompense. Au-delà, l’eau chasse trop fort et le
+                  montage ne tient plus le fond : c’est le cas courant autour de Barfleur et
+                  de la Hague en vive-eau.
                 </p>
               </article>
               <article class="tile">
                 <span class="weight">Coef. &lt; 40</span>
                 <h3>Morte-eau</h3>
                 <p>
-                  L’eau bouge à peine, le courant tombe sous 0,2 m/s. Le score chute et il
-                  vaut mieux attendre la reprise.
+                  L’eau bouge à peine, le courant tombe sous 0,2 m/s et le score chute. Sur
+                  la Côte de Nacre, c’est souvent la seule fenêtre pour pêcher tranquille.
                 </p>
               </article>
             </div>
 
             <p class="section-lede">
-              Le courant lui-même a un optimum : autour de <strong>0,5 à 1,2 m/s</strong>.
-              Au-delà, l’eau chasse trop fort, le montage ne tient plus le fond et les
-              leurres ne nagent plus droit — ce qui arrive régulièrement à Boulogne sur les
-              gros coefficients.
+              Cas extrême : le <strong>raz Blanchard</strong>, au large du cap de la Hague,
+              où le courant de vive-eau compte parmi les plus violents d’Europe. Le bar y est,
+              et en nombre. Mais c’est une pêche de bateau, pas une pêche du bord, et le
+              score — calibré sur ce qu’on peut faire depuis la côte — ne le dira jamais à
+              votre place.
             </p>
           </div>
         </section>
 
         <!-- ===================== VENT ET MER ===================== -->
-        <section>
+        <section id="vent">
           <div class="wrap">
             <h2>Vent, houle et température : ce qui fait basculer une sortie</h2>
 
             <div class="grid">
               <article class="tile">
                 <span class="weight">15 %</span>
-                <h3>Vent d’ouest à sud-ouest</h3>
+                <h3>Le vent de mer, quel qu’il soit</h3>
                 <p>
-                  La côte boulonnaise regarde vers l’ouest. Un vent de mer trouble l’eau et
-                  pousse la nourriture au bord ; un vent d’est souffle de terre et aplatit
-                  tout. Le bon créneau de force : <strong>15 à 30 km/h</strong>. Au-delà de
-                  40, ou avec des rafales dépassant 50, la mer devient impêchable du bord.
+                  Le vent compte pour sa force et pour sa direction, mais seule la force est
+                  notée automatiquement. Le bon créneau : <strong>15 à 30 km/h</strong>.
+                  Au-delà de 40, ou avec des rafales dépassant 50, la mer devient impêchable
+                  du bord. À vous de savoir si ce vent-là vient de la mer ou de la terre,
+                  chez vous.
                 </p>
               </article>
               <article class="tile">
                 <span class="weight">10 %</span>
                 <h3>Une houle qui brasse, pas un clapot</h3>
                 <p>
-                  <strong>0,5 à 1,5 m sur une période de 7 à 12 s</strong> : assez de
-                  rouleau pour décoller le sable et les vers, assez de longueur pour que ce
-                  ne soit pas une mer hachée par le vent local. Sous 0,3 m l’eau est trop
-                  claire, au-dessus de 2 m on ne tient plus le fond.
+                  <strong>0,5 à 1,5 m sur une période de 7 à 12 s</strong>. La côte ouest du
+                  Cotentin, ouverte sur l’Atlantique, reçoit de la vraie houle longue ; la
+                  baie de Seine, abritée par le Cotentin, ne connaît guère que la mer du
+                  vent. Sous 0,3 m, l’eau est trop claire.
                 </p>
               </article>
               <article class="tile">
                 <span class="weight">7 %</span>
                 <h3>Une eau autour de 16 °C</h3>
                 <p>
-                  C’est l’optimum du bar, et la Manche orientale ne l’atteint qu’en fin
-                  d’été. En février l’eau descend vers 7 °C et le sous-score s’effondre ;
-                  fin août et en septembre, il est au plafond.
+                  L’optimum du bar. L’eau descend vers 8 °C en février et culmine autour de
+                  17 à 18 °C en septembre : ce sous-score est au plafond de la fin août à la
+                  mi-octobre, et au plancher en fin d’hiver.
                 </p>
               </article>
               <article class="tile">
                 <span class="weight">5 %</span>
                 <h3>Une pression qui ne bouge pas</h3>
                 <p>
-                  Moins de 2 hPa de variation sur six heures : le poisson se nourrit dans un
-                  temps installé. Un front qui traverse — et il en traverse beaucoup ici —
-                  le fait décrocher pendant sa transition.
+                  Moins de 2 hPa de variation sur six heures. Le poisson se nourrit dans un
+                  temps installé ; un front qui traverse le fait décrocher pendant sa
+                  transition, et il en traverse beaucoup sur cette côte.
                 </p>
               </article>
-            </div>
-
-            <div class="note">
-              <strong>À savoir</strong> — les préférences de direction du vent sont
-              calibrées sur une seule digue, celle du Braek à Dunkerque. Pour
-              Boulogne-sur-Mer, l’outil affiche « réglages estimés » et note le vent
-              <em>sur sa force uniquement</em>, sans supposer connaître l’orientation de
-              votre plage. Inventer une préférence de secteur serait pire que d’admettre
-              qu’on ne l’a pas. À vous d’ajouter la lecture du plan d’eau que vous avez
-              sous les yeux.
             </div>
           </div>
         </section>
@@ -1168,15 +1281,15 @@
         <!-- ===================== SAISON ===================== -->
         <section>
           <div class="wrap">
-            <h2>Quand le bar est là : la saison boulonnaise</h2>
+            <h2>Quand le bar est là : la saison normande</h2>
             <p class="section-lede">
-              Le bar est présent toute l’année en Manche orientale, mais il n’est ni au même
+              Le bar est présent toute l’année sur la côte normande, mais il n’est ni au même
               endroit ni dans le même état d’appétit selon les mois.
             </p>
 
             <div class="table-scroll">
               <table>
-                <caption>Le bar mois par mois sur la Côte d’Opale</caption>
+                <caption>Le bar mois par mois, de la Manche Est à la Manche Ouest</caption>
                 <thead>
                   <tr>
                     <th scope="col">Période</th>
@@ -1196,32 +1309,34 @@
                   <tr>
                     <th scope="row">Février – mars</th>
                     <td>
-                      Le creux de l’année, et la détention est interdite : c’est du no-kill
-                      strict. Bon moment pour repérer les postes à marée basse.
+                      Le creux de l’année, et la détention est interdite : no-kill strict.
+                      Bon moment pour repérer les estrans à basse mer de vive-eau.
                     </td>
                     <td class="rank low">Fermé à la détention</td>
                   </tr>
                   <tr>
                     <th scope="row">Avril – mai</th>
                     <td>
-                      L’eau se réchauffe, le poisson revient au bord. Les premières belles
-                      sorties de l’année, souvent sur les montantes de fin de journée.
+                      Le poisson revient au bord, d’abord sur la côte ouest du Cotentin, plus
+                      exposée à l’Atlantique et plus précoce. Belles montantes de fin de
+                      journée.
                     </td>
                     <td class="rank mid">Reprise</td>
                   </tr>
                   <tr>
                     <th scope="row">Juin – juillet</th>
                     <td>
-                      Bar partout, mais des journées très longues : les créneaux crépusculaires
-                      tombent très tôt le matin ou très tard le soir.
+                      Bar partout, y compris dans les havres et les estuaires, mais des
+                      journées très longues : les créneaux crépusculaires tombent très tôt ou
+                      très tard.
                     </td>
                     <td class="rank mid">Régulier</td>
                   </tr>
                   <tr>
                     <th scope="row">Août – octobre</th>
                     <td>
-                      L’eau passe par les 16 °C, les premières houles d’automne brassent les
-                      plages et le poisson se charge avant l’hiver. Les plus beaux sujets
+                      L’eau est autour de 16 à 18 °C, les premières houles d’automne brassent
+                      les plages et le poisson se charge avant l’hiver. Les plus beaux sujets
                       sortent là.
                     </td>
                     <td class="rank top">La meilleure période</td>
@@ -1243,54 +1358,56 @@
         <!-- ===================== SPOTS ===================== -->
         <section>
           <div class="wrap">
-            <h2>Où pêcher, autour de Boulogne-sur-Mer</h2>
+            <h2>Où pêcher : quelques communes à chercher dans l’outil</h2>
             <p class="section-lede">
-              Le score se calcule pour une commune, pas pour un rocher. À vous de choisir le
-              poste ; voici les grandes familles du secteur, du nord au sud.
+              Le score se calcule pour une commune, pas pour une région. Voici des points
+              d’entrée par façade — la liste n’a rien d’exhaustif, et l’outil accepte
+              n’importe quelle commune littorale.
             </p>
 
             <div class="grid">
               <article class="tile">
-                <h3>La digue Carnot</h3>
+                <h3>Dieppe, Saint-Valery, Fécamp, Étretat</h3>
                 <p>
-                  Plus de 3 km avançant dans la mer, au sud du premier port de pêche de
-                  France. Du courant, de la profondeur et de beaux bars de la fin de
-                  l’été à l’automne. L’accès est réglementé et l’ouvrage devient
-                  franchement dangereux par vent d’ouest ou de sud-ouest.
+                  La Côte d’Albâtre : galets, valleuses et platiers de silex qui découvrent
+                  aux basses mers de vive-eau. Le bar y chasse sur les têtes de roche à la
+                  montante, souvent très près du bord. Attention aux éboulements en pied de
+                  falaise.
                 </p>
               </article>
               <article class="tile">
-                <h3>Le Portel et les plages sud</h3>
+                <h3>Ouistreham, Courseulles, Arromanches</h3>
                 <p>
-                  Juste au sud de la rade : du sable, une digue accessible, des postes qui
-                  se pêchent sans matériel lourd. L’entrée de gamme du secteur, et une bonne
-                  option quand la Carnot est intenable.
+                  La Côte de Nacre et les plages du Débarquement : sable, quelques épis et les
+                  vestiges du port artificiel, qui font autant de structures à prospecter. La
+                  jetée de Ouistreham et l’embouchure de l’Orne concentrent le passage.
                 </p>
               </article>
               <article class="tile">
-                <h3>Wimereux et Ambleteuse</h3>
+                <h3>Saint-Vaast-la-Hougue et Barfleur</h3>
                 <p>
-                  Au nord, alternance de sable et de platiers rocheux. Le bar y chasse la
-                  crevette et le crabe sur la montante ; les basses mers de vive-eau
-                  découvrent des cuvettes qui valent le repérage.
+                  Le Val de Saire, exposé à l’est : rochers, parcs à huîtres et le courant du
+                  raz de Barfleur juste à côté. Un secteur où le repérage à basse mer paie
+                  plus qu’ailleurs.
                 </p>
               </article>
               <article class="tile">
-                <h3>Équihen-Plage et Hardelot</h3>
+                <h3>Carteret, Agon-Coutainville, Granville</h3>
                 <p>
-                  Les longues plages de surfcasting classiques, ouvertes plein ouest. Il
-                  faut du lancer, mais la houle y travaille et les bancs passent au bord dès
-                  que l’eau se trouble.
+                  La côte des Havres, plein ouest sur l’Atlantique : longues plages, chenaux
+                  de havres qui se vident au jusant, et les plus grandes marées d’Europe
+                  continentale. Les havres se pêchent sur la fin du flot, quand le bar y entre
+                  avec l’eau.
                 </p>
               </article>
             </div>
 
             <div class="note">
               <strong>Sécurité</strong> — le score de BassScore est un indice de pêche, pas
-              une prévision de sécurité. Une digue exposée, une plage à laisse de haute mer
-              rapide et 8 mètres de marnage ne pardonnent pas. Consultez la météo marine et
-              l’horaire des marées avant de partir, et respectez les arrêtés d’accès aux
-              ouvrages portuaires.
+              une prévision de sécurité. Sur les grands estrans de la côte ouest, la mer
+              revient plus vite qu’on ne marche, et les chenaux de havre isolent en quelques
+              minutes. Consultez la météo marine et l’horaire des marées avant de partir, et
+              ne pêchez jamais un estran que vous n’avez pas reconnu.
             </div>
           </div>
         </section>
@@ -1301,7 +1418,8 @@
             <h2>Obtenir le créneau exact pour votre prochaine sortie</h2>
             <p class="section-lede">
               Tout ce qui précède décrit des règles générales. L’outil, lui, applique ces
-              règles aux prévisions du jour et vous donne l’heure.
+              règles aux prévisions du jour, pour la commune que vous lui donnez, et vous
+              rend une heure.
             </p>
 
             <div class="steps">
@@ -1313,10 +1431,11 @@
                 </p>
               </div>
               <div class="step">
-                <h3>Cherchez Boulogne-sur-Mer</h3>
+                <h3>Cherchez votre commune</h3>
                 <p>
-                  Touchez le nom du lieu en bas de l’écran et tapez « Boulogne ». Le choix
-                  est mémorisé : à la prochaine ouverture, vous y êtes déjà.
+                  Touchez le nom du lieu en bas de l’écran et tapez « Granville »,
+                  « Ouistreham », « Fécamp »… Seules les communes du littoral sont proposées :
+                  une ville de l’intérieur est refusée plutôt que scorée dans le vide.
                 </p>
               </div>
               <div class="step">
@@ -1334,8 +1453,8 @@
                 <span class="tick">·</span>
                 <span
                   >Vent, houle, température de l’eau et pression viennent des modèles marins
-                  et atmosphériques d’Open-Meteo ; les marées sont déduites de la courbe de
-                  niveau de la mer, coefficient compris.</span
+                  et atmosphériques d’Open-Meteo ; les marées, coefficient compris, sont
+                  déduites de la courbe de niveau de la mer.</span
                 >
               </p>
               <p class="fact">
@@ -1348,8 +1467,9 @@
               <p class="fact">
                 <span class="tick">·</span>
                 <span
-                  >Le score se relit à la couleur : au-dessus de 90 on y va, entre 70 et 89
-                  ça vaut la sortie sur le créneau indiqué, en dessous un facteur bloque.</span
+                  >L’outil nomme aussi la zone de gestion : <strong>Manche Est</strong> du
+                  Tréport à la pointe de Barfleur, <strong>Manche Ouest</strong> de Barfleur
+                  au Mont-Saint-Michel.</span
                 >
               </p>
             </div>
@@ -1362,9 +1482,10 @@
             <h2>Réglementation : ce que vous avez le droit de garder</h2>
             <div class="prose">
               <p>
-                Boulogne-sur-Mer est au <strong>nord du 48<sup>e</sup> parallèle</strong>,
-                dans la zone Manche Est – mer du Nord, où le bar fait l’objet de mesures de
-                gestion spécifiques. Pour 2026 :
+                Toute la côte normande est au
+                <strong>nord du 48<sup>e</sup> parallèle</strong> — le point le plus au sud,
+                la baie du Mont-Saint-Michel, est encore à plus de soixante kilomètres de
+                cette ligne. La région entière relève donc du régime renforcé. Pour 2026 :
               </p>
             </div>
 
@@ -1380,7 +1501,8 @@
                 <span class="tick">·</span>
                 <span
                   >Du <strong>1<sup>er</sup> février au 31 mars</strong>, la détention est
-                  interdite : pêche à la canne et remise à l’eau uniquement.</span
+                  interdite : pêche à la canne ou à la ligne à la main suivie d’un relâcher
+                  uniquement.</span
                 >
               </p>
               <p class="fact">
@@ -1398,8 +1520,9 @@
 
             <div class="note">
               <strong>Vérifiez avant de partir</strong> — ces règles sont révisées chaque
-              année, et des arrêtés préfectoraux peuvent les durcir localement. La référence
-              qui fait foi est celle publiée par l’administration des affaires maritimes.
+              année, et des arrêtés préfectoraux peuvent les durcir localement : gisements
+              classés, cantonnements, accès aux estrans conchylicoles. La référence qui fait
+              foi est celle publiée par l’administration des affaires maritimes.
             </div>
           </div>
         </section>
@@ -1411,47 +1534,54 @@
 
             <div class="faq">
               <details open>
-                <summary>Quelle est la meilleure heure pour pêcher le bar à Boulogne-sur-Mer ?</summary>
+                <summary>Quelle est la meilleure heure pour pêcher le bar en Normandie ?</summary>
                 <p>
-                  La fenêtre qui compte va de deux heures avant la pleine mer à deux heures
-                  après. Elle vaut double quand elle tombe dans l’heure qui entoure le lever
-                  ou le coucher du soleil : c’est le moment où le bar chasse au bord. Une
-                  pleine mer au crépuscule en vive-eau est la meilleure combinaison possible
-                  sur la Côte d’Opale.
+                  La fenêtre utile va de deux heures avant la pleine mer à deux heures
+                  après, et elle vaut double quand elle tombe dans l’heure qui entoure le
+                  lever ou le coucher du soleil. Une exception locale mérite d’être connue :
+                  au fond de la baie de Seine, la pleine mer « tient » deux à trois heures
+                  au lieu de basculer d’un coup, ce qui allonge d’autant le créneau utile.
                 </p>
               </details>
               <details>
-                <summary>Quel coefficient de marée pour pêcher le bar à Boulogne-sur-Mer ?</summary>
+                <summary>Quel coefficient de marée pour pêcher le bar en Normandie ?</summary>
                 <p>
-                  À partir de 80, et pleinement à 100 et au-dessus. Boulogne-sur-Mer a un
-                  marnage de l’ordre de 8 mètres en vive-eau : le courant y porte fort et met
-                  le bar en chasse. En dessous de 40, l’eau bouge peu et la note s’effondre.
+                  À partir de 80, et pleinement à 100 et au-dessus. Le score note le marnage
+                  du jour relativement au marnage de vive-eau du spot lui-même : un
+                  coefficient de 100 vaut donc la même note à Dieppe, où le marnage atteint
+                  neuf mètres, qu’à Granville où il en fait quatorze. Ce qui change
+                  réellement d’un secteur à l’autre, c’est la vitesse du courant que ce
+                  marnage engendre.
                 </p>
               </details>
               <details>
-                <summary>Quel vent pour pêcher le bar sur la Côte d’Opale ?</summary>
+                <summary>Quel vent pour pêcher le bar en Normandie ?</summary>
                 <p>
-                  Un vent de secteur ouest à sud-ouest, entre 15 et 30 km/h : il vient du
-                  large, trouble l’eau et pousse la nourriture contre le bord. Un vent d’est
-                  souffle de terre et aplatit tout. Au-delà de 40 km/h, ou avec des rafales
-                  de plus de 50 km/h, la mer devient impêchable du bord.
+                  Cela dépend entièrement de la façade. La Côte d’Albâtre regarde vers le
+                  nord-ouest, la Côte de Nacre plein nord, le Val de Saire vers l’est et la
+                  côte des Havres plein ouest. Le vent porteur est toujours celui qui vient
+                  de la mer : il trouble l’eau et pousse la nourriture au bord. La bonne
+                  force, elle, ne change pas : 15 à 30 km/h, et au-delà de 40 km/h la mer
+                  devient impêchable du bord.
                 </p>
               </details>
               <details>
-                <summary>Quelle est la meilleure saison pour le bar à Boulogne-sur-Mer ?</summary>
+                <summary>Où trouve-t-on les plus grandes marées de Normandie ?</summary>
                 <p>
-                  D’août à octobre. L’eau passe alors par les 16 °C, l’optimum du bar, les
-                  premières houles d’automne brassent les plages et le poisson se nourrit
-                  avant l’hiver. Avril à juillet donnent des sorties régulières ; février et
-                  mars sont fermés à la détention.
+                  Dans la baie du Mont-Saint-Michel et sur la côte ouest du Cotentin. Le
+                  marnage y dépasse quatorze mètres en grande vive-eau à Granville, le plus
+                  fort d’Europe continentale. À l’autre extrémité de la région, la pointe du
+                  Cotentin et le secteur de Cherbourg tournent autour de six mètres. Le
+                  courant du raz Blanchard, au cap de la Hague, compte parmi les plus
+                  violents d’Europe.
                 </p>
               </details>
               <details>
-                <summary>Peut-on garder un bar pêché à Boulogne-sur-Mer ?</summary>
+                <summary>Peut-on garder un bar pêché en Normandie ?</summary>
                 <p>
-                  Boulogne-sur-Mer est au nord du 48<sup>e</sup> parallèle. En 2026, la
-                  détention est interdite du 1<sup>er</sup> février au 31 mars — pêche en
-                  no-kill uniquement — et limitée à trois bars par pêcheur et par jour le
+                  Toute la côte normande est au nord du 48ᵉ parallèle. En 2026, la détention
+                  est interdite du 1ᵉʳ février au 31 mars — pêche à la canne et remise à
+                  l’eau uniquement — et limitée à trois bars par pêcheur et par jour le
                   reste de l’année. La taille minimale de capture est de 42 cm. Vérifiez la
                   réglementation en vigueur avant chaque sortie : elle est révisée tous les
                   ans.
@@ -1460,13 +1590,14 @@
             </div>
           </div>
         </section>
+
         <!-- ===================== SIBLING GUIDES ===================== -->
         <section>
           <div class="wrap">
             <h2>Ailleurs sur la côte</h2>
             <p class="section-lede">
-              Au nord la Manche se referme en détroit, au sud-ouest elle s’ouvre sur
-              l’Atlantique. Les autres guides, dans l’ordre de la côte.
+              Au nord-est, la Manche se referme en détroit ; au sud-ouest, elle s’ouvre sur
+              l’Atlantique. Les guides voisins, dans l’ordre de la côte.
             </p>
 
             <div class="siblings">
@@ -1484,11 +1615,11 @@
                   littoral où une trop grosse vive-eau peut faire baisser la note.
                 </p>
               </a>
-              <a class="sibling" href="/peche-bar-normandie/">
-                <h3>Pêche au bar en Normandie →</h3>
+              <a class="sibling" href="/peche-bar-boulogne-sur-mer/">
+                <h3>Pêche au bar à Boulogne-sur-Mer →</h3>
                 <p>
-                  Six cents kilomètres de côte qui tournent sur plus de 180°, du Tréport au
-                  Mont-Saint-Michel, et jusqu’à quatorze mètres de marnage.
+                  Huit mètres de marnage et une côte plein ouest. La digue Carnot, les
+                  plages d’Équihen à Hardelot, et la saison mois par mois.
                 </p>
               </a>
               <a class="sibling" href="/peche-bar-bretagne/">
@@ -1516,8 +1647,8 @@
           <h2>Et concrètement, c’est quand le prochain bon créneau ?</h2>
           <p class="section-lede">
             Marée, vent, houle et lumière des sept prochains jours, ramenés à un score et à
-            une heure. Pour Boulogne-sur-Mer comme pour n’importe quelle commune du littoral
-            français.
+            une heure. Pour n’importe quelle commune du littoral normand, et pour le reste
+            du littoral français.
           </p>
           <a class="cta" href="/app/">Voir les conditions <span class="arrow">→</span></a>
         </div>
@@ -1532,7 +1663,7 @@
           <a href="/#comment">Comment ça marche</a>
           <a href="/peche-bar-dunkerque/">Dunkerque</a>
           <a href="/peche-bar-calais/">Calais</a>
-          <a href="/peche-bar-normandie/">Normandie</a>
+          <a href="/peche-bar-boulogne-sur-mer/">Boulogne-sur-Mer</a>
           <a href="/peche-bar-bretagne/">Bretagne</a>
           <a href="/peche-bar-vendee/">Vendée</a>
           <a href="/app/">Ouvrir l’outil</a>

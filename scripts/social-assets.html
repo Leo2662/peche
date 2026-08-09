@@ -154,13 +154,17 @@
       <div class="ring">
         <svg viewBox="0 0 320 320">
           <circle cx="160" cy="160" r="146" fill="none" stroke="rgba(79,182,217,0.12)" stroke-width="16" />
+          <!-- 91, so the turquoise arc and the kicker below are both what the
+               app would actually render: getVerdict() reserves EXCELLENT for
+               90 and above, and accentForScore() only returns turquoise there
+               — under 90 both go amber. Offset = 917.3 × (1 − 91/100). -->
           <circle
             cx="160" cy="160" r="146" fill="none" stroke="#2FE0C8" stroke-width="16"
-            stroke-linecap="round" stroke-dasharray="917.3" stroke-dashoffset="119.2"
+            stroke-linecap="round" stroke-dasharray="917.3" stroke-dashoffset="82.6"
             transform="rotate(-90 160 160)"
           />
         </svg>
-        <div class="value">87</div>
+        <div class="value">91</div>
       </div>
 
       <div class="copy">
