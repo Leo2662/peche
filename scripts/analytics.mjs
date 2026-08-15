@@ -10,16 +10,17 @@
  *     get read; on the app it says whether the score, the day strip and the
  *     window list are understood without help.
  *
- * Both are the vendors' own snippets, committed into the two page templates —
- * `public/landing.html` and `public/index.html` — immediately after `<head>`.
- * Committed rather than injected at build time from an environment variable: a
- * tag that depends on a host setting is a tag that is missing the day nobody
- * sets it, and all the vendor consoles report back is "not detected".
+ * Both are the vendors' own snippets, rendered immediately after `<head>` by
+ * the two things that produce pages here: `site/components/Analytics.astro` for
+ * the site, and `public/index.html` — Expo's template — for the app. Committed
+ * rather than injected at build time from an environment variable: a tag that
+ * depends on a host setting is a tag that is missing the day nobody sets it,
+ * and all the vendor consoles report back is "not detected".
  *
  * This module is the one place the ids live, and the list of parts each
- * snippet needs to actually work. `build-site.mjs` checks the built pages
- * against it, so a tag lost in Expo's export fails the build instead of
- * quietly leaving a hole in next month's reports.
+ * snippet needs to actually work. `merge-app.mjs` checks the built pages
+ * against it, so a tag lost in Expo's export — or in Astro's minifier — fails
+ * the build instead of quietly leaving a hole in next month's reports.
  */
 
 /** The GA4 property behind pecheaubar.fr. */

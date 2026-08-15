@@ -13,17 +13,36 @@ import {
   missingTagReason,
   TAGS,
 } from '../scripts/analytics.mjs';
-import { GUIDE_PAGES } from '../scripts/build-site.mjs';
+import { GUIDES } from '../site/data/guides.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const readPublic = (name: string) => readFileSync(resolve(ROOT, 'public', name), 'utf8');
+const read = (...segments: string[]) => readFileSync(resolve(ROOT, ...segments), 'utf8');
 
 /**
- * Every page the site serves: landing.html becomes /, index.html becomes
- * /app/, and each guide becomes /<slug>/. A tag missing from one of them
- * under-counts the site without ever looking broken.
+ * Every page the site serves, as it is actually served.
+ *
+ * The landing page and the guides come out of the Astro build, which composes
+ * them from one `Analytics.astro` and then minifies the result — so this reads
+ * the build, not the component. The app's template is the exception: Expo owns
+ * it, and it is checked where it is edited.
+ *
+ * A tag missing from one page under-counts the site without ever looking
+ * broken, which is why every page is held to this and not just a sample.
  */
-const PAGES = ['landing.html', 'index.html', ...GUIDE_PAGES.map(({ slug }) => `${slug}.html`)];
+const PAGES: { label: string; html: string }[] = [
+  { label: 'the landing page', html: read('dist', 'index.html') },
+  { label: "the app's template", html: read('public', 'index.html') },
+  ...GUIDES.map(({ slug }) => ({ label: slug, html: read('dist', slug, 'index.html') })),
+];
+
+const landingHtml = PAGES[0].html;
+
+/**
+ * The charset declaration, either way it is written: Astro minifies it to
+ * `<meta charset="utf-8">`, and Expo's hand-written template keeps the XHTML
+ * style self-closing form.
+ */
+const CHARSET = /<meta charset="utf-8"\s*\/?>/;
 
 /** Every third-party loader the pages are allowed to pull in. */
 const LOADERS = [
@@ -81,7 +100,7 @@ describe('what a working tag needs', () => {
 
     assert.match(reason(''), /Google tag has no gtag\.js loader/);
     assert.match(
-      reason(readPublic('landing.html').replace(/t\.async=1;/, '')),
+      reason(landingHtml.replace(/t\.async=1;/, '')),
       /Clarity tag has no async load/
     );
   });
@@ -89,8 +108,8 @@ describe('what a working tag needs', () => {
 
 describe('every page the site serves', () => {
   it('carries both complete snippets', () => {
-    for (const page of PAGES) {
-      assert.equal(missingTagReason(readPublic(page)), null, `${page} has an incomplete tag`);
+    for (const { label, html } of PAGES) {
+      assert.equal(missingTagReason(html), null, `${label} has an incomplete tag`);
     }
   });
 
@@ -105,35 +124,37 @@ describe('every page the site serves', () => {
    * ignores — which would mangle every accent on a French page.
    */
   it('puts the tags at the top of the head, behind only the charset', () => {
-    for (const page of PAGES) {
-      const html = readPublic(page);
+    for (const { label, html } of PAGES) {
       const headOpen = html.indexOf('<head>') + '<head>'.length;
-      const charset = html.indexOf('<meta charset="utf-8" />');
-      const google = html.indexOf('<!-- Google tag (gtag.js) -->');
-      const clarity = html.indexOf('<!-- Microsoft Clarity -->');
+      const charset = html.search(CHARSET);
+      // Located by the loaders themselves rather than by the comments that
+      // label them: a comment can survive a tag that no longer ships.
+      const google = html.indexOf(`<script async src="${GA_TAG_MARKER}"`);
+      const clarity = html.indexOf(CLARITY_TAG_MARKER);
 
-      assert.ok(charset > headOpen, `${page} has no charset inside its head`);
-      assert.ok(charset < google, `${page} declares its charset after the tags`);
-      assert.ok(google < clarity, `${page} orders the tags oddly`);
+      assert.ok(charset > headOpen, `${label} has no charset inside its head`);
+      assert.ok(google !== -1, `${label} has no Google tag loader`);
+      assert.ok(charset < google, `${label} declares its charset after the tags`);
+      assert.ok(google < clarity, `${label} orders the tags oddly`);
 
       // Nothing but the charset (and comments) may come before the tags.
       const before = html.slice(headOpen, google).replace(/<!--[\s\S]*?-->/g, '');
       assert.equal(
-        before.replace('<meta charset="utf-8" />', '').trim(),
+        before.replace(CHARSET, '').trim(),
         '',
-        `${page} has markup between <head> and the tags`
+        `${label} has markup between <head> and the tags`
       );
 
       // And every other meta the page needs comes after them.
-      assert.ok(html.indexOf('<meta name="viewport"') > clarity, `${page} splits its head oddly`);
+      assert.ok(html.indexOf('<meta name="viewport"') > clarity, `${label} splits its head oddly`);
     }
   });
 
   it('keeps the charset declaration inside the first 1024 bytes', () => {
-    for (const page of PAGES) {
-      const charset = readPublic(page).indexOf('<meta charset="utf-8" />');
-      assert.ok(charset !== -1, `${page} has no charset declaration`);
-      assert.ok(charset < 1024, `${page} declares its charset at byte ${charset}`);
+    for (const { label, html } of PAGES) {
+      const charset = html.search(CHARSET);
+      assert.ok(charset !== -1, `${label} has no charset declaration`);
+      assert.ok(charset < 1024, `${label} declares its charset at byte ${charset}`);
     }
   });
 
@@ -143,8 +164,7 @@ describe('every page the site serves', () => {
    * before it is inserted.
    */
   it('loads every third-party script asynchronously', () => {
-    for (const page of PAGES) {
-      const html = readPublic(page);
+    for (const { label, html } of PAGES) {
       assert.match(html, /<script async src="https:\/\/www\.googletagmanager\.com/);
       assert.match(html, /t\.async=1;/);
       // Nothing else may reach out: a synchronous third-party script in the
@@ -152,32 +172,30 @@ describe('every page the site serves', () => {
       for (const [, src] of html.matchAll(/<script[^>]*\ssrc="(https?:\/\/[^"]+)"/g)) {
         assert.ok(
           src.startsWith('https://www.googletagmanager.com/'),
-          `${page} loads an unexpected script: ${src}`
+          `${label} loads an unexpected script: ${src}`
         );
       }
     }
   });
 
   it('tags each page exactly once per vendor', () => {
-    for (const page of PAGES) {
-      const html = readPublic(page);
-      for (const { label, marker } of LOADERS) {
+    for (const { label, html } of PAGES) {
+      for (const loader of LOADERS) {
         assert.equal(
-          html.split(marker).length - 1,
+          html.split(loader.marker).length - 1,
           1,
-          `${page} loads ${label} more than once — hits would be double-counted`
+          `${label} loads ${loader.label} more than once — hits would be double-counted`
         );
       }
-      assert.equal(html.split(`gtag('config'`).length - 1, 1, `${page} configures GA4 twice`);
-      assert.equal(html.split('"clarity", "script"').length - 1, 1, `${page} starts Clarity twice`);
+      assert.equal(html.split(`gtag('config'`).length - 1, 1, `${label} configures GA4 twice`);
+      assert.equal(html.split('"clarity", "script"').length - 1, 1, `${label} starts Clarity twice`);
     }
   });
 
   it('measures our properties, never a foreign id', () => {
-    for (const page of PAGES) {
-      const html = readPublic(page);
+    for (const { label, html } of PAGES) {
       const gaIds = new Set(html.match(/\bG-[A-Z0-9]{6,}\b/g) ?? []);
-      assert.deepEqual([...gaIds], [GA_MEASUREMENT_ID], `${page} mentions a foreign GA4 id`);
+      assert.deepEqual([...gaIds], [GA_MEASUREMENT_ID], `${label} mentions a foreign GA4 id`);
 
       const clarityIds = new Set(
         [...html.matchAll(/"clarity",\s*"script",\s*"([^"]+)"/g)].map((m) => m[1])
@@ -185,7 +203,7 @@ describe('every page the site serves', () => {
       assert.deepEqual(
         [...clarityIds],
         [CLARITY_PROJECT_ID],
-        `${page} mentions a foreign Clarity project`
+        `${label} mentions a foreign Clarity project`
       );
     }
   });
@@ -198,8 +216,7 @@ describe('the landing page, whose head is also its SEO surface', () => {
    * through `src=` and a JS string — neither of which is a crawl instruction.
    */
   it('adds no crawlable link to a third-party domain', () => {
-    const html = readPublic('landing.html');
-    const head = html.slice(0, html.indexOf('</head>'));
+    const head = landingHtml.slice(0, landingHtml.indexOf('</head>'));
 
     for (const [, url] of head.matchAll(/(?:href|content)="(https?:\/\/[^"]+)"/g)) {
       assert.ok(url.startsWith('https://pecheaubar.fr'), `${url} is not on the site domain`);

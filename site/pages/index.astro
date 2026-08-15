@@ -1,0 +1,299 @@
+---
+/**
+ * pecheaubar.fr — the landing page.
+ *
+ * No bundle and no island: it renders before a network round trip, and it is
+ * the only part of the site a crawler can actually read. The app at `/app/` is
+ * a number that changes hourly and only exists after JavaScript has run, so it
+ * carries a `noindex` and this page carries the ranking.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_URL } from '../data/guides.mjs';
+
+import '../styles/landing.css';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: "BassScore",
+  url: `${SITE_URL}/`,
+  applicationCategory: "SportsApplication",
+  operatingSystem: "Web, iOS, Android",
+  inLanguage: "fr-FR",
+  description:
+    "Prévoir les meilleures conditions de pêche au bar en surfcasting : un score de 0 à 100 calculé sur la marée, le vent, la houle et la lumière, et les meilleurs créneaux sur 7 jours.",
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  areaServed: { '@type': 'Country', name: 'France' },
+};
+---
+
+<BaseLayout
+  title="Prévoir les meilleures conditions de pêche au bar"
+  description="Le score de 0 à 100 qui prévoit les meilleures conditions de pêche au bar : marée, vent, houle et lumière. Vos créneaux sur 7 jours, partout en France."
+  social="Un score de 0 à 100 sur la marée, le vent, la houle et la lumière — et le créneau à la minute, partout en France."
+  path="/"
+>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} slot="schema" />
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="kicker">SURFCASTING · BAR · LITTORAL FRANÇAIS</p>
+        <h1>Le bon créneau pour pêcher le bar, <strong>d’un coup d’œil</strong>.</h1>
+        <p class="lede">
+          BassScore lit la marée, le vent, la houle et la lumière, puis vous dit à quelle
+          heure y aller. Un score de 0 à 100, et le créneau à la minute — pour les
+          7 prochains jours, partout sur le littoral français.
+        </p>
+        <div class="hero-actions">
+          <a class="cta" href="/app/">Voir les conditions <span class="arrow">→</span></a>
+          <a class="cta ghost" href="#comment">Comment ça marche</a>
+        </div>
+        <p class="hero-note">Gratuit · sans compte · sans publicité</p>
+      </div>
+
+      <div class="card good">
+        <div class="dial">
+          <svg viewBox="0 0 178 178" aria-hidden="true">
+            <circle cx="89" cy="89" r="80" fill="none" stroke="rgba(79,182,217,.12)" stroke-width="9" />
+            <circle
+              cx="89" cy="89" r="80" class="arc" fill="none" stroke-width="9"
+              stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="65.4"
+              transform="rotate(-90 89 89)"
+            />
+          </svg>
+          <div class="val">87</div>
+        </div>
+        <div class="verdict">BONNES CONDITIONS</div>
+        <div class="slot-label">MEILLEUR CRÉNEAU</div>
+        <div class="slot">19:10 – 21:00</div>
+        <div class="reasons">MONTANTE · OUEST · CRÉPUSCULE</div>
+        <div class="place">Dunkerque · Digue du Braek</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HOW ===================== -->
+  <section id="comment">
+    <div class="wrap">
+      <h2>Ce que l’outil regarde</h2>
+      <p class="section-lede">
+        Sept facteurs, pondérés selon ce qui fait vraiment sortir le bar sur une plage.
+        La marée pèse plus de la moitié de la note.
+      </p>
+
+      <div class="grid">
+        <article class="tile">
+          <span class="weight">35 %</span>
+          <h3>Activité biologique</h3>
+          <p>
+            Coefficient, force du courant et marnage. C’est le courant qui met le bar en
+            chasse le long du bord.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">20 %</span>
+          <h3>Fenêtre de marée</h3>
+          <p>
+            Les deux heures avant la pleine mer, l’heure qui suit, et le début du jusant :
+            les créneaux classiques du bar.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">15 %</span>
+          <h3>Vent</h3>
+          <p>
+            Direction et force. Un vent de mer trouble l’eau et pousse la nourriture au
+            bord ; un vent de terre l’aplatit.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">10 %</span>
+          <h3>Vagues</h3>
+          <p>
+            0,5 à 1,5 m avec une période de 7 à 12 s : assez de rouleau pour brasser le
+            sable, sans que ce soit du clapot.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">8 %</span>
+          <h3>Lumière</h3>
+          <p>
+            L’aube, le crépuscule et la nuit. Le bar chasse à la bascule du jour, et un
+            ciel couvert allonge le créneau.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">7 + 5 %</span>
+          <h3>Eau et pression</h3>
+          <p>
+            Température de la mer autour de 16 °C, et une pression stable : le poisson se
+            méfie quand un front passe.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STEPS ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Trois gestes, dix secondes</h2>
+
+      <div class="steps">
+        <div class="step">
+          <h3>Choisissez votre plage</h3>
+          <p>
+            N’importe quelle commune du littoral français. Seuls les spots où l’on peut
+            réellement lancer sont proposés.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Lisez le score</h3>
+          <p>
+            De 0 à 100, avec les meilleurs créneaux du jour et leur horaire précis, sur
+            sept jours.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Comprenez pourquoi</h3>
+          <p>
+            Touchez un créneau : l’outil donne ses raisons en un mot chacune, puis les
+            mesures et les courbes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SCALE ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Lire la note</h2>
+      <p class="section-lede">
+        La couleur suffit à décider. Le chiffre sert à comparer deux créneaux entre eux.
+      </p>
+
+      <div class="scale">
+        <div class="band good">
+          <div class="range">90 – 100</div>
+          <div class="name">EXCELLENTES</div>
+          <p class="what">On y va. Tout converge : marée, vent et lumière.</p>
+        </div>
+        <div class="band mid">
+          <div class="range">70 – 89</div>
+          <div class="name">BONNES</div>
+          <p class="what">Ça vaut la sortie, surtout sur le créneau indiqué.</p>
+        </div>
+        <div class="band low">
+          <div class="range">0 – 69</div>
+          <div class="name">MOYENNES À MAUVAISES</div>
+          <p class="what">Un facteur bloque. Regardez plutôt les jours suivants.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HONESTY ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>D’où viennent les données</h2>
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Vent, houle, température de l’eau et pression : les modèles marins et
+            atmosphériques d’<a href="https://open-meteo.com" rel="noopener">Open-Meteo</a>.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Marées : pleines et basses mers déduites de la courbe de niveau de la mer, avec
+            le coefficient qui va avec.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Lever, coucher et phase de lune : calculés sur votre appareil, donc valables
+            même hors ligne.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Le score est un indice de pêche, pas une prévision de sécurité. Consultez la
+            météo marine avant de partir.</span
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SPOT GUIDES ===================== -->
+  <section id="spots">
+    <div class="wrap">
+      <h2>Guides par spot et par région</h2>
+      <p class="section-lede">
+        Le score marche partout sur le littoral. Ces pages disent ce qu’il faut savoir
+        d’un secteur en particulier : ses marées, ses vents, sa saison — et, du nord au
+        sud, tout ce que la même formule ne dit pas de la même façon.
+      </p>
+
+      <div class="grid">
+        <article class="tile">
+          <h3><a class="tile-link" href="/peche-bar-dunkerque/">Dunkerque</a></h3>
+          <p>
+            Le spot sur lequel le score a été réglé, et le seul dont la table des vents
+            est mesurée. Marée, courant, saison et digue du Braek.
+          </p>
+        </article>
+        <article class="tile">
+          <h3><a class="tile-link" href="/peche-bar-calais/">Calais</a></h3>
+          <p>
+            Le détroit et ses deux à trois nœuds de courant : le seul secteur où une
+            trop grosse vive-eau peut faire baisser la note.
+          </p>
+        </article>
+        <article class="tile">
+          <h3><a class="tile-link" href="/peche-bar-boulogne-sur-mer/">Boulogne-sur-Mer</a></h3>
+          <p>
+            Huit mètres de marnage et une côte plein ouest. Les meilleurs horaires de
+            marée, le vent de la Côte d’Opale et la saison du bar, mois par mois.
+          </p>
+        </article>
+        <article class="tile">
+          <h3><a class="tile-link" href="/peche-bar-normandie/">Normandie</a></h3>
+          <p>
+            Six cents kilomètres de côte qui tournent sur plus de 180°, du Tréport au
+            Mont-Saint-Michel, et jusqu’à quatorze mètres de marnage.
+          </p>
+        </article>
+        <article class="tile">
+          <h3><a class="tile-link" href="/peche-bar-bretagne/">Bretagne</a></h3>
+          <p>
+            Deux mers et deux réglementations : le 48<sup>e</sup> parallèle coupe la
+            région en deux, et la houle d’ouest décide de tout le reste.
+          </p>
+        </article>
+        <article class="tile">
+          <h3><a class="tile-link" href="/peche-bar-vendee/">Vendée</a></h3>
+          <p>
+            De l’eau à 21 °C en août, des marées modestes et de la houle atlantique : la
+            Gascogne ne se lit pas comme la Manche.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CLOSING ===================== -->
+  <section class="closing">
+    <div class="wrap">
+      <h2>Alors, on y va ce soir ?</h2>
+      <a class="cta" href="/app/">Voir les conditions <span class="arrow">→</span></a>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,45 @@
+---
+/**
+ * The site footer, and the only internal linking between the guides.
+ *
+ * A guide never links to itself: `current` is its slug, and it drops out of the
+ * nav. That was done by hand in six files, which is the kind of edit that
+ * survives five pages and not the sixth.
+ *
+ * The landing page spells each link out — "Pêche au bar à Dunkerque" — because
+ * it is the page Google reads the anchor text of. The guides link each other by
+ * place name alone, next to the two links back up to the landing page.
+ */
+import { GUIDES, pathOf } from '../data/guides.mjs';
+
+interface Props {
+  /** Slug of the guide being rendered, so it can omit its own link. */
+  current?: string;
+}
+
+const { current } = Astro.props;
+const others = GUIDES.filter(({ slug }) => slug !== current);
+const isGuide = current !== undefined;
+---
+
+<footer>
+  <div class="wrap">
+    <span>BassScore — pecheaubar.fr</span>
+    <nav aria-label="Liens du site">
+      {
+        isGuide && (
+          <>
+            <a href="/">Accueil</a>
+            <a href="/#comment">Comment ça marche</a>
+          </>
+        )
+      }
+      {
+        others.map(({ slug, place, preposition }) => (
+          <a href={pathOf(slug)}>{isGuide ? place : `Pêche au bar ${preposition} ${place}`}</a>
+        ))
+      }
+      <a href="/app/">Ouvrir l’outil</a>
+    </nav>
+  </div>
+</footer>
