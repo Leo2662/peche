@@ -1,0 +1,45 @@
+---
+/**
+ * The two measurement tags, as the vendors write them.
+ *
+ * They were pasted into seven documents by hand, and `build-site.mjs` checked
+ * all seven afterwards because Expo re-serialises the app's HTML on export and
+ * a tag lost on one page under-counts the site without ever looking broken.
+ * There is one copy now, and the ids come from `scripts/analytics.mjs` rather
+ * than being retyped — but the check stays: it is what proves this component
+ * still renders a tag the vendor will actually recognise.
+ *
+ * `is:inline` is not optional. Astro would otherwise bundle these into a
+ * module, and both vendors need their snippet in the document head, running
+ * before the page does.
+ */
+import { CLARITY_PROJECT_ID, GA_MEASUREMENT_ID } from '../../scripts/analytics.mjs';
+---
+
+{/* Google tag (gtag.js) */}
+<script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+></script>
+<script
+  is:inline
+  set:html={`
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', '${GA_MEASUREMENT_ID}');
+    `}
+/>
+
+{/* Microsoft Clarity */}
+<script
+  is:inline
+  type="text/javascript"
+  set:html={`
+      (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "${CLARITY_PROJECT_ID}");
+    `}
+/>

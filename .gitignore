@@ -6,8 +6,12 @@ node_modules/
 # Expo
 .expo/
 dist/
+dist-expo/
 web-build/
 expo-env.d.ts
+
+# Astro
+.astro/
 
 # Native
 .kotlin/

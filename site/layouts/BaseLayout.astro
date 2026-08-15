@@ -1,0 +1,103 @@
+---
+/**
+ * The document every page on pecheaubar.fr is built from.
+ *
+ * The head was written out seven times, tag for tag, which is how a canonical
+ * ends up pointing at the wrong path or an `hreflang` at a page that moved. It
+ * is derived from `path` here: the canonical, both `hreflang`s and `og:url` are
+ * the same URL by construction, and there is no way to make them disagree.
+ *
+ * Only what actually varies is a prop. Titles are shared between `<title>`,
+ * `og:title` and `twitter:title` — they were identical on all seven pages —
+ * while the description splits in two: `description` is what Google shows,
+ * `social` is what a shared link shows, and they were deliberately different
+ * on every page.
+ */
+import Analytics from '../components/Analytics.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { SITE_URL } from '../data/guides.mjs';
+
+import '../styles/site.css';
+
+interface Props {
+  /** `<title>`, `og:title` and `twitter:title`. */
+  title: string;
+  /** The search snippet. */
+  description: string;
+  /** The share-card snippet — shorter, and written to be read cold. */
+  social: string;
+  /** Absolute path this page is served from, trailing slash included. */
+  path: string;
+  /** `website` for the landing page, `article` for a guide. */
+  ogType?: 'website' | 'article';
+  /** Slug of the current guide, so the footer omits its own link. */
+  current?: string;
+}
+
+const { title, description, social, path, ogType = 'website', current } = Astro.props;
+
+const url = `${SITE_URL}${path}`;
+const image = `${SITE_URL}/og-image.png`;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <!-- Stays first: a charset declaration the parser finds after the first
+         1024 bytes is one it ignores, and the tags below are 700 of them. -->
+    <meta charset="utf-8" />
+
+    <Analytics />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="alternate" hreflang="fr" href={url} />
+    <link rel="alternate" hreflang="x-default" href={url} />
+
+    <meta name="application-name" content="BassScore" />
+    <meta name="theme-color" content="#030A12" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="format-detection" content="telephone=no,date=no,address=no" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="BassScore" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={social} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Score de 91 sur 100, conditions excellentes pour la pêche au bar"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={social} />
+    <meta name="twitter:image" content={image} />
+
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <slot name="schema" />
+  </head>
+
+  <body>
+    <SiteHeader />
+
+    <main>
+      <slot />
+    </main>
+
+    <SiteFooter current={current} />
+  </body>
+</html>

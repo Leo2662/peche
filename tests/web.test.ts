@@ -1,16 +1,36 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
 import { missingTagReason } from '../scripts/analytics.mjs';
-import { checkGuideRoutes, GUIDE_PAGES } from '../scripts/build-site.mjs';
-import { buildSitemap, isoDate, ROUTES, SITE_URL } from '../scripts/generate-sitemap.mjs';
+import { GUIDES, pathOf, ROUTES, SITE_URL, urlOf } from '../site/data/guides.mjs';
+import { buildSitemap, isoDate } from '../site/data/sitemap.mjs';
 import { DEFAULT_SPOT, isCalibrated } from '../src/config/spots';
 
-const PUBLIC_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'public');
-const read = (name: string) => readFileSync(resolve(PUBLIC_DIR, name), 'utf8');
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+
+/**
+ * These assertions are about the pages the site actually serves, so they read
+ * the build rather than the sources. Astro composes each page out of a layout,
+ * a stylesheet and a data file, and then minifies the result — none of which is
+ * visible in `site/pages/`. What ships is what is worth testing.
+ */
+const DIST = resolve(ROOT, 'dist');
+
+/** Static files Astro copies to the root of the site, verbatim. */
+const STATIC = resolve(ROOT, 'site', 'public');
+
+if (!existsSync(resolve(DIST, 'index.html'))) {
+  throw new Error('nothing built — run `npm run build:site` first (`npm run check` does it for you)');
+}
+
+const built = (path: string) => readFileSync(resolve(DIST, path), 'utf8');
+const asset = (name: string) => readFileSync(resolve(STATIC, name));
+
+const landing = built('index.html');
+const pageOf = (slug: string) => built(`${slug}/index.html`);
 
 const DOMAIN = 'https://pecheaubar.fr';
 
@@ -33,25 +53,28 @@ describe('sitemap generation', () => {
     // The landing page, then one entry per editorial guide. The app itself is
     // client-rendered and carries a noindex — listing it would be a soft-404.
     assert.equal(ROUTES[0].path, '/');
-    assert.equal(ROUTES.length, 1 + GUIDE_PAGES.length);
+    assert.equal(ROUTES.length, 1 + GUIDES.length);
 
-    const slugs = GUIDE_PAGES.map(({ slug }) => slug);
     for (const route of ROUTES.slice(1)) {
       // `vercel.json` sets trailingSlash: true, so the slash-less form is a 308.
       assert.match(route.path, /^\/[a-z0-9-]+\/$/, `${route.path} is not a clean guide path`);
-      const slug = route.path.slice(1, -1);
-      assert.ok(slugs.includes(slug), `${route.path} has no page behind it`);
-      assert.doesNotThrow(
-        () => readFileSync(resolve(PUBLIC_DIR, `${slug}.html`)),
-        `public/${slug}.html is missing`
+      assert.ok(
+        existsSync(resolve(DIST, route.path.slice(1), 'index.html')),
+        `${route.path} is in the sitemap but no page was built for it`
       );
     }
   });
 
-  it('agrees with the build about which guides exist', () => {
-    // The two lists are edited by hand in different files; this is the check
-    // that stops one of them being forgotten.
-    assert.equal(checkGuideRoutes(), null);
+  /**
+   * The sitemap and the pages used to be two hand-written lists in two files,
+   * with a build-time check that they still matched. Both now come from
+   * `GUIDES`, so this asserts the property that check used to defend — that
+   * every guide is announced, and nothing is announced that does not exist.
+   */
+  it('announces every guide, and only guides that were built', () => {
+    const announced = ROUTES.slice(1).map((route) => route.path).sort();
+    const registered = GUIDES.map(({ slug }) => pathOf(slug)).sort();
+    assert.deepEqual(announced, registered);
   });
 
   it('produces well-formed XML with the sitemaps.org namespace', () => {
@@ -83,20 +106,21 @@ describe('sitemap generation', () => {
     assert.equal(isoDate(new Date('2026-08-04T22:30:00Z')), '2026-08-04');
     assert.match(buildSitemap(), /<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/);
   });
+
+  it('is served at /sitemap.xml, byte for byte what the builder produces', () => {
+    const served = built('sitemap.xml');
+    const lastmod = served.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1];
+    assert.ok(lastmod, 'the built sitemap has no lastmod');
+
+    // The endpoint is a two-line wrapper around the builder; this is what says
+    // it is still wired to it.
+    assert.equal(served, buildSitemap(lastmod));
+  });
 });
 
-describe('the committed public/ files', () => {
-  it('ships a sitemap matching what the generator produces', () => {
-    const committed = read('sitemap.xml');
-    const lastmod = committed.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1];
-    assert.ok(lastmod, 'the committed sitemap has no lastmod');
-
-    // Same bytes as a fresh run with that date: catches a hand-edited file.
-    assert.equal(committed, buildSitemap(lastmod));
-  });
-
+describe('the built site', () => {
   it('points robots.txt at the sitemap and lets crawlers in', () => {
-    const robots = read('robots.txt');
+    const robots = built('robots.txt');
     assert.match(robots, /^Sitemap: https:\/\/pecheaubar\.fr\/sitemap\.xml$/m);
     assert.match(robots, /^User-agent: \*$/m);
     assert.match(robots, /^Allow: \/$/m);
@@ -104,15 +128,16 @@ describe('the committed public/ files', () => {
     assert.ok(!/^Disallow: \/_expo/m.test(robots));
   });
 
-  it('agrees with landing.html on the domain', () => {
-    const html = read('landing.html');
-    assert.match(html, /<link rel="canonical" href="https:\/\/pecheaubar\.fr\/" \/>/);
-    assert.match(html, /<meta property="og:url" content="https:\/\/pecheaubar\.fr\/" \/>/);
+  it('agrees with the landing page on the domain', () => {
+    assert.match(landing, /<link rel="canonical" href="https:\/\/pecheaubar\.fr\/">/);
+    assert.match(landing, /<meta property="og:url" content="https:\/\/pecheaubar\.fr\/">/);
 
     // Every absolute URL the crawler is told to follow must be on our domain.
     // Only the head: the body legitimately links out (the Open-Meteo credit).
-    const head = html.slice(0, html.indexOf('</head>'));
-    assert.ok(head.length > 0, 'landing.html has no head');
+    // The measurement tags reach their vendors through `src=` and a JS string,
+    // neither of which is a crawl instruction.
+    const head = headOf(landing);
+    assert.ok(head.length > 0, 'the landing page has no head');
     for (const [, url] of head.matchAll(/(?:href|content)="(https?:\/\/[^"]+)"/g)) {
       assert.ok(url.startsWith(DOMAIN), `${url} is not on the site domain`);
     }
@@ -120,23 +145,22 @@ describe('the committed public/ files', () => {
     // The JSON-LD vocabulary is the one Google reads, and the entity it
     // describes is the site itself.
     const jsonLd = JSON.parse(
-      html.match(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/)?.[1] ?? 'null'
+      landing.match(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/)?.[1] ?? 'null'
     );
     assert.equal(jsonLd?.['@context'], 'https://schema.org');
     assert.equal(jsonLd?.url, `${DOMAIN}/`);
   });
 
   it('is a French page with the metadata an indexed page needs', () => {
-    const html = read('landing.html');
-    assert.match(html, /<html lang="fr">/);
-    assert.match(html, /<meta property="og:locale" content="fr_FR" \/>/);
-    assert.match(html, /hreflang="fr"/);
-    assert.match(html, /hreflang="x-default"/);
+    assert.match(landing, /<html lang="fr">/);
+    assert.match(landing, /<meta property="og:locale" content="fr_FR">/);
+    assert.match(landing, /hreflang="fr"/);
+    assert.match(landing, /hreflang="x-default"/);
 
-    const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
+    const title = landing.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
     assert.ok(title.length > 0 && title.length <= 60, `title is ${title.length} chars`);
 
-    const description = html.match(/name="description"\s+content="([^"]+)"/s)?.[1] ?? '';
+    const description = landing.match(/name="description" content="([^"]+)"/s)?.[1] ?? '';
     assert.ok(
       description.length >= 70 && description.length <= 160,
       `description is ${description.length} chars`
@@ -149,9 +173,8 @@ describe('the committed public/ files', () => {
    * drift away from it, the meta tags stop doing their job.
    */
   it('states the purpose, in the words the domain is built on', () => {
-    const html = read('landing.html');
-    const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
-    const description = html.match(/name="description"\s+content="([^"]+)"/s)?.[1] ?? '';
+    const title = landing.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
+    const description = landing.match(/name="description" content="([^"]+)"/s)?.[1] ?? '';
 
     for (const field of [title, description]) {
       const text = field.toLowerCase();
@@ -166,61 +189,39 @@ describe('the committed public/ files', () => {
   });
 
   it('ships a share card the meta tags actually point at', () => {
-    const html = read('landing.html');
-    assert.match(html, /property="og:image" content="https:\/\/pecheaubar\.fr\/og-image\.png"/);
-    assert.match(html, /property="og:image:width" content="1200"/);
-    assert.match(html, /property="og:image:height" content="630"/);
-    // Without alt text the card is unreadable to a screen reader. The
-    // attribute is wrapped across lines in the source, hence the \s+.
-    assert.match(html, /property="og:image:alt"\s+content="[^"]{20,}"/);
+    assert.match(landing, /property="og:image" content="https:\/\/pecheaubar\.fr\/og-image\.png"/);
+    assert.match(landing, /property="og:image:width" content="1200"/);
+    assert.match(landing, /property="og:image:height" content="630"/);
+    // Without alt text the card is unreadable to a screen reader.
+    assert.match(landing, /property="og:image:alt" content="[^"]{20,}"/);
 
     // Twitter needs the large card explicitly; it does not infer it.
-    assert.match(html, /name="twitter:card" content="summary_large_image"/);
-    assert.match(html, /name="twitter:image" content="https:\/\/pecheaubar\.fr\/og-image\.png"/);
+    assert.match(landing, /name="twitter:card" content="summary_large_image"/);
+    assert.match(landing, /name="twitter:image" content="https:\/\/pecheaubar\.fr\/og-image\.png"/);
 
     // And the files have to be there, at the declared size.
-    const og = readFileSync(resolve(PUBLIC_DIR, 'og-image.png'));
-    assert.deepEqual(pngSize(og), { width: 1200, height: 630 }, 'og-image.png is the wrong size');
-    assert.deepEqual(pngSize(readFileSync(resolve(PUBLIC_DIR, 'apple-touch-icon.png'))), {
-      width: 180,
-      height: 180,
-    });
-    assert.deepEqual(pngSize(readFileSync(resolve(PUBLIC_DIR, 'icon-512.png'))), {
-      width: 512,
-      height: 512,
-    });
-  });
-
-  it('stops iOS turning scores and times into phone links', () => {
-    // The screen is full of "19:10 – 21:00" and bare three-digit numbers.
-    assert.match(read('index.html'), /name="format-detection" content="[^"]*telephone=no/);
+    assert.deepEqual(pngSize(asset('og-image.png')), { width: 1200, height: 630 });
+    assert.deepEqual(pngSize(asset('apple-touch-icon.png')), { width: 180, height: 180 });
+    assert.deepEqual(pngSize(asset('icon-512.png')), { width: 512, height: 512 });
   });
 
   it('has a manifest consistent with the page', () => {
-    const html = read('landing.html');
-    assert.match(html, /<link rel="manifest" href="\/manifest\.webmanifest" \/>/);
+    assert.match(landing, /<link rel="manifest" href="\/manifest\.webmanifest">/);
 
-    const manifest = JSON.parse(read('manifest.webmanifest'));
+    const manifest = JSON.parse(built('manifest.webmanifest'));
     assert.equal(manifest.lang, 'fr');
     // Someone who installs the app wants the tool, not the sales page.
     assert.equal(manifest.start_url, '/app/');
     assert.equal(manifest.scope, '/');
     // Must match the page, or the splash flashes a different colour.
     assert.equal(manifest.theme_color, '#030A12');
-    assert.match(html, /name="theme-color" content="#030A12"/);
+    assert.match(landing, /name="theme-color" content="#030A12"/);
 
     assert.ok(manifest.icons.length > 0);
     for (const icon of manifest.icons) {
-      const file = readFileSync(resolve(PUBLIC_DIR, icon.src.replace(/^\//, '')));
-      const { width, height } = pngSize(file);
+      const { width, height } = pngSize(asset(icon.src.replace(/^\//, '')));
       assert.equal(`${width}x${height}`, icon.sizes, `${icon.src} does not match its declared size`);
     }
-  });
-
-  it('keeps the mount point Expo injects the bundle into', () => {
-    const html = read('index.html');
-    assert.match(html, /<div id="root"><\/div>/);
-    assert.match(html, /id="expo-reset"/);
   });
 
   /**
@@ -230,9 +231,43 @@ describe('the committed public/ files', () => {
    */
   it('mocks the app with the spot label the app actually shows', () => {
     assert.ok(
-      read('landing.html').includes(DEFAULT_SPOT.label),
+      landing.includes(DEFAULT_SPOT.label),
       `the hero card does not name the default spot as "${DEFAULT_SPOT.label}"`
     );
+  });
+
+  it('carries both measurement tags, whole', () => {
+    assert.equal(missingTagReason(landing), null);
+  });
+});
+
+/**
+ * The app's HTML template.
+ *
+ * Astro never sees this file: Expo reads it from `public/`, injects the bundle
+ * into it and exports it to `/app/`. It is checked at the source because that
+ * is where it is edited, and `scripts/merge-app.mjs` checks the exported result
+ * again after Expo has re-serialised it.
+ */
+describe("the app's template", () => {
+  const template = readFileSync(resolve(ROOT, 'public', 'index.html'), 'utf8');
+
+  it('stops iOS turning scores and times into phone links', () => {
+    // The screen is full of "19:10 – 21:00" and bare three-digit numbers.
+    assert.match(template, /name="format-detection" content="[^"]*telephone=no/);
+  });
+
+  it('keeps the mount point Expo injects the bundle into', () => {
+    assert.match(template, /<div id="root"><\/div>/);
+    assert.match(template, /id="expo-reset"/);
+  });
+
+  it('asks not to be indexed, so the landing page ranks instead', () => {
+    assert.match(template, /name="robots" content="noindex/);
+  });
+
+  it('carries both measurement tags, whole', () => {
+    assert.equal(missingTagReason(template), null);
   });
 });
 
@@ -246,30 +281,29 @@ describe('the committed public/ files', () => {
  * the first.
  */
 describe('the spot guides', () => {
-  for (const { slug, place } of GUIDE_PAGES) {
-    const html = read(`${slug}.html`);
+  for (const { slug, place } of GUIDES) {
+    const html = pageOf(slug);
     const head = headOf(html);
-    const url = `${DOMAIN}/${slug}/`;
+    const url = urlOf(slug);
 
     describe(slug, () => {
       it('claims its own path, and asks to be indexed', () => {
         assert.match(html, /<html lang="fr">/);
         assert.ok(head.length > 0, 'the page has no head');
         assert.ok(
-          head.includes(`<link rel="canonical" href="${url}" />`),
+          head.includes(`<link rel="canonical" href="${url}">`),
           `canonical does not point at ${url}`
         );
         assert.match(head, /<meta name="robots" content="index, follow/);
-        assert.ok(head.includes(`<meta property="og:url" content="${url}" />`));
+        assert.ok(head.includes(`<meta property="og:url" content="${url}">`));
 
-        // Both alternates must land on this page, not on the site root — the
-        // attributes are wrapped across lines in the source, hence the \s+.
+        // Both alternates must land on this page, not on the site root.
         for (const lang of ['fr', 'x-default']) {
-          const alternate = new RegExp(`hreflang="${lang}"\\s+href="([^"]+)"`).exec(head);
+          const alternate = new RegExp(`hreflang="${lang}" href="([^"]+)"`).exec(head);
           assert.ok(alternate, `no ${lang} alternate`);
           assert.equal(alternate[1], url, `the ${lang} alternate points elsewhere`);
         }
-        assert.match(head, /<meta property="og:locale" content="fr_FR" \/>/);
+        assert.match(head, /<meta property="og:locale" content="fr_FR">/);
       });
 
       it('keeps every absolute URL in the head on our own domain', () => {
@@ -283,7 +317,7 @@ describe('the spot guides', () => {
         // Google truncates a title around 60 characters.
         assert.ok(title.length > 0 && title.length <= 60, `title is ${title.length} chars`);
 
-        const description = head.match(/name="description"\s+content="([^"]+)"/s)?.[1] ?? '';
+        const description = head.match(/name="description" content="([^"]+)"/s)?.[1] ?? '';
         assert.ok(
           description.length >= 70 && description.length <= 160,
           `description is ${description.length} chars`
@@ -309,7 +343,7 @@ describe('the spot guides', () => {
        * calls that thin content and picks one to rank; the other is wasted.
        */
       it('is written for its own coast, not copied from a sibling', () => {
-        for (const other of GUIDE_PAGES) {
+        for (const other of GUIDES) {
           if (other.slug === slug) continue;
           // Naming a neighbour in a link or a comparison is the point of the
           // sibling section. Being *about* it is the failure.
@@ -335,21 +369,27 @@ describe('the spot guides', () => {
 
         // …and the landing page links here, or the guide is unreachable by
         // crawl from the site root.
-        const landing = read('landing.html');
         assert.ok(
-          landing.includes(`href="/${slug}/"`),
-          `landing.html does not link to /${slug}/ — the guide is an orphan`
+          landing.includes(`href="${pathOf(slug)}"`),
+          `the landing page does not link to ${pathOf(slug)} — the guide is an orphan`
         );
 
         // The guides link to each other too. A hub-and-spoke with no rim makes
         // every guide a one-hop dead end from the root.
-        for (const other of GUIDE_PAGES) {
+        for (const other of GUIDES) {
           if (other.slug === slug) continue;
           assert.ok(
-            html.includes(`href="/${other.slug}/"`),
-            `${slug} does not link to its sibling /${other.slug}/`
+            html.includes(`href="${pathOf(other.slug)}"`),
+            `${slug} does not link to its sibling ${pathOf(other.slug)}`
           );
         }
+
+        // And never to itself: a self-link in the footer is a wasted slot and
+        // a crawl loop.
+        assert.ok(
+          !html.includes(`href="${pathOf(slug)}"`),
+          `${slug} links to itself in its own footer`
+        );
       });
 
       it('ships structured data Google can read', () => {
@@ -365,9 +405,19 @@ describe('the spot guides', () => {
         const trail = breadcrumb.itemListElement;
         assert.equal(trail[0].item, `${DOMAIN}/`);
         assert.equal(trail.at(-1).item, url);
+        assert.equal(trail.at(-1).name, place, 'the breadcrumb does not name the place');
         trail.forEach((step: { position: number }, index: number) => {
           assert.equal(step.position, index + 1, 'breadcrumb positions are not 1-based and ordered');
         });
+
+        // The Article has to be about this place and point at this page — the
+        // two fields a copy-paste between guides would leave behind.
+        const article = blocks.find((block) => block['@type'] === 'Article');
+        assert.ok(article, 'no Article');
+        assert.equal(article.url, url);
+        assert.equal(article.mainEntityOfPage, url);
+        assert.equal(article.about?.name, place);
+        assert.ok(article.headline?.includes(place), 'the headline does not name the place');
 
         const faq = blocks.find((block) => block['@type'] === 'FAQPage');
         assert.ok(faq, 'no FAQPage');
@@ -399,7 +449,7 @@ describe('the spot guides', () => {
  * `DUNKERQUE_WIND_SECTORS` and the page keeps advertising the old numbers.
  */
 describe('the Dunkerque wind table', () => {
-  const html = read('peche-bar-dunkerque.html');
+  const html = pageOf('peche-bar-dunkerque');
   const table = html.slice(html.indexOf('id="vent"'), html.indexOf('id="horaires"'));
 
   /** The scores as the page prints them: two decimals, French comma. */

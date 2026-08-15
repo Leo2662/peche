@@ -1,0 +1,686 @@
+---
+import GuideLayout from '../layouts/GuideLayout.astro';
+
+/** What Google may show under the result, in the page's own words. */
+const faq = [
+  {
+    question: "Quelle est la meilleure heure pour pêcher le bar à Calais ?",
+    answer:
+      "La fenêtre utile va de deux heures avant la pleine mer à deux heures après, et elle vaut double quand elle tombe dans l’heure qui entoure le lever ou le coucher du soleil. Dans le détroit, la fin de la montante est le moment le plus régulier : le courant porte encore vers le nord-est, l’eau recouvre les bancs et le bar chasse dessus. Une pleine mer au crépuscule est le meilleur profil possible.",
+  },
+  {
+    question: "Quel coefficient de marée pour pêcher le bar à Calais ?",
+    answer:
+      "Entre 70 et 95, plutôt qu’au-delà. C’est la particularité de Calais : le détroit porte déjà deux à trois nœuds en vive-eau, et au-dessus de 1,2 m/s le score considère que le courant scoure trop pour qu’un montage tienne le fond. Un coefficient de 110 y est donc noté moins bien qu’un 85, à égalité par ailleurs. En dessous de 40, à l’inverse, l’eau ne bouge plus assez.",
+  },
+  {
+    question: "Quel vent pour pêcher le bar à Calais ?",
+    answer:
+      "La côte calaisienne regarde vers le nord et le nord-ouest, pas plein ouest comme le boulonnais : le vent vraiment onshore est un nord-ouest, et un sud-ouest passe en travers, le long de la plage. Le bon créneau de force reste 15 à 30 km/h. Au-delà de 40 km/h, ou avec des rafales de plus de 50 km/h, la mer devient impêchable du bord.",
+  },
+  {
+    question: "Quelle est la meilleure saison pour le bar à Calais ?",
+    answer:
+      "D’août à novembre. L’eau passe par les 16 °C, l’optimum du bar, entre juillet et octobre, et les premières houles d’automne brassent les bancs de sable devant le port. Avril à juillet donnent des sorties régulières mais des crépuscules très tardifs ; février et mars sont fermés à la détention.",
+  },
+  {
+    question: "Peut-on garder un bar pêché à Calais ?",
+    answer:
+      "Calais est au nord du 48ᵉ parallèle. En 2026, la détention est interdite du 1ᵉʳ février au 31 mars — pêche à la canne et remise à l’eau uniquement — et limitée à trois bars par pêcheur et par jour le reste de l’année. La taille minimale de capture est de 42 cm. Vérifiez la réglementation en vigueur avant chaque sortie : elle est révisée tous les ans.",
+  },
+];
+---
+
+<GuideLayout
+  slug="peche-bar-calais"
+  title="Pêche au bar à Calais : horaires et conditions"
+  description="Les meilleurs horaires pour pêcher le bar à Calais : fenêtre de marée, coefficient, courant du détroit et vent de nord-ouest — avec le score sur 7 jours."
+  social="Marée, courant du détroit, vent et saison — et le créneau à la minute pour les 7 prochains jours."
+  faq={faq}
+>
+  <Fragment slot="hero">
+    <div>
+      <h1>
+        Pêche au bar à Calais :
+        <strong>les meilleurs horaires</strong> et les bonnes conditions.
+      </h1>
+      <p class="lede">
+        Trente-trois kilomètres d’eau entre le cap Blanc-Nez et l’Angleterre, et
+        toute la Manche qui doit passer par là deux fois par jour. Calais est le
+        secteur le plus courantologique du littoral français — au point que la
+        plus grosse marée n’y est pas toujours la meilleure. Voici comment lire
+        le détroit, et le créneau à la minute pour les 7 prochains jours.
+      </p>
+      <div class="hero-actions">
+        <a class="cta" href="/app/">Voir les conditions à Calais <span class="arrow">→</span></a>
+        <a class="cta ghost" href="#courant">Pourquoi la vive-eau ne suffit pas</a>
+      </div>
+      <p class="hero-note">Gratuit · sans compte · sans publicité</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">EXEMPLE DE LECTURE</p>
+      <div class="dial">
+        <svg viewBox="0 0 178 178" aria-hidden="true">
+          <circle cx="89" cy="89" r="80" fill="none" stroke="rgba(79,182,217,.12)" stroke-width="9" />
+          <circle
+            cx="89" cy="89" r="80" class="arc" fill="none" stroke-width="9"
+            stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="40.2"
+            transform="rotate(-90 89 89)"
+          />
+        </svg>
+        <div class="val">92</div>
+      </div>
+      <div class="verdict">CONDITIONS EXCELLENTES</div>
+      <div class="slot-label">MEILLEUR CRÉNEAU</div>
+      <div class="slot">19:35 – 21:30</div>
+      <div class="reasons">MONTANTE · COURANT · CRÉPUSCULE</div>
+      <div class="place">Calais · Détroit du Pas de Calais</div>
+    </div>
+  </Fragment>
+
+  <!-- ===================== LE COURANT ===================== -->
+  <section id="courant" class="flagship">
+    <div class="wrap">
+      <span class="badge">LA PARTICULARITÉ DU SECTEUR</span>
+      <h2>Le détroit : le seul endroit où une trop grosse marée coûte des points</h2>
+      <div class="prose">
+        <p>
+          Partout ailleurs, la règle est simple : plus le coefficient monte, mieux
+          c’est. Le score le dit d’ailleurs sans nuance —
+          <strong>l’activité biologique pèse 35 %</strong> de la note, et le
+          coefficient en est le premier tiers. À Calais, cette règle se retourne.
+        </p>
+        <p>
+          Le Pas de Calais est le goulot de la Manche : trente-trois kilomètres entre
+          le cap Blanc-Nez et l’Angleterre, par lesquels doit transiter deux fois par
+          jour le remplissage de toute la mer du Nord méridionale. Le courant de marée
+          y atteint <strong>deux à trois nœuds en vive-eau</strong>, soit environ 1 à
+          1,5 m/s, en portant au nord-est au flot et au sud-ouest au jusant, parallèle
+          à la côte.
+        </p>
+        <p>
+          Or l’optimum de courant du score est <strong>0,5 à 1,2 m/s</strong>. Au-delà,
+          la note du sous-facteur retombe : l’eau chasse trop fort, le plomb décroche,
+          les leurres ne nagent plus droit. Un coefficient de 110 à Calais peut donc
+          être <em>moins</em> bien noté qu’un 85 — et sur le terrain, c’est exactement
+          ce que dit l’expérience d’une plage impêchable un jour de grande marée.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Le courant, tel que le score le note</caption>
+          <thead>
+            <tr>
+              <th scope="col">Vitesse du courant</th>
+              <th scope="col">Ce que ça donne dans le détroit</th>
+              <th scope="col">Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">0,5 à 1,2 m/s</th>
+              <td>
+                La plage idéale. L’eau travaille, la nourriture circule, le montage
+                tient encore le fond. Coefficients de 70 à 95, en gros.
+              </td>
+              <td class="rank top">Optimal</td>
+            </tr>
+            <tr>
+              <th scope="row">Plus de 1,2 m/s</th>
+              <td>
+                Grosse vive-eau dans le goulot. Ça scoure : il faut du plomb lourd, un
+                poste abrité du courant, et beaucoup de patience.
+              </td>
+              <td class="rank mid">Pénalisé</td>
+            </tr>
+            <tr>
+              <th scope="row">0,2 à 0,5 m/s</th>
+              <td>Fin de morte-eau ou approche de l’étale. L’eau bouge sans porter.</td>
+              <td class="rank mid">Moyen</td>
+            </tr>
+            <tr>
+              <th scope="row">Moins de 0,2 m/s</th>
+              <td>Étale franche. Le bar décroche et part chercher ailleurs.</td>
+              <td class="rank low">Faible</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>Une limite à connaître</strong> — le score ne lit que
+        <em>l’écart à la pleine mer</em>. Dans le détroit, la renverse du courant ne
+        tombe pas exactement à l’heure de la pleine mer : le flot continue de porter au
+        nord-est un moment après. Sur un poste où le courant fait tout, l’atlas de
+        courants du SHOM reste le complément indispensable de ce que
+        <a href="/app/">l’outil</a> affiche.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HORAIRES ===================== -->
+  <section id="horaires">
+    <div class="wrap">
+      <h2>Les meilleurs horaires : la marée d’abord, la lumière ensuite</h2>
+      <div class="prose">
+        <p>
+          À Calais, la question n’est pas « quelle heure » mais « où en est la marée à
+          cette heure-là ». La fenêtre utile s’ouvre
+          <strong>deux heures avant la pleine mer</strong> et se referme
+          <strong>deux heures après</strong> : c’est l’intervalle où le courant porte
+          encore, où l’eau recouvre les bancs de sable de la rade, et où le bar peut
+          chasser sur des zones qui sont à sec le reste du cycle.
+        </p>
+        <p>
+          Calais est un <strong>port de référence du SHOM</strong> : ses marées sont
+          prédites directement, pas déduites d’un port voisin. Le marnage y est de
+          l’ordre de <strong>sept mètres en vive-eau</strong> — entre les cinq mètres
+          et demi de Dunkerque et les huit mètres du boulonnais.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Fenêtre de marée, telle que le score la note</caption>
+          <thead>
+            <tr>
+              <th scope="col">Écart à la pleine mer</th>
+              <th scope="col">Ce qui se passe</th>
+              <th scope="col">Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">−2 h à +2 h</th>
+              <td>
+                Fin de montante, plein, début de jusant : les trois créneaux classiques
+                du bar, d’un seul tenant. Le meilleur des deux, en général, est la fin
+                de montante.
+              </td>
+              <td class="rank top">Optimal</td>
+            </tr>
+            <tr>
+              <th scope="row">2 h à 3 h</th>
+              <td>Le courant du détroit porte encore franchement.</td>
+              <td class="rank top">Bon</td>
+            </tr>
+            <tr>
+              <th scope="row">3 h à 4 h</th>
+              <td>On approche de l’étale de basse mer, l’eau ralentit.</td>
+              <td class="rank mid">Moyen</td>
+            </tr>
+            <tr>
+              <th scope="row">Plus de 4 h</th>
+              <td>
+                Basse mer. Les bancs découvrent, le bar est parti au large de la rade.
+              </td>
+              <td class="rank low">Faible</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose" style="margin-top: 36px">
+        <h3>Puis la lumière, qui départage les deux pleines mers</h3>
+        <p>
+          Il y a deux pleines mers par jour et une seule vaut le déplacement : celle
+          qui tombe dans <strong>l’heure qui entoure le lever ou le coucher du
+          soleil</strong>. Le bar est un chasseur crépusculaire ; à la bascule du jour
+          il monte sur les petits fonds. La nuit reste bonne, le plein jour vaut
+          nettement moins à marée égale.
+        </p>
+        <p>
+          Un ciel couvert allonge le créneau : au-dessus de 70 % de nuages, la basse
+          lumière dure une bonne partie de la journée. Sur cette côte, ce n’est pas la
+          situation la plus rare.
+        </p>
+        <p>
+          <strong>La combinaison à guetter :</strong> une pleine mer au crépuscule, sur
+          un coefficient de 80 à 95, avec un nord-ouest modéré. C’est le profil des
+          journées à 90 et plus, et <a href="/app/">l’outil</a> la repère sur sept
+          jours d’un coup d’œil.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== VENT ET MER ===================== -->
+  <section id="vent">
+    <div class="wrap">
+      <h2>Vent, houle et température : ce qui fait basculer une sortie</h2>
+      <p class="section-lede">
+        La côte calaisienne ne regarde pas dans la même direction que sa voisine du
+        sud : elle est orientée <strong>nord à nord-ouest</strong>, presque
+        perpendiculaire à celle de la Côte d’Opale rocheuse. Le vent s’y lit
+        différemment.
+      </p>
+
+      <div class="grid">
+        <article class="tile">
+          <span class="weight">15 %</span>
+          <h3>Le nord-ouest, pas l’ouest</h3>
+          <p>
+            Des Hemmes de Marck à Sangatte, le trait de côte fait face au nord et au
+            nord-ouest. Un <strong>nord-ouest</strong> est le vrai vent de mer : il
+            lève la houle sur les bancs et pousse la nourriture au bord. Un
+            sud-ouest — le plus fréquent — passe en travers de la plage, et un sud-est
+            souffle de terre et aplatit tout. Bonne force :
+            <strong>15 à 30 km/h</strong>.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">10 %</span>
+          <h3>Une houle courte, par nature</h3>
+          <p>
+            Le détroit est trop fermé pour recevoir de la houle longue d’Atlantique :
+            la mer y est levée par le vent local. L’idéal du score —
+            <strong>0,5 à 1,5 m sur 7 à 12 s</strong> — n’y est atteint qu’avec un
+            coup de nord-ouest établi. Sous 0,3 m, l’eau redevient trop claire pour que
+            le bar vienne au bord de jour.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">7 %</span>
+          <h3>Une eau autour de 16 °C</h3>
+          <p>
+            L’optimum du bar. Dans le détroit, l’eau descend vers 7 °C en février et
+            culmine autour de 18 °C fin août : elle traverse donc les 16 °C deux fois
+            par an, en juillet puis en octobre. Ce sont les deux moments où ce
+            sous-score est au plafond.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">5 %</span>
+          <h3>Une pression qui ne bouge pas</h3>
+          <p>
+            Moins de 2 hPa de variation sur six heures : le poisson se nourrit dans un
+            temps installé. Les fronts qui traversent la Manche — et il en traverse
+            beaucoup — le font décrocher pendant leur transition.
+          </p>
+        </article>
+      </div>
+
+      <div class="note">
+        <strong>À savoir</strong> — l’outil n’a de préférence de direction du vent que
+        pour une seule digue, celle du Braek. Pour Calais, il affiche « réglages
+        estimés » et note le vent <em>sur sa force uniquement</em>. C’est volontaire :
+        inventer une orientation pour une plage qu’on n’a pas mesurée serait pire que
+        d’admettre qu’on ne l’a pas. Le paragraphe ci-dessus est à ajouter de tête.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SAISON ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Quand le bar est là : la saison calaisienne</h2>
+      <p class="section-lede">
+        Le bar est présent toute l’année dans le détroit, mais ni au même endroit ni
+        dans le même état d’appétit selon les mois.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Le bar mois par mois dans le détroit</caption>
+          <thead>
+            <tr>
+              <th scope="col">Période</th>
+              <th scope="col">Ce qu’on trouve</th>
+              <th scope="col">Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Janvier</th>
+              <td>
+                Eau à 8 °C, poissons dispersés au large. Les sorties du bord sont
+                longues et rarement payantes.
+              </td>
+              <td class="rank low">Difficile</td>
+            </tr>
+            <tr>
+              <th scope="row">Février – mars</th>
+              <td>
+                Le creux de l’année, et la détention est interdite : no-kill strict.
+                Bon moment pour repérer les bancs et les cuvettes à basse mer de
+                vive-eau.
+              </td>
+              <td class="rank low">Fermé à la détention</td>
+            </tr>
+            <tr>
+              <th scope="row">Avril – mai</th>
+              <td>
+                L’eau se réchauffe, le poisson revient au bord. Les premières belles
+                sorties, souvent sur les montantes de fin de journée.
+              </td>
+              <td class="rank mid">Reprise</td>
+            </tr>
+            <tr>
+              <th scope="row">Juin – juillet</th>
+              <td>
+                Bar partout, mais des journées interminables : le crépuscule tombe
+                après 22 h et l’aube avant 6 h.
+              </td>
+              <td class="rank mid">Régulier</td>
+            </tr>
+            <tr>
+              <th scope="row">Août – novembre</th>
+              <td>
+                La meilleure fenêtre du secteur. L’eau redescend vers 16 °C, les
+                premières dépressions d’automne troublent la rade et le poisson se
+                charge avant l’hiver.
+              </td>
+              <td class="rank top">La meilleure période</td>
+            </tr>
+            <tr>
+              <th scope="row">Décembre</th>
+              <td>
+                Gros coefficients, gros temps, peu de poissons mais de belle taille.
+                Une sortie sur trois est annulée par le vent.
+              </td>
+              <td class="rank mid">Sélectif</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SPOTS ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Où pêcher, autour de Calais</h2>
+      <p class="section-lede">
+        Le score se calcule pour une commune, pas pour un rocher. À vous de choisir le
+        poste ; voici les grandes familles du secteur, d’ouest en est.
+      </p>
+
+      <div class="grid">
+        <article class="tile">
+          <h3>Le cap Blanc-Nez et Escalles</h3>
+          <p>
+            À une dizaine de kilomètres à l’ouest : falaises de craie et platier
+            rocheux qui découvre aux basses mers de vive-eau. Le bar y chasse le crabe
+            et la crevette sur la montante. C’est aussi le seul secteur qui offre un
+            abri correct par vent de sud-ouest établi.
+          </p>
+        </article>
+        <article class="tile">
+          <h3>Sangatte et Blériot-Plage</h3>
+          <p>
+            La grande plage de sable à l’ouest du port, dans le prolongement du
+            Blanc-Nez. Du surfcasting classique : il faut du lancer, mais la houle de
+            nord-ouest y travaille bien et les bancs passent au bord dès que l’eau se
+            trouble.
+          </p>
+        </article>
+        <article class="tile">
+          <h3>Les jetées et la rade</h3>
+          <p>
+            Le port de Calais est le premier port de voyageurs d’Europe : l’accès aux
+            jetées et aux ouvrages est réglementé, contrôlé, et peut être fermé sans
+            préavis. Renseignez-vous avant, et ne comptez pas dessus pour organiser une
+            sortie.
+          </p>
+        </article>
+        <article class="tile">
+          <h3>Les Hemmes de Marck et Oye-Plage</h3>
+          <p>
+            À l’est, le sable reprend et les bancs — les ridens — s’allongent devant la
+            côte. Des cuvettes et des chenaux se dessinent à basse mer et se remplissent
+            au flot : c’est là qu’on va chercher le bar sur la montante, avec un
+            repérage préalable qui vaut toutes les cannes du monde.
+          </p>
+        </article>
+      </div>
+
+      <div class="note">
+        <strong>Sécurité</strong> — le score de BassScore est un indice de pêche, pas
+        une prévision de sécurité. Sept mètres de marnage sur une plage plate, ça
+        signifie une laisse de haute mer qui remonte vite et des bancs qui s’isolent.
+        Consultez la météo marine et l’horaire des marées avant de partir, et respectez
+        les arrêtés d’accès aux ouvrages portuaires.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== USING THE TOOL ===================== -->
+  <section id="outil">
+    <div class="wrap">
+      <h2>Obtenir le créneau exact pour votre prochaine sortie</h2>
+      <p class="section-lede">
+        Tout ce qui précède décrit des règles générales. L’outil, lui, applique ces
+        règles aux prévisions du jour et vous donne l’heure.
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <h3>Ouvrez l’outil</h3>
+          <p>
+            <a href="/app/">pecheaubar.fr/app</a> s’ouvre dans le navigateur, sans
+            compte ni installation. Il démarre sur Dunkerque.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Cherchez Calais</h3>
+          <p>
+            Touchez le nom du lieu en bas de l’écran et tapez « Calais ». Le choix est
+            mémorisé : à la prochaine ouverture, vous y êtes déjà.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Lisez le créneau, puis le pourquoi</h3>
+          <p>
+            Un score de 0 à 100 par jour sur sept jours, le meilleur créneau à la
+            minute, et — en touchant ce créneau — les raisons en un mot chacune, avec
+            les mesures et les courbes derrière.
+          </p>
+        </div>
+      </div>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Vent, houle, température de l’eau et pression viennent des modèles marins
+            et atmosphériques d’Open-Meteo ; les marées, coefficient compris, sont
+            déduites de la courbe de niveau de la mer.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Le détail des sept facteurs et de leur pondération est expliqué sur la
+            <a href="/#comment">page d’accueil</a>.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Détail amusant : la ligne de côte embarquée dans l’outil fait passer la
+            frontière entre <strong>mer du Nord</strong> et <strong>Manche
+            Est</strong> exactement au droit de Calais. Le secteur est à cheval sur
+            deux mers, et le score le sait.</span
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== REGLEMENTATION ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Réglementation : ce que vous avez le droit de garder</h2>
+      <div class="prose">
+        <p>
+          Calais est au <strong>nord du 48<sup>e</sup> parallèle</strong>, à la
+          charnière entre la mer du Nord et la Manche Est, dans la zone où le bar fait
+          l’objet de mesures de gestion renforcées. Pour 2026 :
+        </p>
+      </div>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Taille minimale de capture : 42 cm.</strong> En dessous, le
+            poisson est remis à l’eau, avec les précautions qui vont avec.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Du <strong>1<sup>er</sup> février au 31 mars</strong>, la détention est
+            interdite : pêche à la canne ou à la ligne à la main suivie d’un relâcher
+            uniquement.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Le reste de l’année, <strong>trois bars maximum par pêcheur et par
+            jour</strong>.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span>La pêche du bar au filet fixe est interdite en pêche de loisir.</span>
+        </p>
+      </div>
+
+      <div class="note">
+        <strong>Vérifiez avant de partir</strong> — ces règles sont révisées chaque
+        année, et des arrêtés préfectoraux ou portuaires peuvent les durcir localement.
+        La référence qui fait foi est celle publiée par l’administration des affaires
+        maritimes.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Questions fréquentes</h2>
+
+      <div class="faq">
+        <details open>
+          <summary>Quelle est la meilleure heure pour pêcher le bar à Calais ?</summary>
+          <p>
+            La fenêtre utile va de deux heures avant la pleine mer à deux heures
+            après, et elle vaut double quand elle tombe dans l’heure qui entoure le
+            lever ou le coucher du soleil. Dans le détroit, la fin de la montante est
+            le moment le plus régulier : le courant porte encore vers le nord-est,
+            l’eau recouvre les bancs et le bar chasse dessus. Une pleine mer au
+            crépuscule est le meilleur profil possible.
+          </p>
+        </details>
+        <details>
+          <summary>Quel coefficient de marée pour pêcher le bar à Calais ?</summary>
+          <p>
+            Entre 70 et 95, plutôt qu’au-delà. C’est la particularité de Calais : le
+            détroit porte déjà deux à trois nœuds en vive-eau, et au-dessus de 1,2 m/s
+            le score considère que le courant scoure trop pour qu’un montage tienne le
+            fond. Un coefficient de 110 y est donc noté moins bien qu’un 85, à égalité
+            par ailleurs. En dessous de 40, à l’inverse, l’eau ne bouge plus assez.
+          </p>
+        </details>
+        <details>
+          <summary>Quel vent pour pêcher le bar à Calais ?</summary>
+          <p>
+            La côte calaisienne regarde vers le nord et le nord-ouest, pas plein ouest
+            comme le boulonnais : le vent vraiment onshore est un nord-ouest, et un
+            sud-ouest passe en travers, le long de la plage. Le bon créneau de force
+            reste 15 à 30 km/h. Au-delà de 40 km/h, ou avec des rafales de plus de 50
+            km/h, la mer devient impêchable du bord.
+          </p>
+        </details>
+        <details>
+          <summary>Quelle est la meilleure saison pour le bar à Calais ?</summary>
+          <p>
+            D’août à novembre. L’eau passe par les 16 °C, l’optimum du bar, entre
+            juillet et octobre, et les premières houles d’automne brassent les bancs
+            de sable devant le port. Avril à juillet donnent des sorties régulières
+            mais des crépuscules très tardifs ; février et mars sont fermés à la
+            détention.
+          </p>
+        </details>
+        <details>
+          <summary>Peut-on garder un bar pêché à Calais ?</summary>
+          <p>
+            Calais est au nord du 48ᵉ parallèle. En 2026, la détention est interdite
+            du 1ᵉʳ février au 31 mars — pêche à la canne et remise à l’eau uniquement
+            — et limitée à trois bars par pêcheur et par jour le reste de l’année. La
+            taille minimale de capture est de 42 cm. Vérifiez la réglementation en
+            vigueur avant chaque sortie : elle est révisée tous les ans.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SIBLING GUIDES ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Ailleurs sur la côte</h2>
+      <p class="section-lede">
+        Trente kilomètres au sud-ouest, cent au nord-est, ou six cents plus loin sur
+        l’Atlantique : la même formule, d’autres mers.
+      </p>
+
+      <div class="siblings">
+        <a class="sibling" href="/peche-bar-dunkerque/">
+          <h3>Pêche au bar à Dunkerque →</h3>
+          <p>
+            Un marnage moyen mais un courant qui tombe pile dans la plage idéale — et
+            le seul spot dont l’outil connaisse la table des vents par cœur.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-boulogne-sur-mer/">
+          <h3>Pêche au bar à Boulogne-sur-Mer →</h3>
+          <p>
+            Huit mètres de marnage et une côte plein ouest. La digue Carnot, les
+            plages d’Équihen à Hardelot, et la saison mois par mois.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-normandie/">
+          <h3>Pêche au bar en Normandie →</h3>
+          <p>
+            Six cents kilomètres de côte qui tournent sur plus de 180°, du Tréport au
+            Mont-Saint-Michel, et jusqu’à quatorze mètres de marnage.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-bretagne/">
+          <h3>Pêche au bar en Bretagne →</h3>
+          <p>
+            Deux mers et deux réglementations : le 48ᵉ parallèle coupe la région en
+            deux, et la houle d’ouest décide de tout le reste.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-vendee/">
+          <h3>Pêche au bar en Vendée →</h3>
+          <p>
+            De l’eau à 21 °C en août, des marées modestes et de la houle atlantique :
+            la Gascogne ne se lit pas comme la Manche.
+          </p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="closing">
+    <!-- ===================== CLOSING ===================== -->
+    <section class="closing">
+      <div class="wrap">
+        <h2>Et concrètement, c’est quand le prochain bon créneau ?</h2>
+        <p class="section-lede">
+          Marée, courant, vent et lumière des sept prochains jours, ramenés à un score et
+          à une heure. Pour Calais comme pour n’importe quelle commune du littoral
+          français.
+        </p>
+        <a class="cta" href="/app/">Voir les conditions <span class="arrow">→</span></a>
+      </div>
+    </section>
+  </Fragment>
+</GuideLayout>

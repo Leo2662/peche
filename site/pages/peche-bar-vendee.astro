@@ -1,0 +1,780 @@
+---
+import GuideLayout from '../layouts/GuideLayout.astro';
+
+/** What Google may show under the result, in the page's own words. */
+const faq = [
+  {
+    question: "Quelle est la meilleure heure pour pêcher le bar en Vendée ?",
+    answer:
+      "La fenêtre utile va de deux heures avant la pleine mer à deux heures après, et elle vaut double quand elle tombe dans l’heure qui entoure le lever ou le coucher du soleil. Sur les longues plages vendéennes, c’est la montante qui compte le plus : l’eau recouvre les creux et les chenaux dessinés dans le sable, et le bar y entre pour chasser dès qu’il a trente centimètres d’eau.",
+  },
+  {
+    question: "Quelle est la meilleure saison pour pêcher le bar en Vendée ?",
+    answer:
+      "Le printemps et l’automne, pas le plein été. L’eau du golfe de Gascogne monte à 20 ou 21 °C en août, soit quatre à cinq degrés au-dessus de l’optimum du bar : le sous-score de température retombe alors autour de 0,6. Il est au plafond quand l’eau traverse les 16 °C, ce qui arrive deux fois par an, autour de juin puis en octobre. Ce sont les deux meilleures fenêtres de l’année.",
+  },
+  {
+    question: "Quel coefficient de marée pour pêcher le bar en Vendée ?",
+    answer:
+      "À partir de 80, et pleinement à 100 et au-dessus. Le marnage de vive-eau tourne autour de cinq mètres et demi aux Sables-d’Olonne, moitié moins que dans la baie du Mont-Saint-Michel : le courant qui en découle reste presque toujours dans la plage optimale du score, entre 0,5 et 1,2 m/s. C’est un avantage — les grands coefficients y sont rarement pénalisés.",
+  },
+  {
+    question: "Quelle houle pour pêcher le bar en Vendée ?",
+    answer:
+      "Le score vise 0,5 à 1,5 m sur une période de 7 à 12 secondes. La côte vendéenne, ouverte plein ouest sur l’Atlantique, reçoit cette houle longue très régulièrement au printemps et à l’automne : c’est elle qui creuse les chenaux dans le sable, trouble l’eau et met le bar en chasse dans la barre. Au-delà de deux mètres, on ne tient plus le fond.",
+  },
+  {
+    question: "Peut-on garder un bar pêché en Vendée ?",
+    answer:
+      "La Vendée est au sud du 48ᵉ parallèle, dans le golfe de Gascogne : la pêche du bar y est ouverte toute l’année, sans période de fermeture, mais le quota est de deux bars par pêcheur et par jour. La taille minimale de capture est de 42 cm, comme dans la Manche. Vérifiez la réglementation en vigueur avant chaque sortie : elle est révisée tous les ans.",
+  },
+];
+---
+
+<GuideLayout
+  slug="peche-bar-vendee"
+  title="Pêche au bar en Vendée : horaires et conditions"
+  description="Les meilleurs horaires pour pêcher le bar en Vendée : marée, coefficient, houle atlantique et température de l’eau — avec le score sur 7 jours."
+  social="Marée, houle atlantique, température de l’eau et saison sur la côte vendéenne — et le créneau à la minute pour les 7 prochains jours."
+  faq={faq}
+>
+  <Fragment slot="hero">
+    <div>
+      <h1>
+        Pêche au bar en Vendée :
+        <strong>les meilleurs horaires</strong> et les bonnes conditions.
+      </h1>
+      <p class="lede">
+        Deux cent cinquante kilomètres de sable et de rochers ouverts plein ouest,
+        des marées deux fois plus modestes que dans la Manche, et une eau qui monte
+        à vingt-et-un degrés en août — soit cinq de trop pour le bar. La Gascogne ne
+        se lit pas comme la Manche. Voici comment, et le créneau à la minute pour
+        les 7 prochains jours.
+      </p>
+      <div class="hero-actions">
+        <a class="cta" href="/app/">Voir les conditions chez vous <span class="arrow">→</span></a>
+        <a class="cta ghost" href="#temperature">Pourquoi l’été n’est pas la saison</a>
+      </div>
+      <p class="hero-note">Gratuit · sans compte · sans publicité</p>
+    </div>
+
+    <div class="card good">
+      <p class="eyebrow">EXEMPLE DE LECTURE</p>
+      <div class="dial">
+        <svg viewBox="0 0 178 178" aria-hidden="true">
+          <circle cx="89" cy="89" r="80" fill="none" stroke="rgba(79,182,217,.12)" stroke-width="9" />
+          <circle
+            cx="89" cy="89" r="80" class="arc" fill="none" stroke-width="9"
+            stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="65.4"
+            transform="rotate(-90 89 89)"
+          />
+        </svg>
+        <div class="val">87</div>
+      </div>
+      <div class="verdict">BONNES CONDITIONS</div>
+      <div class="slot-label">MEILLEUR CRÉNEAU</div>
+      <div class="slot">07:05 – 08:55</div>
+      <div class="reasons">MONTANTE · HOULE · AUBE</div>
+      <div class="place">Les Sables-d’Olonne · Vendée</div>
+    </div>
+  </Fragment>
+
+  <!-- ===================== TEMPERATURE ===================== -->
+  <section id="temperature" class="flagship">
+    <div class="wrap">
+      <span class="badge">LA PARTICULARITÉ DU SECTEUR</span>
+      <h2>L’eau passe deux fois par l’optimum — et jamais en août</h2>
+      <div class="prose">
+        <p>
+          Le bar a un optimum thermique, et le score le prend au mot :
+          <strong>16 °C</strong>. La formule est simple —
+          <strong>1 − |T − 16| / 12</strong> — et elle tombe à zéro à 4 °C comme à
+          28 °C. Dans la Manche, ce sous-score ne fait que monter du printemps à
+          l’automne, parce que l’eau n’atteint jamais vraiment l’optimum. En Vendée,
+          elle le dépasse.
+        </p>
+        <p>
+          Le golfe de Gascogne se réchauffe fort : la température de surface part
+          d’environ 10 °C en fin d’hiver pour dépasser <strong>20 °C au cœur de
+          l’août</strong>. Résultat, la courbe du sous-score n’a pas une bosse mais
+          deux : une en fin de printemps quand l’eau monte à travers les 16 °C, une en
+          automne quand elle redescend.
+        </p>
+        <p>
+          C’est contre-intuitif et pourtant conforme à ce que rapportent les pêcheurs du
+          secteur : le plein été n’est pas la meilleure saison du bord, et les gros
+          poissons se prennent en fin de printemps et en octobre.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Le sous-score de température, au fil de l’année</caption>
+          <thead>
+            <tr>
+              <th scope="col">Période</th>
+              <th scope="col">Eau de surface, ordre de grandeur</th>
+              <th scope="col">Sous-score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Mai – juin</th>
+              <td>
+                L’eau traverse les 16 °C en montant. Optimum atteint, poisson qui se
+                nourrit après la fraie.
+              </td>
+              <td class="rank top">
+                1,00
+                <span class="bar"><span style="width: 100%"></span></span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Octobre</th>
+              <td>
+                Autour de 17 °C en redescendant. La deuxième traversée de l’optimum, et
+                la meilleure de l’année : les plages sont vides.
+              </td>
+              <td class="rank top">
+                0,92
+                <span class="bar"><span style="width: 92%"></span></span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Juillet</th>
+              <td>Environ 20 °C. Quatre degrés au-dessus : ça commence à coûter.</td>
+              <td class="rank mid">
+                0,67
+                <span class="bar"><span style="width: 67%"></span></span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Août</th>
+              <td>
+                Le maximum annuel, 21 °C et parfois davantage sur les petits fonds. Le
+                creux de ce sous-score, en pleine saison touristique.
+              </td>
+              <td class="rank low">
+                0,58
+                <span class="bar"><span style="width: 58%"></span></span>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Février – mars</th>
+              <td>Autour de 10 °C. Six degrés en dessous, et le plancher de l’année.</td>
+              <td class="rank low">
+                0,50
+                <span class="bar"><span style="width: 50%"></span></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-lede">
+        À relativiser tout de même : la température pèse <strong>7 %</strong> du score,
+        contre 35 % pour l’activité biologique et 20 % pour la fenêtre de marée. Un
+        mois d’août avec une belle vive-eau au crépuscule reste une très bonne sortie.
+        Ce sous-score explique une tendance de fond, pas le résultat d’une soirée.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== HORAIRES ===================== -->
+  <section id="horaires">
+    <div class="wrap">
+      <h2>Les meilleurs horaires : la marée d’abord, la lumière ensuite</h2>
+      <div class="prose">
+        <p>
+          La fenêtre utile s’ouvre <strong>deux heures avant la pleine mer</strong> et
+          se referme <strong>deux heures après</strong>. Sur les longues plages
+          vendéennes, cette fenêtre a un sens très concret : c’est le moment où l’eau
+          recouvre les creux, les barres et les chenaux que la houle a dessinés dans le
+          sable, et où le bar y entre pour chasser — souvent dans très peu d’eau, à
+          quelques mètres du bord.
+        </p>
+        <p>
+          D’où le conseil local classique : <strong>repérez la plage à basse mer de
+          vive-eau</strong>, notez où sont les creux, et revenez les pêcher au flot. Le
+          score vous donne l’heure ; le repérage vous donne l’endroit.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Fenêtre de marée, telle que le score la note</caption>
+          <thead>
+            <tr>
+              <th scope="col">Écart à la pleine mer</th>
+              <th scope="col">Ce qui se passe</th>
+              <th scope="col">Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">−2 h à +2 h</th>
+              <td>
+                Fin de montante, étale, début de jusant. Les trois créneaux classiques
+                du bar, d’un seul tenant.
+              </td>
+              <td class="rank top">Optimal</td>
+            </tr>
+            <tr>
+              <th scope="row">2 h à 3 h</th>
+              <td>
+                Le courant porte encore. Sur la plage, l’eau commence à peine à couvrir
+                les barres : c’est déjà pêchable.
+              </td>
+              <td class="rank top">Bon</td>
+            </tr>
+            <tr>
+              <th scope="row">3 h à 4 h</th>
+              <td>On approche de l’étale de basse mer, l’eau ralentit.</td>
+              <td class="rank mid">Moyen</td>
+            </tr>
+            <tr>
+              <th scope="row">Plus de 4 h</th>
+              <td>Basse mer. Les creux sont à sec, le bar est parti derrière la barre.</td>
+              <td class="rank low">Faible</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose" style="margin-top: 36px">
+        <h3>Puis la lumière, qui décide du meilleur des deux</h3>
+        <p>
+          Deux pleines mers par jour, une seule qui vaut le déplacement : celle qui
+          tombe dans <strong>l’heure qui entoure le lever ou le coucher du
+          soleil</strong>. En Vendée, ce point est doublement vrai en été : les plages
+          sont fréquentées toute la journée, et la pêche du bord se joue donc à l’aube
+          ou après le coucher du soleil, quand elles se vident.
+        </p>
+        <p>
+          <strong>La combinaison à guetter :</strong> une pleine mer à l’aube, en
+          vive-eau, avec un mètre de houle d’ouest et une eau autour de 16 °C. C’est le
+          profil d’une matinée de mai ou d’octobre — et
+          <a href="/app/">l’outil</a> la repère sur sept jours d’un coup d’œil.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MARNAGE ===================== -->
+  <section id="marnage">
+    <div class="wrap">
+      <h2>Des marées modestes — et pourquoi c’est une bonne nouvelle</h2>
+      <div class="prose">
+        <p>
+          Le marnage de vive-eau tourne autour de <strong>cinq mètres et demi</strong>
+          aux Sables-d’Olonne : deux fois et demie moins que dans la baie du
+          Mont-Saint-Michel, et nettement moins qu’en Manche orientale. On pourrait
+          croire à un handicap. Ce n’en est pas un, pour deux raisons.
+        </p>
+        <p>
+          D’abord parce que le score <strong>normalise le marnage sur le spot
+          lui-même</strong> : il compare la journée d’aujourd’hui aux plus grandes
+          marées de votre plage, pas à celles du voisin. Un coefficient de 100 vaut la
+          même note en Vendée qu’ailleurs.
+        </p>
+        <p>
+          Ensuite parce que le courant qui en résulte reste presque toujours dans la
+          plage que le score récompense, <strong>0,5 à 1,2 m/s</strong>. À l’autre bout
+          du littoral, dans le détroit du Pas de Calais, une grande vive-eau fait
+          dépasser ce plafond et coûte des points. Ici, la vive-eau est simplement bonne.
+        </p>
+      </div>
+
+      <div class="grid">
+        <article class="tile">
+          <span class="weight">Coef. 100+</span>
+          <h3>Vive-eau franche</h3>
+          <p>
+            Le maximum sur ce sous-score, et sans le revers des secteurs à fort
+            marnage : le courant reste tenable du bord. C’est aussi le jour où le
+            repérage à basse mer révèle le plus de structure.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">Coef. 80 – 99</span>
+          <h3>Le meilleur compromis</h3>
+          <p>
+            Assez de courant pour que ça travaille, assez peu pour pêcher fin. C’est là
+            qu’on sort le plus de poissons sur les plages ouvertes.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">Goulets</span>
+          <h3>Les exceptions</h3>
+          <p>
+            Le goulet de Fromentine, les chenaux de la baie de Bourgneuf et les
+            embouchures — la Vie, le Payré, le Lay — concentrent tout le débit d’une
+            baie dans quelques centaines de mètres. Là, oui, le courant peut devenir
+            ingérable en vive-eau.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">Coef. &lt; 40</span>
+          <h3>Morte-eau</h3>
+          <p>
+            L’eau bouge à peine, le courant tombe sous 0,2 m/s et le score chute. Sur
+            une plage plate, c’est souvent le moment le plus creux du mois.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HOULE ET VENT ===================== -->
+  <section id="houle">
+    <div class="wrap">
+      <h2>Houle et vent : la côte est ouverte plein ouest</h2>
+
+      <div class="grid">
+        <article class="tile">
+          <span class="weight">10 %</span>
+          <h3>La houle atlantique, celle qui creuse</h3>
+          <p>
+            <strong>0,5 à 1,5 m sur une période de 7 à 12 s</strong> : la Vendée reçoit
+            cette houle longue très régulièrement, au printemps et à l’automne surtout.
+            C’est elle qui dessine les barres et les chenaux dans le sable, trouble
+            l’eau et met le bar en chasse dans la barre. Au-delà de 2 m, on ne tient
+            plus le fond.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">15 %</span>
+          <h3>Un vent d’ouest à nord-ouest</h3>
+          <p>
+            Le vent de mer sur presque toute la côte. La bonne force est
+            <strong>15 à 30 km/h</strong> ; au-delà de 40, ou avec des rafales
+            dépassant 50, la mer devient impêchable du bord. Le vent d’est, de terre,
+            aplatit et éclaircit — mais rend les plages exposées enfin praticables par
+            gros temps.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">8 %</span>
+          <h3>La lumière, et le monde sur la plage</h3>
+          <p>
+            Aube et crépuscule valent le plein du sous-score, la nuit reste bonne, le
+            plein jour vaut nettement moins. En juillet et en août, c’est aussi le seul
+            moment où les plages sont à vous.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">5 %</span>
+          <h3>Une pression qui ne bouge pas</h3>
+          <p>
+            Moins de 2 hPa de variation sur six heures : le poisson se nourrit dans un
+            temps installé. Un front atlantique qui traverse le fait décrocher pendant
+            sa transition.
+          </p>
+        </article>
+      </div>
+
+      <div class="note">
+        <strong>À savoir</strong> — l’outil n’a de préférence de direction du vent que
+        pour une seule digue, celle du Braek à Dunkerque. Pour la côte vendéenne, il
+        affiche « réglages estimés » et note le vent <em>sur sa force uniquement</em>,
+        sans supposer connaître l’orientation de votre plage. Inventer une préférence de
+        secteur serait pire que d’admettre qu’on ne l’a pas ; à vous d’ajouter la
+        lecture du plan d’eau que vous avez sous les yeux.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SAISON ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Quand le bar est là : la saison vendéenne</h2>
+      <p class="section-lede">
+        Le bar est présent toute l’année sur la côte vendéenne, et la pêche y est
+        ouverte toute l’année. Reste que les mois ne se valent pas.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Le bar mois par mois sur la côte vendéenne</caption>
+          <thead>
+            <tr>
+              <th scope="col">Période</th>
+              <th scope="col">Ce qu’on trouve</th>
+              <th scope="col">Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Janvier – mars</th>
+              <td>
+                Eau autour de 10 °C, poissons au large sur les zones de fraie, et les
+                grosses dépressions atlantiques qui se succèdent. La détention reste
+                autorisée, mais les fenêtres sont rares.
+              </td>
+              <td class="rank low">Difficile</td>
+            </tr>
+            <tr>
+              <th scope="row">Avril – mai</th>
+              <td>
+                La reprise. L’eau se réchauffe vite, le poisson revient au bord et les
+                plages sont encore vides. Les premières belles sorties de l’année.
+              </td>
+              <td class="rank mid">Reprise</td>
+            </tr>
+            <tr>
+              <th scope="row">Juin</th>
+              <td>
+                L’eau traverse les 16 °C, la houle s’est assagie, les journées sont
+                longues mais les plages pas encore pleines. Une des deux meilleures
+                fenêtres.
+              </td>
+              <td class="rank top">Excellente</td>
+            </tr>
+            <tr>
+              <th scope="row">Juillet – août</th>
+              <td>
+                Eau à 20-21 °C, plages fréquentées du matin au soir. Le bar est là mais
+                la pêche se fait de nuit ou à l’aube, et le sous-score de température
+                pèse contre.
+              </td>
+              <td class="rank mid">De nuit</td>
+            </tr>
+            <tr>
+              <th scope="row">Septembre – novembre</th>
+              <td>
+                La meilleure période de l’année. L’eau redescend vers l’optimum, les
+                premières houles d’automne reviennent creuser les plages, le poisson se
+                charge — et il n’y a plus personne.
+              </td>
+              <td class="rank top">La meilleure période</td>
+            </tr>
+            <tr>
+              <th scope="row">Décembre</th>
+              <td>
+                Gros temps et gros coefficients. Peu de sorties possibles, mais de beaux
+                poissons pour qui trouve la fenêtre entre deux dépressions.
+              </td>
+              <td class="rank mid">Sélectif</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SPOTS ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Où pêcher : quelques communes à chercher dans l’outil</h2>
+      <p class="section-lede">
+        Le score se calcule pour une commune, pas pour un secteur. Voici des points
+        d’entrée du nord au sud — la liste n’a rien d’exhaustif, et l’outil accepte
+        n’importe quelle commune littorale.
+      </p>
+
+      <div class="grid">
+        <article class="tile">
+          <h3>Noirmoutier et la baie de Bourgneuf</h3>
+          <p>
+            Une baie fermée par l’île, des vasières, des chenaux et le goulet de
+            Fromentine où tout le débit passe. C’est la façade abritée du département :
+            ce qui se pêche encore quand l’ouest souffle fort sur les plages.
+          </p>
+        </article>
+        <article class="tile">
+          <h3>Saint-Jean-de-Monts et Notre-Dame-de-Monts</h3>
+          <p>
+            Vingt kilomètres de plage rectiligne ouverte plein ouest, adossés à la
+            dune. Du surfcasting franc : il faut du lancer, et surtout un repérage
+            sérieux des creux à basse mer.
+          </p>
+        </article>
+        <article class="tile">
+          <h3>Saint-Gilles-Croix-de-Vie et Brétignolles</h3>
+          <p>
+            L’embouchure de la Vie et ses jetées concentrent le passage sur le jusant ;
+            juste au sud, les rochers de Brétignolles et de la Sauzaie cassent la
+            monotonie du sable et tiennent du poisson à demeure.
+          </p>
+        </article>
+        <article class="tile">
+          <h3>Les Sables-d’Olonne et la Chaume</h3>
+          <p>
+            La grande jetée, la baie, et surtout la côte rocheuse du Puits d’Enfer vers
+            le sud : de la profondeur près du bord, des cassures et de vrais postes à
+            leurres. Le secteur le plus polyvalent du département.
+          </p>
+        </article>
+        <article class="tile">
+          <h3>Jard, Bourgenay, La Tranche-sur-Mer</h3>
+          <p>
+            Alternance de criques rocheuses et de longues plages exposées, avec les
+            embouchures du Payré et du Lay qui font office d’aimants à bar sur la
+            descendante.
+          </p>
+        </article>
+        <article class="tile">
+          <h3>La pointe d’Arçay et l’île d’Yeu</h3>
+          <p>
+            Deux extrêmes : d’un côté la flèche sableuse et la baie de l’Aiguillon, très
+            peu profonde, où le bar entre avec le flot ; de l’autre une île rocheuse
+            battue par la houle, avec des postes de côte sauvage à part.
+          </p>
+        </article>
+      </div>
+
+      <div class="note">
+        <strong>Sécurité</strong> — le score de BassScore est un indice de pêche, pas
+        une prévision de sécurité. Les plages vendéennes creusent des chenaux de retour
+        qui vident très vite, les rochers du sud sont glissants et exposés aux séries,
+        et le passage du Gois se referme en quelques minutes. Consultez la météo marine
+        et l’horaire des marées avant de partir.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== USING THE TOOL ===================== -->
+  <section id="outil">
+    <div class="wrap">
+      <h2>Obtenir le créneau exact pour votre prochaine sortie</h2>
+      <p class="section-lede">
+        Tout ce qui précède décrit des règles générales. L’outil, lui, applique ces
+        règles aux prévisions du jour, pour la commune que vous lui donnez, et vous
+        rend une heure.
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <h3>Ouvrez l’outil</h3>
+          <p>
+            <a href="/app/">pecheaubar.fr/app</a> s’ouvre dans le navigateur, sans
+            compte ni installation. Il démarre sur Dunkerque.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Cherchez votre commune</h3>
+          <p>
+            Touchez le nom du lieu en bas de l’écran et tapez « Les Sables-d’Olonne »,
+            « Saint-Jean-de-Monts », « La Tranche »… Seules les communes du littoral
+            sont proposées : une ville de l’intérieur est refusée plutôt que scorée
+            dans le vide.
+          </p>
+        </div>
+        <div class="step">
+          <h3>Lisez le créneau, puis le pourquoi</h3>
+          <p>
+            Un score de 0 à 100 par jour sur sept jours, le meilleur créneau à la
+            minute, et — en touchant ce créneau — les raisons en un mot chacune, avec
+            les mesures et les courbes derrière.
+          </p>
+        </div>
+      </div>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Vent, houle, température de l’eau et pression viennent des modèles marins
+            et atmosphériques d’Open-Meteo ; les marées, coefficient compris, sont
+            déduites de la courbe de niveau de la mer.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Le détail des sept facteurs et de leur pondération est expliqué sur la
+            <a href="/#comment">page d’accueil</a>.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >L’outil nomme la zone de gestion de la commune choisie : sur toute la côte
+            vendéenne, c’est <strong>Golfe de Gascogne Nord</strong>, la division CIEM
+            8.a.</span
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== REGLEMENTATION ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Réglementation : ce que vous avez le droit de garder</h2>
+      <div class="prose">
+        <p>
+          La Vendée est au <strong>sud du 48<sup>e</sup> parallèle</strong>, dans le
+          golfe de Gascogne — l’autre stock de bar, et l’autre régime de gestion. La
+          différence avec la Manche est nette. Pour 2026 :
+        </p>
+      </div>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Taille minimale de capture : 42 cm</strong>, la même qu’au nord.
+            En dessous, le poisson est remis à l’eau, avec les précautions qui vont
+            avec.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Pas de période de fermeture</strong> : la pêche du bar y est
+            ouverte toute l’année, y compris en février et en mars.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >En contrepartie, le quota est plus bas : <strong>deux bars maximum par
+            pêcheur et par jour</strong>.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >La pêche du bar au filet fixe est interdite en pêche de loisir, et tout
+            poisson conservé doit être marqué.</span
+          >
+        </p>
+      </div>
+
+      <div class="note">
+        <strong>Vérifiez avant de partir</strong> — ces règles sont révisées chaque
+        année, et des arrêtés préfectoraux peuvent les durcir localement : réserves,
+        cantonnements, accès aux estrans conchylicoles de la baie de Bourgneuf et de
+        l’Aiguillon. La référence qui fait foi est celle publiée par l’administration
+        des affaires maritimes.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Questions fréquentes</h2>
+
+      <div class="faq">
+        <details open>
+          <summary>Quelle est la meilleure heure pour pêcher le bar en Vendée ?</summary>
+          <p>
+            La fenêtre utile va de deux heures avant la pleine mer à deux heures
+            après, et elle vaut double quand elle tombe dans l’heure qui entoure le
+            lever ou le coucher du soleil. Sur les longues plages vendéennes, c’est la
+            montante qui compte le plus : l’eau recouvre les creux et les chenaux
+            dessinés dans le sable, et le bar y entre pour chasser dès qu’il a trente
+            centimètres d’eau.
+          </p>
+        </details>
+        <details>
+          <summary>Quelle est la meilleure saison pour pêcher le bar en Vendée ?</summary>
+          <p>
+            Le printemps et l’automne, pas le plein été. L’eau du golfe de Gascogne
+            monte à 20 ou 21 °C en août, soit quatre à cinq degrés au-dessus de
+            l’optimum du bar : le sous-score de température retombe alors autour de
+            0,6. Il est au plafond quand l’eau traverse les 16 °C, ce qui arrive deux
+            fois par an, autour de juin puis en octobre. Ce sont les deux meilleures
+            fenêtres de l’année.
+          </p>
+        </details>
+        <details>
+          <summary>Quel coefficient de marée pour pêcher le bar en Vendée ?</summary>
+          <p>
+            À partir de 80, et pleinement à 100 et au-dessus. Le marnage de vive-eau
+            tourne autour de cinq mètres et demi aux Sables-d’Olonne, moitié moins que
+            dans la baie du Mont-Saint-Michel : le courant qui en découle reste
+            presque toujours dans la plage optimale du score, entre 0,5 et 1,2 m/s.
+            C’est un avantage — les grands coefficients y sont rarement pénalisés.
+          </p>
+        </details>
+        <details>
+          <summary>Quelle houle pour pêcher le bar en Vendée ?</summary>
+          <p>
+            Le score vise 0,5 à 1,5 m sur une période de 7 à 12 secondes. La côte
+            vendéenne, ouverte plein ouest sur l’Atlantique, reçoit cette houle longue
+            très régulièrement au printemps et à l’automne : c’est elle qui creuse les
+            chenaux dans le sable, trouble l’eau et met le bar en chasse dans la
+            barre. Au-delà de deux mètres, on ne tient plus le fond.
+          </p>
+        </details>
+        <details>
+          <summary>Peut-on garder un bar pêché en Vendée ?</summary>
+          <p>
+            La Vendée est au sud du 48ᵉ parallèle, dans le golfe de Gascogne : la
+            pêche du bar y est ouverte toute l’année, sans période de fermeture, mais
+            le quota est de deux bars par pêcheur et par jour. La taille minimale de
+            capture est de 42 cm, comme dans la Manche. Vérifiez la réglementation en
+            vigueur avant chaque sortie : elle est révisée tous les ans.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SIBLING GUIDES ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Ailleurs sur la côte</h2>
+      <p class="section-lede">
+        Remontez la côte vers le nord : les marées grossissent, l’eau refroidit, et la
+        réglementation change de régime au passage du 48<sup>e</sup> parallèle.
+      </p>
+
+      <div class="siblings">
+        <a class="sibling" href="/peche-bar-dunkerque/">
+          <h3>Pêche au bar à Dunkerque →</h3>
+          <p>
+            Un marnage moyen mais un courant qui tombe pile dans la plage idéale — et
+            le seul spot dont l’outil connaisse la table des vents par cœur.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-calais/">
+          <h3>Pêche au bar à Calais →</h3>
+          <p>
+            Le détroit et ses deux à trois nœuds de courant : le seul secteur du
+            littoral où une trop grosse vive-eau peut faire baisser la note.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-boulogne-sur-mer/">
+          <h3>Pêche au bar à Boulogne-sur-Mer →</h3>
+          <p>
+            Huit mètres de marnage et une côte plein ouest. La digue Carnot, les
+            plages d’Équihen à Hardelot, et la saison mois par mois.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-normandie/">
+          <h3>Pêche au bar en Normandie →</h3>
+          <p>
+            Six cents kilomètres de côte qui tournent sur plus de 180°, du Tréport au
+            Mont-Saint-Michel, et jusqu’à quatorze mètres de marnage.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-bretagne/">
+          <h3>Pêche au bar en Bretagne →</h3>
+          <p>
+            Deux mers et deux réglementations : le 48ᵉ parallèle coupe la région en
+            deux, et la houle d’ouest décide de tout le reste.
+          </p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="closing">
+    <!-- ===================== CLOSING ===================== -->
+    <section class="closing">
+      <div class="wrap">
+        <h2>Et concrètement, c’est quand le prochain bon créneau ?</h2>
+        <p class="section-lede">
+          Marée, houle, vent et lumière des sept prochains jours, ramenés à un score et à
+          une heure. Pour n’importe quelle commune du littoral vendéen, et pour le reste du
+          littoral français.
+        </p>
+        <a class="cta" href="/app/">Voir les conditions <span class="arrow">→</span></a>
+      </div>
+    </section>
+  </Fragment>
+</GuideLayout>

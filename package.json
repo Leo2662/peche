@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/node": "^26.1.2",
     "@types/react": "~19.2.2",
+    "astro": "^7.2.2",
     "tsx": "^4.23.1",
     "typescript": "~6.0.3"
   },
@@ -27,11 +28,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "sitemap": "node scripts/generate-sitemap.mjs",
-    "build:web": "npm run sitemap && expo export --platform web && node scripts/build-site.mjs",
+    "dev": "astro dev",
+    "build:site": "astro build",
+    "build:app": "expo export --platform web --output-dir dist-expo",
+    "build:web": "npm run build:site && npm run build:app && node scripts/merge-app.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tests",
     "test": "tsx --test tests/*.test.ts",
-    "check": "npm run typecheck && npm test"
+    "check": "npm run typecheck && npm run build:site && npm test"
   },
   "private": true
 }
