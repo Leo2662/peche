@@ -42,6 +42,8 @@ export const ROUTES = [
   { path: '/peche-bar-normandie/', changefreq: 'monthly' },
   { path: '/peche-bar-bretagne/', changefreq: 'monthly' },
   { path: '/peche-bar-vendee/', changefreq: 'monthly' },
+  // Technique articles: same cadence, no coast behind them.
+  { path: '/canne-peche-bar-bord/', changefreq: 'monthly' },
 ];
 
 /** YYYY-MM-DD, the W3C date form the sitemap spec asks for. */

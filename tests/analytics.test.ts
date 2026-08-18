@@ -13,17 +13,17 @@ import {
   missingTagReason,
   TAGS,
 } from '../scripts/analytics.mjs';
-import { GUIDE_PAGES } from '../scripts/build-site.mjs';
+import { EDITORIAL_PAGES } from '../scripts/build-site.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const readPublic = (name: string) => readFileSync(resolve(ROOT, 'public', name), 'utf8');
 
 /**
  * Every page the site serves: landing.html becomes /, index.html becomes
- * /app/, and each guide becomes /<slug>/. A tag missing from one of them
- * under-counts the site without ever looking broken.
+ * /app/, and each guide or article becomes /<slug>/. A tag missing from one of
+ * them under-counts the site without ever looking broken.
  */
-const PAGES = ['landing.html', 'index.html', ...GUIDE_PAGES.map(({ slug }) => `${slug}.html`)];
+const PAGES = ['landing.html', 'index.html', ...EDITORIAL_PAGES.map(({ slug }) => `${slug}.html`)];
 
 /** Every third-party loader the pages are allowed to pull in. */
 const LOADERS = [

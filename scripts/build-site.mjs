@@ -4,11 +4,11 @@
  *
  * Expo puts the app at the root and copies everything in public/ verbatim
  * alongside it. The site wants the landing page at the root instead, with the
- * app one level down and each editorial guide on its own clean path:
+ * app one level down and each editorial page on its own clean path:
  *
  *   dist/index.html                            the landing page (was public/landing.html)
  *   dist/app/index.html                        the app          (was dist/index.html)
- *   dist/peche-bar-boulogne-sur-mer/index.html a guide          (was public/<slug>.html)
+ *   dist/peche-bar-boulogne-sur-mer/index.html an article       (was public/<slug>.html)
  *   dist/_expo/…                               the bundle, referenced absolutely from /,
  *                                              so it loads identically from any depth
  *
@@ -22,16 +22,12 @@ import { CLARITY_PROJECT_ID, GA_MEASUREMENT_ID, missingTagReason } from './analy
 import { ROUTES, SITE_URL } from './generate-sitemap.mjs';
 
 /**
- * The editorial pages. `public/<slug>.html` becomes `/<slug>/`.
+ * The place guides. `public/<slug>.html` becomes `/<slug>/`.
  *
  * `place` is what the guide is about — a commune for the spot pages, a region
  * for the wider ones — spelled as the page spells it. It is here so the tests
  * can hold every guide to naming its own subject in its title and its h1 — the
  * one mistake that would quietly turn a spot page into a copy of its neighbour.
- *
- * Adding one here is half the job — the other half is an entry in `ROUTES` in
- * `generate-sitemap.mjs`, so the page is actually announced to crawlers.
- * `checkGuideRoutes` refuses to build if the two lists disagree.
  */
 export const GUIDE_PAGES = [
   { slug: 'peche-bar-boulogne-sur-mer', place: 'Boulogne-sur-Mer' },
@@ -43,23 +39,48 @@ export const GUIDE_PAGES = [
 ];
 
 /**
- * Why the sitemap and the build disagree about the guides, or null when they
- * match. The mismatch matters in both directions: a guide the sitemap never
+ * The technique articles: same shape of page, but about gear or method rather
+ * than about a stretch of coast. They answer a question that has no map behind
+ * it, so none of the geographic rules apply to them — what they share with the
+ * guides is the contract in `EDITORIAL_PAGES` below.
+ */
+export const ARTICLE_PAGES = [{ slug: 'canne-peche-bar-bord', subject: 'canne' }];
+
+/**
+ * Every page the site publishes as an article, and the word each one has to
+ * name in its own title, h1 and description.
+ *
+ * `subject` is that word: the place for a guide, the piece of tackle for an
+ * article. It is the check that stops a page being published as a near-copy of
+ * one that already exists.
+ *
+ * Adding one here is half the job — the other half is an entry in `ROUTES` in
+ * `generate-sitemap.mjs`, so the page is actually announced to crawlers.
+ * `checkEditorialRoutes` refuses to build if the two lists disagree.
+ */
+export const EDITORIAL_PAGES = [
+  ...GUIDE_PAGES.map(({ slug, place }) => ({ slug, subject: place })),
+  ...ARTICLE_PAGES,
+];
+
+/**
+ * Why the sitemap and the build disagree about the pages, or null when they
+ * match. The mismatch matters in both directions: a page the sitemap never
  * announces is invisible, and a sitemap entry with no page behind it is a 404
  * handed to Google.
  *
  * Exported so the test can assert the two lists stay in step without running a
  * build.
  */
-export function checkGuideRoutes() {
-  const built = GUIDE_PAGES.map(({ slug }) => `/${slug}/`).sort();
+export function checkEditorialRoutes() {
+  const built = EDITORIAL_PAGES.map(({ slug }) => `/${slug}/`).sort();
   const routed = ROUTES.map((route) => route.path)
     .filter((path) => path !== '/')
     .sort();
 
   if (built.join() === routed.join()) return null;
   return (
-    `the sitemap lists ${routed.join(', ') || 'no guides'} but the build produces ` +
+    `the sitemap lists ${routed.join(', ') || 'no pages'} but the build produces ` +
     `${built.join(', ') || 'none'} — update ROUTES in generate-sitemap.mjs`
   );
 }
@@ -86,9 +107,9 @@ function buildSite(dist) {
   // 2. Promote the landing page to the root.
   renameSync(landingSource, resolve(dist, 'index.html'));
 
-  // 3. Give each guide its own directory, so it serves from a clean path rather
-  //    than a .html its canonical URL would then disagree with.
-  const guides = GUIDE_PAGES.map(({ slug }) => {
+  // 3. Give each article its own directory, so it serves from a clean path
+  //    rather than a .html its canonical URL would then disagree with.
+  const articles = EDITORIAL_PAGES.map(({ slug }) => {
     const source = resolve(dist, `${slug}.html`);
     if (!existsSync(source)) fail(`no ${slug}.html in the export — is public/${slug}.html there?`);
 
@@ -111,21 +132,21 @@ function buildSite(dist) {
   }
   if (!/noindex/.test(app)) fail('the app page should not be indexed — the landing page is');
 
-  for (const { slug, html } of guides) {
-    // A guide whose canonical points anywhere but its own path is a guide that
+  for (const { slug, html } of articles) {
+    // A page whose canonical points anywhere but its own path is a page that
     // asks Google to index a URL it is not served from.
     if (!html.includes(`<link rel="canonical" href="${SITE_URL}/${slug}/" />`)) {
       fail(`${slug}: canonical does not point at ${SITE_URL}/${slug}/`);
     }
     if (!/name="robots" content="index/.test(html)) fail(`${slug}: is not indexable`);
-    // A guide exists to send its reader into the tool, and the link back to the
-    // landing page is what keeps the two pages one site rather than two.
+    // An article exists to send its reader into the tool, and the link back to
+    // the landing page is what keeps the two pages one site rather than two.
     if (!html.includes('href="/app/"')) fail(`${slug}: has no link to the app`);
     if (!/href="\/(#[a-z-]+)?"/.test(html)) fail(`${slug}: has no link back to the landing page`);
     if (html.includes('id="root"')) fail(`${slug}: looks like the app template`);
   }
 
-  const routeMismatch = checkGuideRoutes();
+  const routeMismatch = checkEditorialRoutes();
   if (routeMismatch) fail(routeMismatch);
 
   // The measurement tags are written into every template by hand. Expo
@@ -135,20 +156,20 @@ function buildSite(dist) {
   for (const [page, html] of [
     ['landing page', landing],
     ['app page', app],
-    ...guides.map(({ slug, html }) => [slug, html]),
+    ...articles.map(({ slug, html }) => [slug, html]),
   ]) {
     const missing = missingTagReason(html);
     if (missing) fail(`${page}: ${missing}`);
   }
 
   // 5. A host that serves /app (no trailing slash) without redirecting would
-  //    404. A copy at /app.html costs nothing and covers it — same per guide.
+  //    404. A copy at /app.html costs nothing and covers it — same per article.
   writeFileSync(resolve(dist, 'app.html'), app, 'utf8');
-  for (const { slug, html } of guides) writeFileSync(resolve(dist, `${slug}.html`), html, 'utf8');
+  for (const { slug, html } of articles) writeFileSync(resolve(dist, `${slug}.html`), html, 'utf8');
 
-  const paths = GUIDE_PAGES.map(({ slug }) => `/${slug}/`).join(', ');
+  const paths = EDITORIAL_PAGES.map(({ slug }) => `/${slug}/`).join(', ');
   console.log(
-    `build-site: landing at /, app at /app/, ${guides.length} guide(s) at ${paths} (${dist})`
+    `build-site: landing at /, app at /app/, ${articles.length} article(s) at ${paths} (${dist})`
   );
   console.log(
     `build-site: Google tag ${GA_MEASUREMENT_ID} and Clarity ${CLARITY_PROJECT_ID} on all pages`
