@@ -8,9 +8,12 @@
  *
  * The landing page spells each link out — "Pêche au bar à Dunkerque" — because
  * it is the page Google reads the anchor text of. The guides link each other by
- * place name alone, next to the two links back up to the landing page.
+ * place name alone — or, for a guide about tackle rather than a coast, by the
+ * question it answers — next to the two links back up to the landing page.
+ * Which of the two labels an entry has is `linkLabel`'s business, not the
+ * footer's.
  */
-import { GUIDES, pathOf } from '../data/guides.mjs';
+import { linkLabel, PAGES, pathOf } from '../data/guides.mjs';
 
 interface Props {
   /** Slug of the guide being rendered, so it can omit its own link. */
@@ -18,7 +21,7 @@ interface Props {
 }
 
 const { current } = Astro.props;
-const others = GUIDES.filter(({ slug }) => slug !== current);
+const others = PAGES.filter(({ slug }) => slug !== current);
 const isGuide = current !== undefined;
 ---
 
@@ -35,8 +38,8 @@ const isGuide = current !== undefined;
         )
       }
       {
-        others.map(({ slug, place, preposition }) => (
-          <a href={pathOf(slug)}>{isGuide ? place : `Pêche au bar ${preposition} ${place}`}</a>
+        others.map((entry) => (
+          <a href={pathOf(entry.slug)}>{linkLabel(entry, !isGuide)}</a>
         ))
       }
       <a href="/app/">Ouvrir l’outil</a>

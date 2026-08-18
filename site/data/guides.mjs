@@ -10,6 +10,14 @@
  *
  * Adding a guide is now: a page in `site/pages/<slug>.astro`, and an entry
  * here. The build fails if a slug names no page.
+ *
+ * There are two kinds of entry, because there turned out to be two kinds of
+ * guide. A **spot guide** answers "pêche au bar à Calais" and everything it
+ * says about itself follows from its place — its breadcrumb, its headline, the
+ * postal address and the coordinates in its schema. A **topic guide** answers
+ * "quelle canne pour le bar", which no place decides, so it writes those things
+ * down instead of deriving them. `subjectOf()` is where the two meet: it hands
+ * `GuideLayout` the same three fields whichever kind it was given.
  */
 
 /** No trailing slash: every path below adds its own. */
@@ -99,12 +107,105 @@ export const GUIDES = [
   },
 ];
 
-/** The entry for a slug, or a thrown error naming the slug that has none. */
-export function guideBySlug(slug) {
+/**
+ * @typedef {object} Topic
+ * @property {string} slug   the path it is served from, without slashes
+ * @property {string} crumb  the short label: the last step of the breadcrumb,
+ *                           and the link the other guides carry in their footer.
+ *                           A place names itself in two words; a question does
+ *                           not, so the short form is written rather than cut.
+ * @property {string} nav    the long label, spelled out for the landing page —
+ *                           the one page whose anchor text Google reads as a
+ *                           description of the target.
+ * @property {string} headline  what the `Article` schema announces. On a spot
+ *                           guide this is a template over the place; here the
+ *                           page's own subject is the only thing that could
+ *                           produce it.
+ * @property {string} about  the thing the article is about, for the `about`
+ *                           node. Not a `Place`, which is the whole difference
+ *                           between the two kinds.
+ */
+
+/**
+ * The guides that are not about a stretch of coast.
+ *
+ * A spot guide answers *where* and *when*; these answer *with what* and *how*.
+ * They rank on searches no commune appears in ("quelle canne pour le bar du
+ * bord"), and they are the pages a spot guide can hand a reader off to once it
+ * has told them the tide is right.
+ *
+ * @type {readonly Topic[]}
+ */
+export const TOPICS = [
+  {
+    slug: 'canne-peche-bar-du-bord',
+    crumb: 'Quelle canne',
+    nav: 'Quelle canne pour le bar du bord',
+    headline: 'Quelle canne pour la pêche au bar du bord : longueur, puissance, action',
+    about: 'Canne à pêche au bar du bord',
+  },
+];
+
+/** Every page in the route table, spot guides first. */
+export const PAGES = [...GUIDES, ...TOPICS];
+
+/**
+ * What a page's schema blocks need to know about their subject: the name the
+ * breadcrumb ends on, the headline the `Article` announces, and the entity it
+ * is `about`.
+ *
+ * A spot guide derives all three from its place — that is what `preposition`,
+ * `kind`, `region` and `geo` are for, and the one headline shape all six share
+ * is what keeps them in step. A topic guide has none of that to derive from and
+ * carries the three fields itself. Either way the layout receives the same
+ * object and has no idea which kind it rendered.
+ */
+export function subjectOf(slug) {
   const guide = GUIDES.find((g) => g.slug === slug);
-  if (!guide) throw new Error(`no guide registered for "${slug}" — add it to site/data/guides.mjs`);
-  return guide;
+  if (guide) {
+    const { place, preposition, kind, region, geo } = guide;
+    return {
+      crumb: place,
+      headline: `Pêche au bar ${preposition} ${place} : meilleurs horaires et conditions`,
+      about: {
+        '@type': 'Place',
+        name: place,
+        address: {
+          '@type': 'PostalAddress',
+          // A region page has no locality to name — only the region itself.
+          ...(kind === 'commune' ? { addressLocality: place } : {}),
+          addressRegion: region,
+          addressCountry: 'FR',
+        },
+        geo: { '@type': 'GeoCoordinates', ...geo },
+      },
+    };
+  }
+
+  const topic = TOPICS.find((t) => t.slug === slug);
+  if (topic) {
+    const { crumb, headline, about } = topic;
+    return { crumb, headline, about: { '@type': 'Thing', name: about } };
+  }
+
+  throw new Error(`no guide registered for "${slug}" — add it to site/data/guides.mjs`);
 }
+
+/**
+ * How a link to a page reads in a footer.
+ *
+ * The landing page spells every link out, because it is the page whose anchor
+ * text Google reads; between guides the short form is enough and the nav has
+ * seven links to fit.
+ */
+export const linkLabel = (entry, long) =>
+  entry.place
+    ? long
+      ? `Pêche au bar ${entry.preposition} ${entry.place}`
+      : entry.place
+    : long
+      ? entry.nav
+      : entry.crumb;
 
 /** The path a guide is served from, trailing slash included. */
 export const pathOf = (slug) => `/${slug}/`;
@@ -116,13 +217,13 @@ export const urlOf = (slug) => `${SITE_URL}${pathOf(slug)}`;
  * Every URL the sitemap announces, in the order it announces them.
  *
  * The landing page is first and re-crawled daily: the score behind it is
- * recomputed from fresh forecasts continuously. The guides describe tide and
- * wind rules that do not move.
+ * recomputed from fresh forecasts continuously. The guides describe tide rules,
+ * wind rules and tackle that do not move.
  *
  * The app at `/app/` is deliberately absent. It is a single client-rendered
  * route carrying a `noindex`, so listing it would hand Google a soft-404.
  */
 export const ROUTES = [
   { path: '/', changefreq: 'daily' },
-  ...GUIDES.map(({ slug }) => ({ path: pathOf(slug), changefreq: 'monthly' })),
+  ...PAGES.map(({ slug }) => ({ path: pathOf(slug), changefreq: 'monthly' })),
 ];

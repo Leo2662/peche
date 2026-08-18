@@ -137,7 +137,10 @@ h2 {
 
 /* One card per guide, at a fixed readable width rather than stretched to
    the full column — there is one guide today and there will be more. */
-#spots .grid {
+/* The guide tiles are cards of a fixed size, not a stretched row: a section
+   with one guide in it must look the same as the section with six. */
+#spots .grid,
+#materiel .grid {
   grid-template-columns: repeat(auto-fit, minmax(300px, 340px));
   justify-content: start;
 }

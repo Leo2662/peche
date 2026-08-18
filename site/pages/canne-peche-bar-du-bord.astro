@@ -1,0 +1,898 @@
+---
+import GuideLayout from '../layouts/GuideLayout.astro';
+
+/** What Google may show under the result, in the page's own words. */
+const faq = [
+  {
+    question: "Quelle longueur de canne pour pêcher le bar du bord ?",
+    answer:
+      "2,70 m aux leurres, dans neuf cas sur dix. C’est la longueur qui lance assez loin depuis une plage, qui garde la bannière au-dessus de la première vague et qui reste maniable une journée entière au bout d’un bras. En dessous de 2,40 m, on ne pêche bien qu’en port ou en estuaire abrité ; au-dessus de 3 m, on gagne de la distance et du contrôle sur une digue haute ou dans les roches, au prix du poids et de la précision. Le surfcasting aux appâts, lui, ne se discute pas : 4,20 m environ.",
+  },
+  {
+    question: "Quelle puissance de canne pour le bar aux leurres ?",
+    answer:
+      "10-40 g pour la canne unique du bord. La puissance inscrite sur le blank est une plage de poids de leurre, pas une résistance au poisson : elle dit ce que la canne propulse correctement, et une canne lance le mieux dans le tiers médian de sa plage, donc entre 18 et 30 g pour une 10-40 g. Descendez à 7-28 g pour les petits leurres en eau calme, montez à 15-60 g pour la houle, le courant et les gros volumes. En surfcasting, on parle de 100-150 g et il s’agit du plomb.",
+  },
+  {
+    question: "Quelle action de canne choisir pour le bar ?",
+    answer:
+      "Une action de pointe (fast) pour les leurres souples et les jerkbaits : seuls les trente premiers centimètres du blank plient, l’animation est nette et le ferrage passe à quarante mètres sur tresse. Une action semi-parabolique (regular ou moderate-fast) si vous pêchez surtout aux poissons nageurs à hameçons triples : la canne amortit les coups de tête et décroche moins. Le surfcasting, lui, se pêche en parabolique, parce qu’il faut propulser un plomb, pas animer un leurre.",
+  },
+  {
+    question: "Une seule canne peut-elle faire les leurres et le surfcasting ?",
+    answer:
+      "Non, et c’est le seul point où il ne faut pas chercher le compromis. Les deux pêches ne demandent pas le même geste : l’une propulse 20 g qu’il faut ensuite animer à la seconde près, l’autre envoie 130 g de plomb et d’appât à cent mètres puis attend, canne posée sur un pique. Une canne « polyvalente » de 3,60 m en 30-80 g fait les deux mal. Si le budget n’en permet qu’une, prenez la canne à leurres : elle prend du poisson partout, y compris de la plage.",
+  },
+  {
+    question: "Quel moulinet et quel fil associer à une canne à bar du bord ?",
+    answer:
+      "Sur une 2,70 m en 10-40 g : un moulinet taille 3000 ou 4000, une tresse de 0,15 à 0,18 mm et un bas de ligne fluorocarbone de 30 à 35/100 sur environ un mètre. La tresse ne s’allonge pas, ce qui rend le ferrage possible à distance et fait sentir la touche ; le fluorocarbone encaisse le frottement sur la roche et se voit moins en eau claire. En surfcasting, on repasse au nylon de 28 à 30/100 avec un arraché de 55 à 60/100, à raison d’un dixième de millimètre par dix grammes de plomb.",
+  },
+  {
+    question: "Canne télescopique ou canne en deux brins ?",
+    answer:
+      "Deux brins, sauf contrainte de transport réelle. Une télescopique se range dans un sac à dos et se déploie en dix secondes, mais elle empile cinq à sept emboîtements sur la longueur du blank : l’action y est plus molle, les brins se bloquent avec le sel et le sable, et les anneaux ne s’alignent jamais tout à fait. Une canne en deux brins de même prix sera plus fine, plus nerveuse et durera plus longtemps. La télescopique se justifie si l’alternative est de ne pas emporter de canne du tout.",
+  },
+];
+---
+
+<GuideLayout
+  slug="canne-peche-bar-du-bord"
+  title="Quelle canne pour la pêche au bar du bord ?"
+  description="Longueur, puissance et action d’une canne à pêche au bar du bord : la 2,70 m en 10-40 g qui fait presque tout, et les cas où il en faut une autre."
+  social="La canne à bar du bord en trois chiffres : 2,70 m, 10-40 g, action de pointe — et ce que le vent, la houle et le courant changent au choix."
+  faq={faq}
+>
+  <Fragment slot="hero">
+    <div>
+      <h1>
+        Quelle canne pour la pêche au bar du bord ?
+        <strong>Longueur, puissance, action.</strong>
+      </h1>
+      <p class="lede">
+        Trois chiffres sont écrits sur le blank, et ils se lisent ensemble.
+        Ils disent à quelle distance vous pêcherez, ce que la canne accepte de
+        lancer et ce qu’elle vous laissera faire du leurre une fois qu’il est à
+        l’eau. Voici comment les choisir pour le bar, du bord — et pourquoi une
+        seule canne suffit dans la plupart des cas.
+      </p>
+      <div class="hero-actions">
+        <a class="cta" href="/app/">Voir les conditions du jour <span class="arrow">→</span></a>
+        <a class="cta ghost" href="#une-seule">Si vous n’en achetez qu’une</a>
+      </div>
+      <p class="hero-note">Aucun lien affilié · aucune marque citée · gratuit et sans compte</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">LA CANNE PASSE-PARTOUT</p>
+      <div class="slot-label">LONGUEUR</div>
+      <div class="slot">2,70 m</div>
+      <div class="slot-label">PUISSANCE</div>
+      <div class="slot">10 – 40 g</div>
+      <div class="slot-label">ACTION</div>
+      <div class="slot">De pointe</div>
+      <div class="verdict">LE COMPROMIS DU BORD</div>
+      <div class="place">Plage · digue · estuaire · roche</div>
+    </div>
+  </Fragment>
+
+  <!-- ===================== LIRE LE BLANK ===================== -->
+  <section id="fiche" class="flagship">
+    <div class="wrap">
+      <span class="badge">CE QUI EST ÉCRIT SUR LA CANNE</span>
+      <h2>« 2.70 M · 10-40 G · MF » : trois informations, trois métiers</h2>
+      <div class="prose">
+        <p>
+          Toutes les cannes de mer portent la même ligne sérigraphiée au-dessus de la
+          poignée. Elle tient en trois nombres, et chacun décide d’une chose
+          différente : la <strong>longueur</strong> décide de la distance et du
+          contrôle, la <strong>puissance</strong> décide de ce que vous pouvez lancer,
+          l’<strong>action</strong> décide de ce que vous pourrez faire du leurre et du
+          poisson. Une canne mal choisie l’est presque toujours sur un seul de ces trois
+          points.
+        </p>
+        <p>
+          Le reste — le nombre de brins, la marque des anneaux, la matière de la poignée
+          — vient après, et coûte beaucoup moins de poissons qu’une puissance choisie au
+          hasard.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Les trois chiffres, et ce que chacun commande</caption>
+          <thead>
+            <tr>
+              <th scope="col">Ce qui est écrit</th>
+              <th scope="col">Ce que ça veut dire</th>
+              <th scope="col">Ce que ça décide</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">2.70 M</th>
+              <td>
+                La longueur totale, canne montée. Parfois donnée en pieds sur les
+                modèles importés : 9’ vaut 2,74 m, 10’ vaut 3,05 m.
+              </td>
+              <td class="rank top">Distance, bannière</td>
+            </tr>
+            <tr>
+              <th scope="row">10-40 G</th>
+              <td>
+                La plage de poids que le blank propulse correctement. Aux leurres, c’est
+                le leurre plombé ; en surfcasting, c’est le plomb seul.
+              </td>
+              <td class="rank top">Ce qu’on peut lancer</td>
+            </tr>
+            <tr>
+              <th scope="row">MF, F, XF, M</th>
+              <td>
+                L’action : la part du blank qui plie sous charge. <em>F</em> pour
+                fast, <em>MF</em> pour moderate-fast, <em>M</em> pour une courbe ronde.
+              </td>
+              <td class="rank mid">Animation, ferrage</td>
+            </tr>
+            <tr>
+              <th scope="row">2 SEC / TELE</th>
+              <td>
+                Le nombre de brins. Deux brins pour une canne qui travaille, télescopique
+                pour une canne qui voyage.
+              </td>
+              <td class="rank mid">Transport, durée de vie</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>La puissance affichée est optimiste</strong> — c’est la seule ligne de la
+        fiche technique qu’il faut lire avec méfiance. Beaucoup de constructeurs annoncent
+        la plage à laquelle le blank <em>résiste</em>, pas celle à laquelle il travaille
+        bien. Une canne marquée 10-40 g lance généralement au mieux entre 18 et 30 g, et
+        une marquée 100-200 g est faite pour 130 à 150 g de plomb. Prenez toujours le
+        milieu de la plage comme la vraie valeur d’usage.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LONGUEUR ===================== -->
+  <section id="longueur">
+    <div class="wrap">
+      <h2>La longueur : ce qu’elle vous donne, et ce qu’elle vous prend</h2>
+      <div class="prose">
+        <p>
+          Une canne longue lance plus loin, tient la ligne plus haut au-dessus de l’eau et
+          amortit mieux. Une canne courte est précise, légère au bout du bras et passe
+          sous les obstacles. Toute la question de la <strong>longueur d’une canne à
+          bar</strong> tient dans cet arbitrage, et le poste où vous pêchez tranche plus
+          sûrement que la théorie.
+        </p>
+        <p>
+          Le paramètre qu’on oublie est la <strong>tenue de bannière</strong> : depuis une
+          plage, la première vague tire sur le fil et fait dériver le leurre. Trente
+          centimètres de canne en plus, c’est trente centimètres de fil qui ne traînent
+          plus dans l’écume — souvent plus décisif que les cinq mètres de lancer gagnés.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>La longueur selon le poste, du plus abrité au plus exposé</caption>
+          <thead>
+            <tr>
+              <th scope="col">Longueur</th>
+              <th scope="col">Là où elle est chez elle</th>
+              <th scope="col">Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">2,10 – 2,40 m</th>
+              <td>
+                Ports, quais, pontons, petits estuaires. On pêche court, entre les bateaux
+                et sous les structures, et on a besoin de placer le leurre au mètre près.
+              </td>
+              <td class="rank mid">Milieu fermé</td>
+            </tr>
+            <tr>
+              <th scope="row">2,40 – 2,70 m</th>
+              <td>
+                Estuaires, bords de rivière côtière, plages abritées. Le début du vrai
+                lancer, avec une précision encore excellente et une canne qui ne pèse rien.
+              </td>
+              <td class="rank top">Bon compromis</td>
+            </tr>
+            <tr>
+              <th scope="row">2,70 – 3,00 m</th>
+              <td>
+                Plage, estran, digue basse, roches accessibles. La longueur de référence du
+                bord : elle lance, elle tient la bannière, elle se porte toute la nuit.
+              </td>
+              <td class="rank top">Le standard</td>
+            </tr>
+            <tr>
+              <th scope="row">3,00 – 3,30 m</th>
+              <td>
+                Digue haute, enrochements, platiers avec de la vague. Il faut passer
+                au-dessus du déferlement et sortir un poisson en le tenant à distance des
+                blocs.
+              </td>
+              <td class="rank top">Digue et roche</td>
+            </tr>
+            <tr>
+              <th scope="row">3,90 – 4,50 m</th>
+              <td>
+                Surfcasting aux appâts, sur les grandes plages. Le blank sert à propulser
+                cent à cent cinquante grammes et à garder la ligne haute derrière la barre.
+              </td>
+              <td class="rank mid">Une autre pêche</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose" style="margin-top: 36px">
+        <h3>Pourquoi 2,70 m et pas 3,00 m</h3>
+        <p>
+          Sur le papier, trente centimètres de plus valent une dizaine de mètres de lancer.
+          Sur le terrain, une canne à leurres se manipule des centaines de fois par sortie :
+          lancer, animer, ramener, relancer. Le poids et le porte-à-faux se paient à la
+          troisième heure, quand la fatigue commence à se voir sur la précision des
+          lancers — et le bar du bord se prend souvent à la tombée du jour, c’est-à-dire à
+          la fin de la session, pas au début.
+        </p>
+        <h3>Quand passer à 3,00 – 3,30 m</h3>
+        <p>
+          Trois situations le justifient franchement : une <strong>digue haute</strong>, où
+          il faut tenir le fil loin des blocs et guider le poisson jusqu’à l’épuisette ;
+          un <strong>platier rocheux</strong> couvert de laminaires, où chaque mètre de fil qui
+          traîne est un mètre de fil qui accroche ; et une <strong>plage qui déferle
+          loin</strong>, où le leurre doit passer derrière la barre. C’est le cas courant sur
+          les côtes exposées de <a href="/peche-bar-bretagne/">Bretagne</a> et
+          de <a href="/peche-bar-vendee/">Vendée</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PUISSANCE ===================== -->
+  <section id="puissance">
+    <div class="wrap">
+      <h2>La puissance : un poids de leurre, pas une taille de poisson</h2>
+      <div class="prose">
+        <p>
+          C’est le malentendu le plus coûteux du rayon. La <strong>puissance d’une canne à
+          bar</strong> n’est pas la force du poisson qu’elle peut sortir : c’est la plage de
+          poids qu’elle propulse et qu’elle anime correctement. Un bar de soixante-dix
+          centimètres se prend très bien sur une 10-40 g — ce sont le frein du moulinet et
+          le fil qui encaissent la bagarre, pas le blank.
+        </p>
+        <p>
+          Une canne travaille en se chargeant : le leurre plie le blank au lancer, et le
+          blank le renvoie. Trop léger, il ne charge rien et la canne lance comme un manche
+          à balai. Trop lourd, le blank ne rend plus l’énergie, le geste devient mou et,
+          au-delà de la marque haute, il casse. La règle utile tient en une
+          ligne : <strong>visez le tiers médian de la plage annoncée</strong>.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Les plages de puissance et ce qu’on lance avec</caption>
+          <thead>
+            <tr>
+              <th scope="col">Puissance</th>
+              <th scope="col">Les leurres qui vont avec</th>
+              <th scope="col">Usage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">3 – 15 g</th>
+              <td>
+                Petits shads de 7 à 10 cm sur têtes plombées de 5 à 10 g, micro-leurres de
+                surface. Port, estuaire, mer plate, bars de 30 à 50 cm.
+              </td>
+              <td class="rank mid">Léger, abrité</td>
+            </tr>
+            <tr>
+              <th scope="row">7 – 28 g</th>
+              <td>
+                Poissons nageurs de 10 à 12 cm, shads de 10 cm, petites lames. Le choix de
+                celui qui pêche surtout en eau calme et cherche la finesse.
+              </td>
+              <td class="rank top">Fin et polyvalent</td>
+            </tr>
+            <tr>
+              <th scope="row">10 – 40 g</th>
+              <td>
+                Toute la boîte du bord : nageurs de 12 à 15 cm, shads de 12 cm sur tête de
+                20 g, stickbaits, poppers, lames de 25 g. La puissance qui fait tout.
+              </td>
+              <td class="rank top">Le standard</td>
+            </tr>
+            <tr>
+              <th scope="row">15 – 60 g</th>
+              <td>
+                Gros volumes et leurres denses : jigs de 40 g, gros stickbaits, shads de
+                15 cm. Pour la houle, le courant fort et le vent de face.
+              </td>
+              <td class="rank top">Exposé, costaud</td>
+            </tr>
+            <tr>
+              <th scope="row">100 – 200 g</th>
+              <td>
+                Le surfcasting : le chiffre désigne le plomb, auquel s’ajoutent l’appât et
+                le montage. En pratique, on pêche à 130-150 g sur une canne de cette classe.
+              </td>
+              <td class="rank mid">Appâts, plage</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>« Je prends plus puissant, au cas où »</strong> — c’est l’erreur numéro un,
+        et elle ne se répare pas. Une canne surdimensionnée ne charge pas avec les leurres
+        que vous utiliserez réellement : vous perdez dix à quinze mètres au lancer, vous ne
+        sentez plus le leurre travailler, et un bar qui secoue la tête sous la pointe se
+        décroche parce que rien n’amortit. Le « au cas où » n’arrive jamais ; la perte de
+        distance, elle, arrive à chaque lancer.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ACTION ===================== -->
+  <section id="action">
+    <div class="wrap">
+      <h2>L’action : où la canne plie, et ce que ça change</h2>
+      <p class="section-lede">
+        La puissance dit <em>combien</em> la canne encaisse ; l’action dit <em>où</em> elle
+        plie. C’est le paramètre le plus difficile à juger en magasin et le plus sensible au
+        bord de l’eau.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Les trois familles d’action, et ce qu’elles font au bar</caption>
+          <thead>
+            <tr>
+              <th scope="col">Action</th>
+              <th scope="col">Ce qui se passe sous charge</th>
+              <th scope="col">Pour quoi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">De pointe (fast, XF)</th>
+              <td>
+                Le tiers haut du blank travaille, le reste reste raide. L’animation est
+                nette au poignet, le ferrage passe même à quarante mètres, la touche remonte
+                dans la main.
+              </td>
+              <td class="rank top">Leurres souples, jerkbaits</td>
+            </tr>
+            <tr>
+              <th scope="row">Semi-parabolique (MF, regular)</th>
+              <td>
+                La moitié du blank s’engage. La canne pardonne les coups de tête et les
+                rushs sous les pieds, et propulse mieux les leurres lourds.
+              </td>
+              <td class="rank top">Poissons nageurs, débutants</td>
+            </tr>
+            <tr>
+              <th scope="row">Parabolique (M, slow)</th>
+              <td>
+                Le blank plie jusqu’au talon et se comporte comme un ressort long. Aucune
+                finesse d’animation, mais une propulsion et un amorti maximum.
+              </td>
+              <td class="rank mid">Surfcasting, appâts</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose" style="margin-top: 36px">
+        <h3>Pourquoi la pointe l’emporte aux leurres</h3>
+        <p>
+          Un shad se pêche en donnant des coups secs et courts, avec des pauses. Une canne
+          parabolique absorbe ces coups avant qu’ils n’atteignent le leurre : l’animation
+          devient molle, et la pause n’est jamais franche. Sur une action de pointe, le
+          même geste se transmet intégralement. Le ferrage suit la même logique — la tresse
+          ne s’allonge pas, le blank raide non plus, et l’hameçon se plante à distance.
+        </p>
+        <h3>L’exception des poissons nageurs</h3>
+        <p>
+          Un bar ferré sur des hameçons triples se décroche facilement : les branches font
+          levier dès qu’il secoue la tête, et une canne raide n’a rien à donner. Si vous
+          pêchez principalement au poisson nageur, dans la vague, une
+          action <strong>semi-parabolique</strong> vous coûtera un peu de netteté et
+          vous fera gagner des poissons au bord — c’est un échange qui vaut souvent la
+          peine, et c’est ce que font la plupart des cannes vendues comme « seabass ».
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TROIS PECHES ===================== -->
+  <section id="ensembles">
+    <div class="wrap">
+      <h2>Quatre pêches du bord, quatre ensembles complets</h2>
+      <p class="section-lede">
+        La canne ne se choisit pas seule : le moulinet doit équilibrer le blank et le fil
+        doit correspondre à ce que vous lancez. Voici quatre ensembles cohérents, du plus
+        courant au plus spécialisé.
+      </p>
+
+      <div class="grid">
+        <article class="tile">
+          <span class="weight">2,70 m · 10-40 g</span>
+          <h3>Les leurres, du bord</h3>
+          <p>
+            Action de pointe, deux brins. Moulinet <strong>3000 ou 4000</strong>, tresse de
+            0,15 à 0,18 mm, bas de ligne fluorocarbone de 30 à 35/100 sur un mètre, raccordé
+            par un nœud FG ou un Albright. C’est l’ensemble qui prend le plus de bars du
+            bord en France, sur tous les postes et à toutes les saisons.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">3,00-3,30 m · 15-60 g</span>
+          <h3>La digue et les roches</h3>
+          <p>
+            Semi-parabolique, plus de réserve dans le talon.
+            Moulinet <strong>4000 ou 5000</strong>, tresse de 0,18 à 0,20 mm, fluorocarbone
+            de 40 à 50/100 pour l’abrasion sur les blocs. Prévoyez une épuisette télescopique ou une
+            corde à poisson : un bar de 60 cm ne se hisse pas de trois mètres de haut.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">4,20 m · 100-150 g</span>
+          <h3>Le surfcasting aux appâts</h3>
+          <p>
+            Parabolique, trois brins. Moulinet de <strong>taille 6000 à 8000</strong> ou
+            moulinet dédié, corps de ligne nylon de 28 à 30/100, arraché de 55 à 60/100 sur
+            deux longueurs de canne. La règle de l’arraché : un dixième de millimètre par
+            dix grammes de plomb lancé.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">2,40 m · 7-28 g</span>
+          <h3>Le port et l’estuaire</h3>
+          <p>
+            Action de pointe, canne courte et précise. Moulinet <strong>2500 ou
+            3000</strong>, tresse de 0,12 à 0,14 mm, fluorocarbone de 26 à 30/100. La pêche
+            de nuit sous les lampadaires d’un port, sur des bars qui chassent la crevette,
+            demande de la finesse plutôt que de la puissance.
+          </p>
+        </article>
+      </div>
+
+      <div class="note">
+        <strong>Ne cherchez pas la canne qui fait les deux</strong> — une 3,60 m en 30-80 g
+        vendue comme polyvalente lance mal 20 g de leurre et mal 120 g de plomb. Les deux
+        pêches ne partagent ni le geste, ni le rythme, ni le fil. Si le budget n’en permet
+        qu’une seule, prenez la canne à leurres : elle se pêche aussi de la plage, et elle
+        ne vous immobilise pas trois heures derrière un pique.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SI UNE SEULE ===================== -->
+  <section id="une-seule">
+    <div class="wrap">
+      <h2>Si vous n’en achetez qu’une : 2,70 m, 10-40 g, action de pointe</h2>
+      <div class="prose">
+        <p>
+          C’est la réponse courte à la question, et elle tient parce qu’aucun des trois
+          chiffres n’y est un compromis mou. La longueur couvre la plage, la digue basse et
+          l’estuaire ; la puissance couvre 95 % d’une boîte à leurres à bar ; l’action de
+          pointe permet d’animer un souple sans empêcher de lancer un nageur.
+        </p>
+        <p>
+          Ce que cette canne ne fera pas : le surfcasting à cent mètres, le gros jig dans
+          trois nœuds de courant, et le lancer d’un leurre de 8 g en pleine finesse. Trois
+          situations qui ne représentent, pour la plupart des pêcheurs du bord, qu’une
+          poignée de sorties par an.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Ce que le budget change, et ce qu’il ne change pas</caption>
+          <thead>
+            <tr>
+              <th scope="col">Budget canne</th>
+              <th scope="col">Ce que vous obtenez</th>
+              <th scope="col">Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">50 – 90 €</th>
+              <td>
+                Un blank correct, des anneaux ordinaires, un peu de poids en trop. Ça pêche,
+                ça prend du poisson, et ça ne mérite aucun mépris pour commencer.
+              </td>
+              <td class="rank mid">Suffisant</td>
+            </tr>
+            <tr>
+              <th scope="row">120 – 200 €</th>
+              <td>
+                Le vrai palier : carbone plus fin, donc plus léger et plus sensible, anneaux
+                qui tiennent la tresse et le sel, équilibre net avec un 4000.
+              </td>
+              <td class="rank top">Le bon rapport</td>
+            </tr>
+            <tr>
+              <th scope="row">250 € et plus</th>
+              <td>
+                Du confort, de la finition et quelques grammes de moins. Vous pêcherez plus
+                agréablement ; vous ne prendrez pas plus de bars qu’avec la précédente.
+              </td>
+              <td class="rank mid">Plaisir</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-lede">
+        À budget donné, l’ordre des priorités est simple : la canne d’abord, parce que c’est
+        elle qui lance et qui anime ; le moulinet ensuite, pour son frein ; le fil enfin,
+        mais sans rogner dessus, parce que c’est le seul élément entre vous et le poisson.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== CONDITIONS ===================== -->
+  <section id="conditions">
+    <div class="wrap">
+      <h2>Ce que les conditions du jour changent au matériel</h2>
+      <p class="section-lede">
+        Le choix de la canne se fait une fois ; le choix de ce qu’on met au bout se refait à
+        chaque sortie. Les mêmes paramètres que le score de <a href="/app/">l’outil</a>
+        regarde — vent, houle, courant, clarté de l’eau — décident aussi du grammage et
+        du bas de ligne.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Des conditions au bout de la ligne</caption>
+          <thead>
+            <tr>
+              <th scope="col">Ce que dit la prévision</th>
+              <th scope="col">Ce qu’il faut au bout</th>
+              <th scope="col">Effet</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Vent de face &gt; 25 km/h</th>
+              <td>
+                Montez en densité plutôt qu’en volume : lame, jig, stickbait plombé de 28 à
+                35 g. Une tresse fine prend moins de vent qu’une grosse.
+              </td>
+              <td class="rank mid">Distance sauvée</td>
+            </tr>
+            <tr>
+              <th scope="row">Houle de 1 à 1,5 m</th>
+              <td>
+                Le haut de la plage de puissance, et une canne longue pour tenir la bannière
+                au-dessus de la barre. En surfcasting, plomb grappin de 150 g.
+              </td>
+              <td class="rank top">Le leurre tient</td>
+            </tr>
+            <tr>
+              <th scope="row">Courant fort, grande vive-eau</th>
+              <td>
+                Alourdissez la tête plombée de 5 à 10 g par rapport à votre habitude, sinon
+                le montage part en dérive avant d’avoir touché le fond.
+              </td>
+              <td class="rank top">Contact au fond</td>
+            </tr>
+            <tr>
+              <th scope="row">Mer d’huile, eau claire</th>
+              <td>
+                Descendez : leurre plus fin, fluorocarbone de 26 à 28/100, animation plus
+                lente. C’est la situation où une canne trop puissante se remarque le plus.
+              </td>
+              <td class="rank mid">Discrétion</td>
+            </tr>
+            <tr>
+              <th scope="row">Roche et laminaires</th>
+              <td>
+                Fluorocarbone de 40 à 50/100 et hameçons simples plutôt que triples : on
+                perd moins de leurres et on décroche plus facilement.
+              </td>
+              <td class="rank mid">Moins de casse</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose" style="margin-top: 36px">
+        <p>
+          C’est le point de rencontre entre cette page et le reste du site : le matériel
+          répond à des conditions, et les conditions se prévoient. <a href="/app/">BassScore</a>
+          note de 0 à 100 les sept prochains jours pour
+          n’importe quelle commune du littoral, à partir de la marée, du vent, de la houle,
+          de la lumière et de la température de l’eau — et donne le meilleur créneau à la
+          minute. Le détail des facteurs et de leur pondération
+          est <a href="/#comment">expliqué sur la page d’accueil</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ERREURS ===================== -->
+  <section id="erreurs">
+    <div class="wrap">
+      <h2>Les six erreurs qui coûtent une canne ou une saison</h2>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Choisir la puissance sur la taille du poisson.</strong> Le chiffre
+            désigne le poids de leurre, jamais la force du bar. Une 20-80 g achetée « pour
+            les gros » ne lancera correctement aucun des leurres que vous possédez.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Prendre une télescopique bas de gamme pour tout faire.</strong> Cinq à
+            sept emboîtements sur la longueur du blank, une action molle, des brins qui se
+            bloquent au sel : à prix égal, deux brins font mieux et durent plus
+            longtemps.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Ne pas rincer après la sortie.</strong> C’est ce qui tue le matériel de
+            mer, et vite. Eau douce sur la canne démontée, le porte-moulinet et les anneaux,
+            séchage à plat, jamais debout dans un coin de garage encore humide.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Lancer à fond avec un leurre au-dessus de la marque.</strong> Une canne
+            ne casse presque jamais sur un poisson : elle casse au lancer, sur un
+            sur-grammage, ou sur un choc ancien qu’on n’avait pas vu.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Oublier le bas de ligne.</strong> Une tresse nue frottée sur une moule
+            ou un bloc casse net. Un mètre de fluorocarbone entre la tresse et le leurre,
+            c’est trente secondes de montage et la moitié des casses en moins.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Négliger la longueur du talon.</strong> Une poignée courte se lance à
+            une main, une poignée longue se lance à deux : c’est ce qui distingue une canne
+            à leurres d’une canne de surf, bien plus que le nombre de brins.</span
+          >
+        </p>
+      </div>
+
+      <div class="note">
+        <strong>Sécurité</strong> — une canne en carbone conduit l’électricité. Ne pêchez
+        jamais sous une ligne haute tension ni pendant un orage, et gardez à l’esprit qu’une
+        digue mouillée par la houle est le mauvais endroit pour se battre avec un poisson.
+        Le score de BassScore est un indice de pêche, pas une prévision de sécurité :
+        consultez la météo marine avant de partir.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== REGLEMENTATION ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Un mot de réglementation, parce qu’elle parle de la canne</h2>
+      <div class="prose">
+        <p>
+          La pêche du bar de loisir est encadrée, et l’engin utilisé fait partie des règles.
+          Pour 2026 :
+        </p>
+      </div>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Taille minimale de capture : 42 cm</strong>, partout. En dessous, le
+            poisson est remis à l’eau avec les précautions qui vont avec — mains mouillées,
+            hameçon décroché dans l’eau si possible.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Au nord du 48<sup>e</sup> parallèle</strong> — détention interdite du
+            1<sup>er</sup> février au 31 mars : sur cette période, seule la
+            pêche <em>à la canne</em>, en remise à l’eau, reste autorisée. Trois bars par pêcheur
+            et par jour le reste de l’année.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Au sud</strong> — pêche ouverte toute l’année, dans la limite de deux
+            bars par pêcheur et par jour.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >La pêche du bar au filet fixe est interdite en pêche de loisir, et tout poisson
+            conservé doit être marqué.</span
+          >
+        </p>
+      </div>
+
+      <div class="note">
+        <strong>Vérifiez avant de partir</strong> — ces règles sont révisées chaque année et
+        des arrêtés préfectoraux peuvent les durcir localement. La référence qui fait foi est
+        celle publiée par l’administration des affaires maritimes.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Questions fréquentes</h2>
+
+      <div class="faq">
+        <details open>
+          <summary>Quelle longueur de canne pour pêcher le bar du bord ?</summary>
+          <p>
+            2,70 m aux leurres, dans neuf cas sur dix. C’est la longueur qui lance assez
+            loin depuis une plage, qui garde la bannière au-dessus de la première vague et
+            qui reste maniable une journée entière au bout d’un bras. En dessous de 2,40 m,
+            on ne pêche bien qu’en port ou en estuaire abrité ; au-dessus de 3 m, on gagne
+            de la distance et du contrôle sur une digue haute ou dans les roches, au prix
+            du poids et de la précision. Le surfcasting aux appâts, lui, ne se discute
+            pas : 4,20 m environ.
+          </p>
+        </details>
+        <details>
+          <summary>Quelle puissance de canne pour le bar aux leurres ?</summary>
+          <p>
+            10-40 g pour la canne unique du bord. La puissance inscrite sur le blank est
+            une plage de poids de leurre, pas une résistance au poisson : elle dit ce que
+            la canne propulse correctement, et une canne lance le mieux dans le tiers
+            médian de sa plage, donc entre 18 et 30 g pour une 10-40 g. Descendez à 7-28 g
+            pour les petits leurres en eau calme, montez à 15-60 g pour la houle, le
+            courant et les gros volumes. En surfcasting, on parle de 100-150 g et il s’agit
+            du plomb.
+          </p>
+        </details>
+        <details>
+          <summary>Quelle action de canne choisir pour le bar ?</summary>
+          <p>
+            Une action de pointe (fast) pour les leurres souples et les jerkbaits : seuls
+            les trente premiers centimètres du blank plient, l’animation est nette et le
+            ferrage passe à quarante mètres sur tresse. Une action semi-parabolique
+            (regular ou moderate-fast) si vous pêchez surtout aux poissons nageurs à
+            hameçons triples : la canne amortit les coups de tête et décroche moins. Le
+            surfcasting, lui, se pêche en parabolique, parce qu’il faut propulser un plomb,
+            pas animer un leurre.
+          </p>
+        </details>
+        <details>
+          <summary>Une seule canne peut-elle faire les leurres et le surfcasting ?</summary>
+          <p>
+            Non, et c’est le seul point où il ne faut pas chercher le compromis. Les deux
+            pêches ne demandent pas le même geste : l’une propulse 20 g qu’il faut ensuite
+            animer à la seconde près, l’autre envoie 130 g de plomb et d’appât à cent mètres
+            puis attend, canne posée sur un pique. Une canne « polyvalente » de 3,60 m en
+            30-80 g fait les deux mal. Si le budget n’en permet qu’une, prenez la canne à
+            leurres : elle prend du poisson partout, y compris de la plage.
+          </p>
+        </details>
+        <details>
+          <summary>Quel moulinet et quel fil associer à une canne à bar du bord ?</summary>
+          <p>
+            Sur une 2,70 m en 10-40 g : un moulinet taille 3000 ou 4000, une tresse de 0,15
+            à 0,18 mm et un bas de ligne fluorocarbone de 30 à 35/100 sur environ un mètre.
+            La tresse ne s’allonge pas, ce qui rend le ferrage possible à distance et fait
+            sentir la touche ; le fluorocarbone encaisse le frottement sur la roche et se
+            voit moins en eau claire. En surfcasting, on repasse au nylon de 28 à 30/100
+            avec un arraché de 55 à 60/100, à raison d’un dixième de millimètre par dix
+            grammes de plomb.
+          </p>
+        </details>
+        <details>
+          <summary>Canne télescopique ou canne en deux brins ?</summary>
+          <p>
+            Deux brins, sauf contrainte de transport réelle. Une télescopique se range dans
+            un sac à dos et se déploie en dix secondes, mais elle empile cinq à sept
+            emboîtements sur la longueur du blank : l’action y est plus molle, les brins se
+            bloquent avec le sel et le sable, et les anneaux ne s’alignent jamais tout à
+            fait. Une canne en deux brins de même prix sera plus fine, plus nerveuse et
+            durera plus longtemps. La télescopique se justifie si l’alternative est de ne
+            pas emporter de canne du tout.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SIBLING GUIDES ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Et maintenant, où et quand</h2>
+      <p class="section-lede">
+        La canne est choisie. Reste la moitié qui décide vraiment d’une sortie : la marée,
+        le vent et la lumière, qui ne se lisent pas de la même façon d’un bout à l’autre du
+        littoral.
+      </p>
+
+      <div class="siblings">
+        <a class="sibling" href="/peche-bar-dunkerque/">
+          <h3>Pêche au bar à Dunkerque →</h3>
+          <p>
+            Un marnage moyen mais un courant qui tombe pile dans la plage idéale — et le
+            seul spot dont l’outil connaisse la table des vents par cœur.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-calais/">
+          <h3>Pêche au bar à Calais →</h3>
+          <p>
+            Le détroit et ses deux à trois nœuds de courant : le seul secteur du littoral où
+            une trop grosse vive-eau peut faire baisser la note.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-boulogne-sur-mer/">
+          <h3>Pêche au bar à Boulogne-sur-Mer →</h3>
+          <p>
+            Huit mètres de marnage et une côte plein ouest. La digue Carnot, les plages
+            d’Équihen à Hardelot, et la saison mois par mois.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-normandie/">
+          <h3>Pêche au bar en Normandie →</h3>
+          <p>
+            Six cents kilomètres de côte qui tournent sur plus de 180°, du Tréport au
+            Mont-Saint-Michel, et jusqu’à quatorze mètres de marnage.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-bretagne/">
+          <h3>Pêche au bar en Bretagne →</h3>
+          <p>
+            Deux mers, deux réglementations et la houle d’ouest qui décide de tout : la
+            région où la longueur de canne se discute vraiment.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-vendee/">
+          <h3>Pêche au bar en Vendée →</h3>
+          <p>
+            De l’eau à 21 °C en août, des marées modestes et de la houle atlantique : la
+            Gascogne ne se lit pas comme la Manche.
+          </p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="closing">
+    <!-- ===================== CLOSING ===================== -->
+    <section class="closing">
+      <div class="wrap">
+        <h2>La bonne canne, au bon moment</h2>
+        <p class="section-lede">
+          Marée, houle, vent et lumière des sept prochains jours, ramenés à un score et à
+          une heure, pour n’importe quelle commune du littoral. Le matériel fait le reste.
+        </p>
+        <a class="cta" href="/app/">Voir les conditions <span class="arrow">→</span></a>
+      </div>
+    </section>
+  </Fragment>
+</GuideLayout>

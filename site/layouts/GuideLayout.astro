@@ -9,14 +9,19 @@
  * to leave a neighbour's coordinates behind after a copy-paste. What is left
  * for the page to supply is what is genuinely its own: its title, its two
  * descriptions, its questions and its prose.
+ *
+ * It renders a spot guide and a topic guide the same way, and does not know
+ * which it was handed: `subjectOf()` answers what the breadcrumb ends on, what
+ * the headline says and what the article is about, and those are the only three
+ * places the two kinds differ.
  */
 import BaseLayout from './BaseLayout.astro';
-import { guideBySlug, pathOf, SITE_URL, urlOf } from '../data/guides.mjs';
+import { pathOf, SITE_URL, subjectOf, urlOf } from '../data/guides.mjs';
 
 import '../styles/guide.css';
 
 interface Props {
-  /** Which guide this is. Everything about the place comes from its entry. */
+  /** Which guide this is. Everything about its subject comes from its entry. */
   slug: string;
   /** `<title>`, `og:title` and `twitter:title`. */
   title: string;
@@ -29,7 +34,7 @@ interface Props {
 }
 
 const { slug, title, description, social, faq } = Astro.props;
-const { place, preposition, kind, region, geo } = guideBySlug(slug);
+const { crumb, headline, about } = subjectOf(slug);
 
 const url = urlOf(slug);
 
@@ -38,32 +43,21 @@ const breadcrumbs = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Pêche au bar', item: `${SITE_URL}/` },
-    { '@type': 'ListItem', position: 2, name: place, item: url },
+    { '@type': 'ListItem', position: 2, name: crumb, item: url },
   ],
 };
 
 const article = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  // The one headline shape all six share. A guide that ever needs its own says
-  // so with a prop; until one does, this is what keeps them in step.
-  headline: `Pêche au bar ${preposition} ${place} : meilleurs horaires et conditions`,
+  // Both the headline and what the article is about come from the route table:
+  // a spot guide's are a template over its place, a topic guide's are its own.
+  headline,
   inLanguage: 'fr-FR',
   url,
   mainEntityOfPage: url,
   image: `${SITE_URL}/og-image.png`,
-  about: {
-    '@type': 'Place',
-    name: place,
-    address: {
-      '@type': 'PostalAddress',
-      // A region page has no locality to name — only the region itself.
-      ...(kind === 'commune' ? { addressLocality: place } : {}),
-      addressRegion: region,
-      addressCountry: 'FR',
-    },
-    geo: { '@type': 'GeoCoordinates', ...geo },
-  },
+  about,
   publisher: { '@type': 'Organization', name: 'BassScore', url: `${SITE_URL}/` },
 };
 
@@ -98,7 +92,7 @@ const faqPage = {
         <nav class="crumbs" aria-label="Fil d’Ariane">
           <ol>
             <li><a href="/">Pêche au bar</a></li>
-            <li>{place}</li>
+            <li>{crumb}</li>
           </ol>
         </nav>
 
