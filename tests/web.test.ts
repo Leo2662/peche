@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
 import { missingTagReason } from '../scripts/analytics.mjs';
-import { GUIDES, pathOf, ROUTES, SITE_URL, urlOf } from '../site/data/guides.mjs';
+import { GUIDES, PAGES, pathOf, ROUTES, SITE_URL, subjectOf, TOPICS, urlOf } from '../site/data/guides.mjs';
 import { buildSitemap, isoDate } from '../site/data/sitemap.mjs';
 import { DEFAULT_SPOT, isCalibrated } from '../src/config/spots';
 
@@ -50,10 +50,11 @@ describe('sitemap generation', () => {
   });
 
   it('lists only routes the site actually serves', () => {
-    // The landing page, then one entry per editorial guide. The app itself is
-    // client-rendered and carries a noindex — listing it would be a soft-404.
+    // The landing page, then one entry per editorial guide — the spot guides
+    // and the topic guides alike. The app itself is client-rendered and carries
+    // a noindex, so listing it would be a soft-404.
     assert.equal(ROUTES[0].path, '/');
-    assert.equal(ROUTES.length, 1 + GUIDES.length);
+    assert.equal(ROUTES.length, 1 + GUIDES.length + TOPICS.length);
 
     for (const route of ROUTES.slice(1)) {
       // `vercel.json` sets trailingSlash: true, so the slash-less form is a 308.
@@ -73,7 +74,7 @@ describe('sitemap generation', () => {
    */
   it('announces every guide, and only guides that were built', () => {
     const announced = ROUTES.slice(1).map((route) => route.path).sort();
-    const registered = GUIDES.map(({ slug }) => pathOf(slug)).sort();
+    const registered = PAGES.map(({ slug }) => pathOf(slug)).sort();
     assert.deepEqual(announced, registered);
   });
 
@@ -272,19 +273,24 @@ describe("the app's template", () => {
 });
 
 /**
- * The per-spot guides.
+ * Every guide, whichever kind it is.
  *
  * These are the pages that actually rank: unlike the app they are real text a
  * crawler can read, and unlike the landing page they answer a question someone
- * types ("pêche au bar à Boulogne-sur-Mer"). What follows holds every guide to
- * the same bar, so the second one cannot be written to a lower standard than
- * the first.
+ * types ("pêche au bar à Boulogne-sur-Mer", "quelle canne pour le bar du
+ * bord"). What follows holds every guide to the same bar, so the seventh cannot
+ * be written to a lower standard than the first.
+ *
+ * What is *not* here is what only one kind of guide can be held to — that a
+ * spot page is written for its own coast, that a topic page delivers the three
+ * axes it promises. Those follow, one describe each.
  */
-describe('the spot guides', () => {
-  for (const { slug, place } of GUIDES) {
+describe('the guides', () => {
+  for (const { slug } of PAGES) {
     const html = pageOf(slug);
     const head = headOf(html);
     const url = urlOf(slug);
+    const { crumb, headline, about } = subjectOf(slug);
 
     describe(slug, () => {
       it('claims its own path, and asks to be indexed', () => {
@@ -323,38 +329,20 @@ describe('the spot guides', () => {
           `description is ${description.length} chars`
         );
 
-        // A guide that names neither its species nor its commune is not a
-        // guide — it is the landing page with extra words.
+        // A guide that does not name its species is not a guide — it is the
+        // landing page with extra words.
         for (const field of [title, description]) {
           assert.match(field.toLowerCase(), /bar/, `"${field}" does not name the species`);
-          assert.ok(field.includes(place), `"${field}" does not name ${place}`);
         }
       });
 
-      it('carries exactly one h1, naming the place', () => {
+      it('carries exactly one h1, naming what the page is about', () => {
         const h1s = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)];
         assert.equal(h1s.length, 1, 'a page with two h1s has no main heading');
-        assert.ok(h1s[0][1].includes(place), `the h1 does not name ${place}`);
-      });
-
-      /**
-       * Two spot guides built from the same template will read as near
-       * duplicates unless each is actually written for its own coast. Google
-       * calls that thin content and picks one to rank; the other is wasted.
-       */
-      it('is written for its own coast, not copied from a sibling', () => {
-        for (const other of GUIDES) {
-          if (other.slug === slug) continue;
-          // Naming a neighbour in a link or a comparison is the point of the
-          // sibling section. Being *about* it is the failure.
-          const body = html.slice(html.indexOf('<h1'));
-          const mentions = body.split(other.place).length - 1;
-          const own = body.split(place).length - 1;
-          assert.ok(
-            own > mentions,
-            `${slug} names ${other.place} ${mentions}× but ${place} only ${own}×`
-          );
-        }
+        // `crumb` is the place on a spot guide and the question on a topic
+        // guide: either way it is what the route table says the page is about,
+        // and the one string a copy-paste from a sibling would leave behind.
+        assert.ok(h1s[0][1].includes(crumb), `the h1 does not name "${crumb}"`);
       });
 
       /**
@@ -362,7 +350,7 @@ describe('the spot guides', () => {
        * it collects the search traffic and hands it on. A guide that links
        * nowhere is a leaf, and one nothing links to is an orphan.
        */
-      it('links into the tool and back to the landing page', () => {
+      it('links into the tool, back to the landing page, and to every sibling', () => {
         assert.ok(html.includes('href="/app/"'), 'no link to the app');
         assert.ok(html.includes('href="/"'), 'no link back to the landing page');
         assert.ok(html.includes('href="/#comment"'), 'no deep link into the explanation');
@@ -374,9 +362,10 @@ describe('the spot guides', () => {
           `the landing page does not link to ${pathOf(slug)} — the guide is an orphan`
         );
 
-        // The guides link to each other too. A hub-and-spoke with no rim makes
-        // every guide a one-hop dead end from the root.
-        for (const other of GUIDES) {
+        // The guides link to each other too — the footer sees to it. A
+        // hub-and-spoke with no rim makes every guide a one-hop dead end from
+        // the root.
+        for (const other of PAGES) {
           if (other.slug === slug) continue;
           assert.ok(
             html.includes(`href="${pathOf(other.slug)}"`),
@@ -405,19 +394,19 @@ describe('the spot guides', () => {
         const trail = breadcrumb.itemListElement;
         assert.equal(trail[0].item, `${DOMAIN}/`);
         assert.equal(trail.at(-1).item, url);
-        assert.equal(trail.at(-1).name, place, 'the breadcrumb does not name the place');
+        assert.equal(trail.at(-1).name, crumb, 'the breadcrumb does not name the subject');
         trail.forEach((step: { position: number }, index: number) => {
           assert.equal(step.position, index + 1, 'breadcrumb positions are not 1-based and ordered');
         });
 
-        // The Article has to be about this place and point at this page — the
-        // two fields a copy-paste between guides would leave behind.
+        // The Article has to point at this page and carry this page's subject —
+        // the fields a copy-paste between guides would leave behind.
         const article = blocks.find((block) => block['@type'] === 'Article');
         assert.ok(article, 'no Article');
         assert.equal(article.url, url);
         assert.equal(article.mainEntityOfPage, url);
-        assert.equal(article.about?.name, place);
-        assert.ok(article.headline?.includes(place), 'the headline does not name the place');
+        assert.equal(article.headline, headline, 'the headline is not the one the route table gives');
+        assert.deepEqual(article.about, about, 'the Article is about someone else');
 
         const faq = blocks.find((block) => block['@type'] === 'FAQPage');
         assert.ok(faq, 'no FAQPage');
@@ -437,6 +426,118 @@ describe('the spot guides', () => {
         assert.match(head, /property="og:image" content="https:\/\/pecheaubar\.fr\/og-image\.png"/);
         assert.match(head, /name="twitter:card" content="summary_large_image"/);
         assert.equal(missingTagReason(html), null);
+      });
+    });
+  }
+});
+
+/**
+ * The per-spot guides, and what only they can be held to.
+ *
+ * A spot guide answers a question someone types with a place in it, so the
+ * place is what it has to name — in its title, in its description, and more
+ * often than any of its neighbours.
+ */
+describe('the spot guides', () => {
+  for (const { slug, place } of GUIDES) {
+    const html = pageOf(slug);
+    const head = headOf(html);
+
+    describe(slug, () => {
+      it('names its place in the title and the description', () => {
+        const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
+        const description = head.match(/name="description" content="([^"]+)"/s)?.[1] ?? '';
+        for (const field of [title, description]) {
+          assert.ok(field.includes(place), `"${field}" does not name ${place}`);
+        }
+      });
+
+      it('announces its place in the schema headline', () => {
+        assert.ok(
+          subjectOf(slug).headline.includes(place),
+          'the headline does not name the place'
+        );
+      });
+
+      /**
+       * Two spot guides built from the same template will read as near
+       * duplicates unless each is actually written for its own coast. Google
+       * calls that thin content and picks one to rank; the other is wasted.
+       */
+      it('is written for its own coast, not copied from a sibling', () => {
+        for (const other of GUIDES) {
+          if (other.slug === slug) continue;
+          // Naming a neighbour in a link or a comparison is the point of the
+          // sibling section. Being *about* it is the failure.
+          const body = html.slice(html.indexOf('<h1'));
+          const mentions = body.split(other.place).length - 1;
+          const own = body.split(place).length - 1;
+          assert.ok(
+            own > mentions,
+            `${slug} names ${other.place} ${mentions}× but ${place} only ${own}×`
+          );
+        }
+      });
+    });
+  }
+});
+
+/**
+ * The topic guides — the ones about tackle and technique rather than a stretch
+ * of coast.
+ *
+ * They rank on searches no commune appears in, which is exactly why they are
+ * the pages most likely to drift into generality: a page that answers "quelle
+ * canne" without ever committing to a length, a casting weight or an action is
+ * an article about nothing. So each is held to naming its own subject, and to
+ * saying something specific about it.
+ */
+describe('the topic guides', () => {
+  for (const topic of TOPICS) {
+    const html = pageOf(topic.slug);
+    const head = headOf(html);
+
+    describe(topic.slug, () => {
+      it('names its subject in the title and the description', () => {
+        const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
+        const description = head.match(/name="description" content="([^"]+)"/s)?.[1] ?? '';
+
+        // The subject noun — "canne" for the rod guide — is the word someone
+        // actually types. Both fields have to carry it, whatever else they say.
+        const subject = topic.about.split(' ')[0].toLowerCase();
+        for (const field of [title, description]) {
+          assert.ok(
+            field.toLowerCase().includes(subject),
+            `"${field}" does not name its subject ("${subject}")`
+          );
+        }
+
+        // And the title asks the page's own question, in the words the
+        // breadcrumb and the sibling links use for it.
+        assert.ok(
+          title.toLowerCase().includes(topic.crumb.toLowerCase()),
+          `the title does not ask "${topic.crumb}"`
+        );
+      });
+
+      it('is about a subject, not about a coast', () => {
+        const body = html.slice(html.indexOf('<h1'));
+        for (const { place } of GUIDES) {
+          // Naming a coast to say where a longer rod earns its keep, and again
+          // in the links out, is what a topic guide is for. Naming one five
+          // times is a spot guide wearing the wrong title, and it will compete
+          // with the real one.
+          const mentions = body.split(place).length - 1;
+          assert.ok(mentions <= 4, `${topic.slug} names ${place} ${mentions}× — it reads as a spot guide`);
+        }
+      });
+
+      it('answers with numbers, not with generalities', () => {
+        const body = html.slice(html.indexOf('<h1'));
+        // A rod guide that never prints a length in metres, a casting weight in
+        // grams or a line diameter has answered nothing.
+        assert.match(body, /\d,\d{2}\s?m/, 'no length in metres anywhere on the page');
+        assert.match(body, /\d{1,3}-\d{1,3}\s?g/, 'no casting weight range anywhere on the page');
       });
     });
   }

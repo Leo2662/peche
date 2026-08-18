@@ -322,8 +322,8 @@ npm run dev           # the site alone, with hot reload, on :4321
 ```
 
 The site is **two builds sharing one output directory**. [Astro](https://astro.build)
-builds everything a crawler reads — the landing page and the six guides — and
-Expo exports the app. `scripts/merge-app.mjs` drops the app into `dist/app/`
+builds everything a crawler reads — the landing page, the six spot guides and
+the topic guides — and Expo exports the app. `scripts/merge-app.mjs` drops the app into `dist/app/`
 once both have run.
 
 They are separated by directory so neither has to be told to look somewhere
@@ -331,11 +331,11 @@ unusual:
 
 | Path | Purpose |
 | --- | --- |
-| `site/pages/` | one file per URL: `index.astro` and a guide per spot |
+| `site/pages/` | one file per URL: `index.astro`, a guide per spot, a guide per topic |
 | `site/layouts/` | `BaseLayout.astro` (the head every page shares) and `GuideLayout.astro` (the schema.org blocks) |
 | `site/components/` | `Analytics.astro`, `SiteHeader.astro`, `SiteFooter.astro` |
 | `site/styles/` | `site.css` (shared chrome), `landing.css`, `guide.css` |
-| `site/data/guides.mjs` | **the route table** — every guide, and everything about its place |
+| `site/data/guides.mjs` | **the route table** — every guide, and everything about its subject |
 | `site/data/sitemap.mjs` | the sitemap builder, served by `site/pages/sitemap.xml.js` |
 | `site/public/` | copied verbatim to the root: robots, manifest, share card, icons |
 | `public/index.html` | the app's HTML template — Expo's, and only Expo's |
@@ -349,8 +349,21 @@ and Metro never sees it. The one thing they share is `scripts/analytics.mjs`.
 
 `site/data/guides.mjs` is the only place a guide is declared. The footers build
 their nav from it, the sitemap builds its `<url>` list from it, and each page
-reads its own entry for the breadcrumb, the postal address and the coordinates
-in its `Article` schema.
+reads its own entry for the breadcrumb, the headline and the entity its
+`Article` schema is about.
+
+There are two kinds of entry, because there are two kinds of guide:
+
+- **`GUIDES`** — the spot guides, one per commune or region. Everything they say
+  about themselves follows from the place: the breadcrumb, the headline, the
+  postal address and the coordinates in the schema.
+- **`TOPICS`** — the guides about tackle and technique, which no place decides
+  ("quelle canne pour le bar du bord"). They write down the three fields a spot
+  guide derives.
+
+`subjectOf(slug)` is where the two meet: it hands `GuideLayout` the same
+breadcrumb label, headline and `about` node whichever kind it was given, so the
+layout renders both and knows about neither.
 
 Adding a guide is two edits: a page in `site/pages/`, and an entry here. The
 build fails if a registered slug has no page behind it.
@@ -634,7 +647,8 @@ src/
 └── types/                  shared domain types
 
 site/                       the website — Astro, no React Native
-├── pages/                  index.astro, one .astro per guide, sitemap.xml.js
+├── pages/                  index.astro, one .astro per guide (spot and topic),
+│                           sitemap.xml.js
 ├── layouts/                BaseLayout.astro, GuideLayout.astro
 ├── components/             Analytics, SiteHeader, SiteFooter
 ├── styles/                 site.css, landing.css, guide.css
