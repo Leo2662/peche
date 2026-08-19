@@ -144,6 +144,13 @@ export const TOPICS = [
     headline: 'Quelle canne pour la pêche au bar du bord : longueur, puissance, action',
     about: 'Canne à pêche au bar du bord',
   },
+  {
+    slug: 'leurres-souples-bar',
+    crumb: 'Leurres souples',
+    nav: 'Les meilleurs leurres souples à bar',
+    headline: 'Les 7 meilleurs leurres souples pour le bar, et comment les animer',
+    about: 'Leurre souple pour la pêche du bar',
+  },
 ];
 
 /** Every page in the route table, spot guides first. */

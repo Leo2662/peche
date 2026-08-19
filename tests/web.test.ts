@@ -339,10 +339,15 @@ describe('the guides', () => {
       it('carries exactly one h1, naming what the page is about', () => {
         const h1s = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)];
         assert.equal(h1s.length, 1, 'a page with two h1s has no main heading');
-        // `crumb` is the place on a spot guide and the question on a topic
-        // guide: either way it is what the route table says the page is about,
-        // and the one string a copy-paste from a sibling would leave behind.
-        assert.ok(h1s[0][1].includes(crumb), `the h1 does not name "${crumb}"`);
+        // `crumb` is the place on a spot guide and the subject on a topic guide:
+        // either way it is what the route table says the page is about, and the
+        // one string a copy-paste from a sibling would leave behind. Compared
+        // case-insensitively, because a breadcrumb label is capitalised and an
+        // h1 may well name the same thing mid-sentence.
+        assert.ok(
+          h1s[0][1].toLowerCase().includes(crumb.toLowerCase()),
+          `the h1 does not name "${crumb}"`
+        );
       });
 
       /**
@@ -534,10 +539,16 @@ describe('the topic guides', () => {
 
       it('answers with numbers, not with generalities', () => {
         const body = html.slice(html.indexOf('<h1'));
-        // A rod guide that never prints a length in metres, a casting weight in
-        // grams or a line diameter has answered nothing.
-        assert.match(body, /\d,\d{2}\s?m/, 'no length in metres anywhere on the page');
-        assert.match(body, /\d{1,3}-\d{1,3}\s?g/, 'no casting weight range anywhere on the page');
+        // The failure mode of a tackle guide is the article that reads well and
+        // commits to nothing — "choisissez une canne adaptée", "privilégiez un
+        // leurre réaliste". A page that answers is thick with measurements: a
+        // length, a weight, a diameter, a temperature. Which units it reaches
+        // for is its own business; that it reaches for them is not.
+        const measured = body.match(/\d+(?:[,.]\d+)?\s?(?:mm|cm|m|g|kg|°C|km\/h)\b/g) ?? [];
+        assert.ok(
+          measured.length >= 20,
+          `${topic.slug} prints only ${measured.length} measurements — it answers in generalities`
+        );
       });
     });
   }

@@ -1,0 +1,819 @@
+---
+import GuideLayout from '../layouts/GuideLayout.astro';
+
+/** What Google may show under the result, in the page's own words. */
+const faq = [
+  {
+    question: "Quel est le meilleur leurre souple pour le bar ?",
+    answer:
+      "Un shad à caudale plate de 10 à 12 cm, monté sur une tête plombée de 10 à 20 g. C’est le leurre qui prend le plus de bars du bord en France, parce qu’il travaille tout seul : sa queue bat dès la récupération la plus lente, il se lance loin, il descend droit et il imite ce que le bar mange le plus souvent — un petit poisson blanc. Si vous ne deviez en emporter qu’un, ce serait celui-là, en blanc nacré et en 11 cm.",
+  },
+  {
+    question: "Quelle taille de leurre souple pour le bar ?",
+    answer:
+      "De 9 à 13 cm dans l’immense majorité des situations, avec 11 cm comme taille pivot. En dessous de 9 cm, vous prendrez plus de poissons mais plus petits, et les touches de maquereau et de chinchard deviendront la règle. Au-dessus de 15 cm, vous sélectionnez de gros bars et vous acceptez de faire beaucoup moins de touches : c’est un choix de nuit ou de gros coefficient, pas un réglage par défaut.",
+  },
+  {
+    question: "Quel poids de tête plombée pour le bar du bord ?",
+    answer:
+      "La plus légère qui vous laisse sentir le fond. En pratique : 7 à 10 g en eau calme et peu profonde, 14 à 20 g dans un mètre de vague ou un courant moyen, 25 à 35 g dans une grande vive-eau ou par vent de face. Le test est simple : lancez, comptez la descente. Si le leurre n’arrive jamais au fond, montez de 5 g ; s’il tombe comme une pierre et que vous ne sentez plus la queue battre, descendez.",
+  },
+  {
+    question: "Comment animer un leurre souple pour le bar ?",
+    answer:
+      "Trois animations couvrent presque tout. La linéaire lente : vous ramenez juste assez vite pour sentir la queue vibrer dans le scion, et rien d’autre. La traction : deux ou trois coups de canne amples, puis vous laissez le leurre redescendre en ligne tendue — c’est à la descente que 80 % des touches arrivent. La dérive : dans le courant, canne haute, vous laissez le leurre travailler tout seul en ne reprenant que le mou. Dans les trois cas, la pause fait autant de travail que le mouvement.",
+  },
+  {
+    question: "Quelle couleur de leurre souple pour le bar ?",
+    answer:
+      "Trois couleurs suffisent. Un naturel translucide pour l’eau claire et le plein jour, un blanc nacré opaque pour l’eau teintée et la houle, un noir ou un sombre pour la nuit — dans le noir, ce que le bar voit est une silhouette à contre-jour, et une couleur claire n’en fait pas. La couleur arrive loin derrière la taille, la profondeur de nage et la vitesse d’animation dans l’ordre de ce qui décide d’une touche.",
+  },
+  {
+    question: "Leurre souple ou poisson nageur pour le bar ?",
+    answer:
+      "Le souple couvre plus de situations : il descend, il se pêche à toutes les profondeurs, il passe dans les roches en montage texan, et il coûte trois fois moins cher à perdre. Le poisson nageur garde deux avantages nets — il nage à vitesse rapide sans se coucher, ce qui compte quand le bar chasse en surface, et ses hameçons triples piquent des poissons qui touchent court. Un bord de mer bien couvert emporte les deux, avec deux tiers de souples.",
+  },
+];
+---
+
+<GuideLayout
+  slug="leurres-souples-bar"
+  title="Les 7 meilleurs leurres souples pour le bar"
+  description="Les 7 familles de leurres souples qui prennent le bar du bord, la taille et le poids de tête à mettre au bout, et l’animation qui va avec chacune."
+  social="Sept leurres souples, sept animations : le shad, le slug, la virgule, le lançon, le texan, le gros volume et le crustacé — et quand sortir lequel."
+  faq={faq}
+>
+  <Fragment slot="hero">
+    <div>
+      <h1>
+        Les 7 meilleurs leurres souples pour le bar, <strong>et comment les
+        animer.</strong>
+      </h1>
+      <p class="lede">
+        Sept familles, pas sept références : un leurre souple ne se choisit pas
+        par sa marque mais par la forme de sa queue, ce qu’elle fait à vitesse
+        lente, et le montage qui va avec. Voici ce que chacune apporte, le poids
+        de tête à mettre au bout, et le geste qui la fait travailler.
+      </p>
+      <div class="hero-actions">
+        <a class="cta" href="/app/">Voir les conditions du jour <span class="arrow">→</span></a>
+        <a class="cta ghost" href="#animation">Les trois animations</a>
+      </div>
+      <p class="hero-note">Aucun lien affilié · aucune marque citée · gratuit et sans compte</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">SI VOUS N’EN EMPORTEZ QU’UN</p>
+      <div class="slot-label">FAMILLE</div>
+      <div class="slot">Shad</div>
+      <div class="slot-label">TAILLE</div>
+      <div class="slot">11 cm</div>
+      <div class="slot-label">TÊTE PLOMBÉE</div>
+      <div class="slot">10 – 20 g</div>
+      <div class="verdict">LINÉAIRE LENTE</div>
+      <div class="place">Plage · digue · estuaire · roche</div>
+    </div>
+  </Fragment>
+
+  <!-- ===================== LA QUEUE DECIDE ===================== -->
+  <section id="familles" class="flagship">
+    <div class="wrap">
+      <span class="badge">CE QUI DISTINGUE UN SOUPLE D’UN AUTRE</span>
+      <h2>La queue décide de tout le reste</h2>
+      <div class="prose">
+        <p>
+          Un rayon de leurres souples ressemble à un mur de couleurs, et c’est le pire
+          angle pour le lire. Ce qui sépare vraiment deux <strong>leurres souples à
+          bar</strong>, c’est la forme de leur caudale : elle fixe la vitesse minimale à
+          laquelle le leurre vit, la vibration qu’il envoie, et donc la situation où il
+          est le bon choix.
+        </p>
+        <p>
+          Une caudale plate — la « paddle » — bat dès qu’on la tire, même très lentement.
+          Une queue fine et droite n’envoie presque rien et se contente de suivre : elle
+          demande que ce soit vous qui donniez la vie. Une virgule tourne sur elle-même et
+          vibre plus haut. Les sept familles ci-dessous couvrent tout ce qu’un pêcheur du
+          bord rencontre, et il en manque très peu.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Les sept familles, en une lecture</caption>
+          <thead>
+            <tr>
+              <th scope="col">Famille</th>
+              <th scope="col">Ce qu’elle fait</th>
+              <th scope="col">Taille</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">1. Le shad</th>
+              <td>Caudale plate, vibration franche à vitesse lente. Le passe-partout.</td>
+              <td class="rank top">10 – 12 cm</td>
+            </tr>
+            <tr>
+              <th scope="row">2. Le slug</th>
+              <td>Corps fin sans caudale, nage erratique donnée par le poignet.</td>
+              <td class="rank top">12 – 14 cm</td>
+            </tr>
+            <tr>
+              <th scope="row">3. Le lançon</th>
+              <td>Silhouette longue et étroite, pour quand le bar chasse le lançon.</td>
+              <td class="rank top">10 – 15 cm</td>
+            </tr>
+            <tr>
+              <th scope="row">4. La virgule</th>
+              <td>Queue en spirale, elle tourne à la vitesse la plus lente possible.</td>
+              <td class="rank mid">7 – 10 cm</td>
+            </tr>
+            <tr>
+              <th scope="row">5. Le texan</th>
+              <td>N’importe quel corps monté hameçon caché : il passe où les autres accrochent.</td>
+              <td class="rank mid">10 – 13 cm</td>
+            </tr>
+            <tr>
+              <th scope="row">6. Le gros volume</th>
+              <td>Beaucoup de déplacement d’eau, peu de touches, de plus gros poissons.</td>
+              <td class="rank mid">15 – 18 cm</td>
+            </tr>
+            <tr>
+              <th scope="row">7. Le crustacé</th>
+              <td>Crevette ou crabe souple, pêché sur le fond, presque immobile.</td>
+              <td class="rank mid">6 – 10 cm</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>Sept familles, pas sept boîtes à acheter</strong> — un bord de mer complet
+        tient dans une pochette : des shads en deux tailles et trois couleurs, quelques
+        slugs, une poignée de têtes plombées de 7 à 30 g et quelques hameçons texans. Le
+        reste se rajoute quand un poste précis le demande, pas avant.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LES SEPT ===================== -->
+  <section id="les-sept">
+    <div class="wrap">
+      <h2>Les sept, une par une</h2>
+      <p class="section-lede">
+        Pour chacune : ce qu’elle fait dans l’eau, le montage qui va avec, et le moment
+        où elle bat les six autres.
+      </p>
+
+      <div class="grid">
+        <article class="tile">
+          <span class="weight">1 · 10-12 cm · 10-20 g</span>
+          <h3>Le shad à caudale plate</h3>
+          <p>
+            Le leurre à bar par défaut, et de loin. Sa queue bat dès la récupération la
+            plus lente, ce qui pardonne à peu près tout : même mal animé, il travaille.
+            Monté sur tête plombée ronde ou en forme de balle, il se lance à quarante
+            mètres et descend droit. <strong>Son moment :</strong> partout, tout le temps
+            — et surtout dès qu’il y a un peu d’eau brassée.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">2 · 12-14 cm · 5-14 g</span>
+          <h3>Le slug (corps fin, sans caudale)</h3>
+          <p>
+            Il ne fait rien tout seul : c’est vous qui le faites vivre, par petits coups
+            de scion qui l’envoient à droite et à gauche. En contrepartie, aucune
+            vibration parasite, une silhouette fine et une nage désordonnée de poisson
+            blessé. <strong>Son moment :</strong> mer plate, eau claire, bar qui suit sans
+            mordre — c’est le leurre du refus.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">3 · 10-15 cm · 7-20 g</span>
+          <h3>Le lançon</h3>
+          <p>
+            Long, étroit, souvent translucide : la copie du lançon, qui est la proie du
+            bar sur les plages de sable de mai à septembre. Se pêche en linéaire lente à
+            mi-hauteur, ou en traction sur le sable. <strong>Son moment :</strong> quand
+            le bar chasse en surface sans rien prendre de ce que vous lui montrez — il est
+            probablement sur du lançon.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">4 · 7-10 cm · 5-14 g</span>
+          <h3>La virgule</h3>
+          <p>
+            Sa queue en spirale tourne à des vitesses où une caudale plate ne bat même
+            plus. C’est le leurre des eaux froides de mars-avril et des jours où le
+            poisson refuse tout ce qui va vite. <strong>Son moment :</strong> eau à moins
+            de 12 °C, courant faible, ou pêche en dérive très lente au fil du courant.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">5 · 10-13 cm · texan 4/0-6/0</span>
+          <h3>Le montage texan</h3>
+          <p>
+            Ce n’est pas un leurre mais un montage : l’hameçon repique dans le corps,
+            pointe cachée, et le tout traverse laminaires, moules et blocs sans accrocher.
+            Il coûte une partie du taux de piquage, et vous rend des postes
+            entiers. <strong>Son moment :</strong> platiers, enrochements, herbiers —
+            partout où une tête plombée nue coûte trois leurres par heure.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">6 · 15-18 cm · 20-40 g</span>
+          <h3>Le gros volume</h3>
+          <p>
+            Beaucoup d’eau déplacée, une onde que le bar sent de loin par sa ligne
+            latérale, et un tri sévère : peu de touches, mais rarement des
+            petits. <strong>Son moment :</strong> la nuit, les grandes vive-eaux, l’eau teintée
+            d’après-tempête — les trois situations où le poisson chasse à la vibration
+            plutôt qu’à la vue.
+          </p>
+        </article>
+        <article class="tile">
+          <span class="weight">7 · 6-10 cm · 5-10 g</span>
+          <h3>Le crustacé souple</h3>
+          <p>
+            Crevette ou petit crabe, pêché posé ou traîné au ras du fond, par petites
+            tirées de dix centimètres entrecoupées de longues pauses. Rien à voir avec la
+            pêche du poisson-fourrage. <strong>Son moment :</strong> ports, darses,
+            estuaires, digues intérieures — là où le bar fouille plus qu’il ne chasse.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ANIMATION ===================== -->
+  <section id="animation">
+    <div class="wrap">
+      <h2>Trois animations de base, et une règle : la touche vient à la descente</h2>
+      <div class="prose">
+        <p>
+          C’est la phrase qui change le plus de sorties. Un bar suit un leurre, l’observe,
+          et se décide au moment où celui-ci décroche et tombe — comme un poisson qui
+          faiblit. Environ <strong>quatre touches sur cinq</strong> arrivent pendant la
+          descente, pas pendant la tirée. Tout ce qui suit consiste donc à provoquer des
+          descentes et à les rendre lisibles.
+        </p>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Les trois gestes de base, et les deux d’appoint</caption>
+          <thead>
+            <tr>
+              <th scope="col">Animation</th>
+              <th scope="col">Le geste, précisément</th>
+              <th scope="col">Pour</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">La linéaire lente</th>
+              <td>
+                Canne à 45°, moulinet à vitesse constante, juste assez vite pour sentir la
+                queue battre dans le scion. Un tour de manivelle par seconde environ, pas
+                plus. Aucune autre intervention.
+              </td>
+              <td class="rank top">Shad, lançon, virgule</td>
+            </tr>
+            <tr>
+              <th scope="row">La traction</th>
+              <td>
+                Deux ou trois coups de canne amples de 40 à 60 cm, puis vous rendez la
+                main et suivez la descente en gardant la ligne tendue, en récupérant le
+                mou. La touche est un « toc » ou, plus souvent, un fil qui part de côté.
+              </td>
+              <td class="rank top">Shad, slug, gros volume</td>
+            </tr>
+            <tr>
+              <th scope="row">La dérive</th>
+              <td>
+                Dans le courant : lancer en amont, canne haute, on ne reprend que le mou
+                et on laisse le courant faire nager le leurre. Le leurre doit passer devant
+                le poste, jamais être tiré contre le courant.
+              </td>
+              <td class="rank top">Estuaires, chenaux, raz</td>
+            </tr>
+            <tr>
+              <th scope="row">Le walking souple</th>
+              <td>
+                Réservé au slug : petits coups de scion secs vers le bas, ligne relâchée
+                entre deux, pour l’envoyer alternativement à droite et à gauche sous la
+                surface.
+              </td>
+              <td class="rank mid">Slug, eau claire</td>
+            </tr>
+            <tr>
+              <th scope="row">Le traîné de fond</th>
+              <td>
+                Le leurre reste au contact : tirées de dix centimètres, pauses de trois à
+                cinq secondes. On pêche le fond comme on sonderait, sans jamais décoller.
+              </td>
+              <td class="rank mid">Crustacés, ports</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose" style="margin-top: 36px">
+        <h3>Ferrer un bar qui aspire</h3>
+        <p>
+          Le bar ne mord pas un souple : il l’aspire, souvent en travers, et le recrache
+          en une demi-seconde s’il sent une résistance anormale. Le ferrage se
+          donne <strong>franchement et immédiatement</strong>, sur le côté plutôt que vers le
+          haut, dès que quelque chose change — un poids, un « toc », une bannière qui part
+          de travers. Un fil tressé, une canne à action de pointe et un hameçon fort de fer
+          font ici toute la différence, et c’est <a href="/canne-peche-bar-du-bord/">le
+          sujet de l’autre guide</a>.
+        </p>
+        <h3>La faute la plus commune : trop vite</h3>
+        <p>
+          À peu près tout le monde anime deux fois trop vite, surtout par eau froide.
+          Comptez les secondes pendant la descente : si votre leurre de 14 g met moins de
+          trois secondes à revenir en tension dans deux mètres d’eau, vous récupérez trop
+          tôt. Le vide entre deux mouvements n’est pas du temps perdu, c’est là que la
+          touche se produit.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MONTAGE ===================== -->
+  <section id="montage">
+    <div class="wrap">
+      <h2>Le montage : tête plombée, texan, ou plombée déportée</h2>
+      <p class="section-lede">
+        Le même corps souple change complètement de comportement selon la façon dont on
+        l’arme. Trois montages suffisent, et le choix se fait sur le fond que vous avez
+        devant vous.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Quel montage pour quel fond</caption>
+          <thead>
+            <tr>
+              <th scope="col">Montage</th>
+              <th scope="col">Ce qu’il donne</th>
+              <th scope="col">Fond</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Tête plombée</th>
+              <td>
+                Le plus simple et le plus piquant : hameçon apparent, taille 2/0 à 4/0 pour
+                un corps de 10 à 13 cm. Le leurre doit être enfilé parfaitement droit,
+                sinon il vrille et le bar le refuse.
+              </td>
+              <td class="rank top">Sable, gravier</td>
+            </tr>
+            <tr>
+              <th scope="row">Texan (weedless)</th>
+              <td>
+                Hameçon offset 4/0 à 6/0, pointe repiquée dans le dos du leurre. Vous
+                perdez du piquage, vous gagnez tous les postes encombrés. Version lestée
+                pour lancer loin.
+              </td>
+              <td class="rank top">Roche, laminaires</td>
+            </tr>
+            <tr>
+              <th scope="row">Plombée déportée</th>
+              <td>
+                Le plomb est en avant, relié par un anneau : le leurre reste articulé et
+                garde une nage libre, très utile en dérive dans le courant.
+              </td>
+              <td class="rank mid">Courant, chenaux</td>
+            </tr>
+            <tr>
+              <th scope="row">Drop shot</th>
+              <td>
+                Plomb en bout de ligne, leurre monté 30 à 60 cm au-dessus : il reste dans
+                la couche d’eau visée sans jamais toucher le fond, presque immobile.
+              </td>
+              <td class="rank mid">Port, eau claire</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>Le poids se choisit par le contact, pas par le catalogue</strong> — la
+        bonne tête plombée est la plus légère qui vous laisse encore sentir le fond et la
+        vibration de la queue. Trop lourde, le leurre tombe comme une pierre et la descente
+        — le moment de la touche — dure une seconde. Trop légère, la ligne part en dérive
+        et vous ne savez plus où pêche votre leurre.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CONDITIONS ===================== -->
+  <section id="conditions">
+    <div class="wrap">
+      <h2>Quel souple sortir, selon les conditions du jour</h2>
+      <p class="section-lede">
+        Les mêmes paramètres que le score de <a href="/app/">l’outil</a> lit — marée,
+        houle, vent, lumière, température de l’eau — désignent aussi le leurre à mettre au
+        bout et le poids qui va avec.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Des conditions au bout de la ligne</caption>
+          <thead>
+            <tr>
+              <th scope="col">Ce que dit la prévision</th>
+              <th scope="col">Ce qu’il faut au bout</th>
+              <th scope="col">Tête</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Mer plate, eau claire, plein jour</th>
+              <td>
+                Slug de 12 cm en coloris naturel translucide, animation walking, ou lançon
+                en linéaire lente très fine. Bas de ligne descendu à 26/100.
+              </td>
+              <td class="rank mid">5 – 10 g</td>
+            </tr>
+            <tr>
+              <th scope="row">Houle de 0,5 à 1,5 m</th>
+              <td>
+                Shad de 11 à 13 cm, blanc opaque, en traction derrière la barre. La
+                vibration porte là où la vue ne sert plus.
+              </td>
+              <td class="rank top">14 – 25 g</td>
+            </tr>
+            <tr>
+              <th scope="row">Grande vive-eau, courant fort</th>
+              <td>
+                Shad ou plombée déportée en dérive, lancé en amont. Le leurre doit passer
+                naturellement devant le poste, pas lutter contre le courant.
+              </td>
+              <td class="rank top">20 – 35 g</td>
+            </tr>
+            <tr>
+              <th scope="row">Crépuscule et première heure de nuit</th>
+              <td>
+                Gros volume de 15 à 18 cm ou shad sombre : le bar chasse à la silhouette et
+                à l’onde. C’est le créneau où la taille moyenne monte d’un cran.
+              </td>
+              <td class="rank top">20 – 30 g</td>
+            </tr>
+            <tr>
+              <th scope="row">Eau à moins de 12 °C, sortie d’hiver</th>
+              <td>
+                Virgule de 7 à 9 cm animée au ralenti, ou crustacé traîné sur le fond. Le
+                poisson ne poursuit plus : il faut lui poser le leurre devant.
+              </td>
+              <td class="rank mid">5 – 14 g</td>
+            </tr>
+            <tr>
+              <th scope="row">Roche, laminaires, moulières</th>
+              <td>
+                Texan systématique. Un shad monté hameçon nu sur ce terrain, c’est trois
+                leurres perdus à l’heure et un poste abandonné.
+              </td>
+              <td class="rank mid">10 – 20 g</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose" style="margin-top: 36px">
+        <p>
+          Reste la moitié que le matériel ne décide pas : l’heure. La fenêtre utile
+          s’ouvre deux heures avant la pleine mer et se referme deux heures après, et elle
+          vaut double quand elle tombe autour du lever ou du coucher du
+          soleil. <a href="/app/">BassScore</a> note de 0 à 100 les sept prochains jours pour
+          n’importe quelle commune du littoral et donne ce créneau à la minute ; le détail
+          des facteurs est <a href="/#comment">expliqué sur la page d’accueil</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COULEURS ===================== -->
+  <section id="couleurs">
+    <div class="wrap">
+      <h2>Les couleurs : trois suffisent</h2>
+      <div class="prose">
+        <p>
+          C’est le sujet sur lequel on dépense le plus et qui décide le moins. Dans
+          l’ordre de ce qui provoque une touche viennent la taille, la profondeur de nage,
+          la vitesse d’animation — et la couleur bien après. Trois teintes couvrent
+          l’année :
+        </p>
+      </div>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Un naturel translucide</strong> — ambre, gris-vert, « ayu ». Pour
+            l’eau claire et le plein jour, quand le bar voit parfaitement et refuse ce qui
+            est trop marqué.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Un blanc nacré opaque</strong> — le plus polyvalent des trois. Eau
+            teintée, houle, ciel couvert, fin de journée : il reste visible quand la
+            visibilité tombe à un mètre.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Un sombre, noir ou violet</strong> — pour la nuit. À contre-jour de la
+            lune ou d’un lampadaire de port, le bar voit une silhouette : un leurre clair
+            n’en dessine aucune.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Le chartreuse et le rose fluo ont un seul usage réel : l’eau très chargée
+            après un coup de vent, quand rien d’autre ne se voit à trente centimètres.</span
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ERREURS ===================== -->
+  <section id="erreurs">
+    <div class="wrap">
+      <h2>Les erreurs qui font croire que « ça ne mord pas »</h2>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Animer trop vite.</strong> C’est la première de toutes, et de loin. Un
+            souple travaille à une vitesse qui paraît absurdement lente vue du bord ;
+            comptez vos secondes de descente plutôt que vos tours de manivelle.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Enfiler le leurre de travers.</strong> Un corps qui n’est pas parfaitement
+            aligné sur l’axe de l’hameçon vrille à la récupération. Le bar refuse un leurre
+            qui tourne sur lui-même, et vous vannerez votre tresse.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Plomber trop lourd « pour lancer plus loin ».</strong> Vous gagnez dix
+            mètres et vous perdez la descente, qui est le moment de la touche. Mieux vaut
+            une tête plus légère et un leurre qui plane.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Garder un leurre déchiré.</strong> Un shad fendu au niveau du collier
+            ne nage plus droit et n’envoie plus rien. Il coûte moins d’un euro : changez-le
+            au lieu de pêcher une heure avec.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Un hameçon trop petit ou émoussé.</strong> Le bar a une gueule dure et
+            osseuse. Un 3/0 fort de fer, piqué net, tient ; un hameçon fin ouvert sur un
+            poisson de 60 cm, non. Vérifiez la pointe à l’ongle toutes les heures.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Rester au même endroit.</strong> Un souple se pêche en prospectant : dix
+            à quinze lancers en éventail, puis on avance de vingt mètres. Le bord de mer
+            récompense celui qui marche.</span
+          >
+        </p>
+      </div>
+
+      <div class="note">
+        <strong>Ramassez vos leurres usagés</strong> — un souple perdu est un morceau de
+        plastique qui reste des années sur l’estran et que les oiseaux confondent avec une
+        proie. Une poche pour les corps déchirés, et rien ne reste sur le poste.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== REGLEMENTATION ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Ce que vous avez le droit de garder</h2>
+      <div class="prose">
+        <p>
+          La pêche du bar de loisir est encadrée, et la pêche aux leurres bénéficie d’un
+          statut particulier pendant la fermeture. Pour 2026 :
+        </p>
+      </div>
+
+      <div class="facts">
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Taille minimale de capture : 42 cm</strong>, partout. En dessous, remise
+            à l’eau mains mouillées, hameçon décroché dans l’eau quand c’est possible.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Au nord du 48<sup>e</sup> parallèle</strong> — détention interdite du
+            1<sup>er</sup> février au 31 mars : seule la pêche à la canne, en remise à
+            l’eau, reste autorisée sur cette période. Trois bars par pêcheur et par jour le
+            reste de l’année.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            ><strong>Au sud</strong> — pêche ouverte toute l’année, dans la limite de deux
+            bars par pêcheur et par jour.</span
+          >
+        </p>
+        <p class="fact">
+          <span class="tick">·</span>
+          <span
+            >Un hameçon simple sans ardillon, ou écrasé, divise par deux le temps de
+            décrochage sur un poisson qui repart — ce n’est pas obligatoire, c’est
+            seulement ce qui marche.</span
+          >
+        </p>
+      </div>
+
+      <div class="note">
+        <strong>Vérifiez avant de partir</strong> — ces règles sont révisées chaque année et
+        des arrêtés préfectoraux peuvent les durcir localement. La référence qui fait foi est
+        celle publiée par l’administration des affaires maritimes.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Questions fréquentes</h2>
+
+      <div class="faq">
+        <details open>
+          <summary>Quel est le meilleur leurre souple pour le bar ?</summary>
+          <p>
+            Un shad à caudale plate de 10 à 12 cm, monté sur une tête plombée de 10 à
+            20 g. C’est le leurre qui prend le plus de bars du bord en France, parce
+            qu’il travaille tout seul : sa queue bat dès la récupération la plus lente,
+            il se lance loin, il descend droit et il imite ce que le bar mange le plus
+            souvent — un petit poisson blanc. Si vous ne deviez en emporter qu’un, ce
+            serait celui-là, en blanc nacré et en 11 cm.
+          </p>
+        </details>
+        <details>
+          <summary>Quelle taille de leurre souple pour le bar ?</summary>
+          <p>
+            De 9 à 13 cm dans l’immense majorité des situations, avec 11 cm comme taille
+            pivot. En dessous de 9 cm, vous prendrez plus de poissons mais plus petits, et
+            les touches de maquereau et de chinchard deviendront la règle. Au-dessus de
+            15 cm, vous sélectionnez de gros bars et vous acceptez de faire beaucoup moins
+            de touches : c’est un choix de nuit ou de gros coefficient, pas un réglage par
+            défaut.
+          </p>
+        </details>
+        <details>
+          <summary>Quel poids de tête plombée pour le bar du bord ?</summary>
+          <p>
+            La plus légère qui vous laisse sentir le fond. En pratique : 7 à 10 g en eau
+            calme et peu profonde, 14 à 20 g dans un mètre de vague ou un courant moyen,
+            25 à 35 g dans une grande vive-eau ou par vent de face. Le test est simple :
+            lancez, comptez la descente. Si le leurre n’arrive jamais au fond, montez de
+            5 g ; s’il tombe comme une pierre et que vous ne sentez plus la queue battre,
+            descendez.
+          </p>
+        </details>
+        <details>
+          <summary>Comment animer un leurre souple pour le bar ?</summary>
+          <p>
+            Trois animations couvrent presque tout. La linéaire lente : vous ramenez juste
+            assez vite pour sentir la queue vibrer dans le scion, et rien d’autre. La
+            traction : deux ou trois coups de canne amples, puis vous laissez le leurre
+            redescendre en ligne tendue — c’est à la descente que 80 % des touches
+            arrivent. La dérive : dans le courant, canne haute, vous laissez le leurre
+            travailler tout seul en ne reprenant que le mou. Dans les trois cas, la pause
+            fait autant de travail que le mouvement.
+          </p>
+        </details>
+        <details>
+          <summary>Quelle couleur de leurre souple pour le bar ?</summary>
+          <p>
+            Trois couleurs suffisent. Un naturel translucide pour l’eau claire et le plein
+            jour, un blanc nacré opaque pour l’eau teintée et la houle, un noir ou un
+            sombre pour la nuit — dans le noir, ce que le bar voit est une silhouette à
+            contre-jour, et une couleur claire n’en fait pas. La couleur arrive loin
+            derrière la taille, la profondeur de nage et la vitesse d’animation dans
+            l’ordre de ce qui décide d’une touche.
+          </p>
+        </details>
+        <details>
+          <summary>Leurre souple ou poisson nageur pour le bar ?</summary>
+          <p>
+            Le souple couvre plus de situations : il descend, il se pêche à toutes les
+            profondeurs, il passe dans les roches en montage texan, et il coûte trois fois
+            moins cher à perdre. Le poisson nageur garde deux avantages nets — il nage à
+            vitesse rapide sans se coucher, ce qui compte quand le bar chasse en surface,
+            et ses hameçons triples piquent des poissons qui touchent court. Un bord de mer
+            bien couvert emporte les deux, avec deux tiers de souples.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SIBLING GUIDES ===================== -->
+  <section>
+    <div class="wrap">
+      <h2>Avec quoi, et où</h2>
+      <p class="section-lede">
+        Le leurre est choisi. Restent la canne qui le lance et l’animera, et la côte qui
+        décide de l’heure.
+      </p>
+
+      <div class="siblings">
+        <a class="sibling" href="/canne-peche-bar-du-bord/">
+          <h3>Quelle canne pour le bar du bord ? →</h3>
+          <p>
+            Longueur, puissance, action : ce qui fait qu’un souple s’anime au poignet et
+            qu’un ferrage passe à quarante mètres, plutôt que l’inverse.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-dunkerque/">
+          <h3>Pêche au bar à Dunkerque →</h3>
+          <p>
+            Un marnage moyen mais un courant qui tombe pile dans la plage idéale — et le
+            seul spot dont l’outil connaisse la table des vents par cœur.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-calais/">
+          <h3>Pêche au bar à Calais →</h3>
+          <p>
+            Le détroit et ses deux à trois nœuds de courant : la dérive y prend le pas sur
+            toutes les autres animations.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-boulogne-sur-mer/">
+          <h3>Pêche au bar à Boulogne-sur-Mer →</h3>
+          <p>
+            Huit mètres de marnage et une côte plein ouest. La digue Carnot, les plages
+            d’Équihen à Hardelot, et la saison mois par mois.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-normandie/">
+          <h3>Pêche au bar en Normandie →</h3>
+          <p>
+            Six cents kilomètres de côte qui tournent sur plus de 180°, du Tréport au
+            Mont-Saint-Michel, et jusqu’à quatorze mètres de marnage.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-bretagne/">
+          <h3>Pêche au bar en Bretagne →</h3>
+          <p>
+            Platiers, laminaires et houle d’ouest : la région où le montage texan cesse
+            d’être une option.
+          </p>
+        </a>
+        <a class="sibling" href="/peche-bar-vendee/">
+          <h3>Pêche au bar en Vendée →</h3>
+          <p>
+            De l’eau à 21 °C en août, des plages de sable à lançons et de la houle
+            atlantique : la Gascogne ne se lit pas comme la Manche.
+          </p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="closing">
+    <!-- ===================== CLOSING ===================== -->
+    <section class="closing">
+      <div class="wrap">
+        <h2>Le bon leurre, à la bonne heure</h2>
+        <p class="section-lede">
+          Marée, houle, vent et lumière des sept prochains jours, ramenés à un score et à
+          une heure, pour n’importe quelle commune du littoral. Le reste tient dans une
+          pochette.
+        </p>
+        <a class="cta" href="/app/">Voir les conditions <span class="arrow">→</span></a>
+      </div>
+    </section>
+  </Fragment>
+</GuideLayout>
