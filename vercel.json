@@ -5,6 +5,14 @@
   "buildCommand": "npm run build:web",
   "outputDirectory": "dist",
   "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.pecheaubar.fr" }],
+      "destination": "https://pecheaubar.fr/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/_expo/static/(.*)",
