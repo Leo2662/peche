@@ -8,16 +8,9 @@
   "redirects": [
     {
       "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.pecheaubar.fr" }],
       "destination": "https://pecheaubar.fr/:path*",
-      "statusCode": 301,
-      "permanent": true,
-      "has": [
-        {
-          "type": "header",
-          "key": "host",
-          "value": "www.pecheaubar.fr"
-        }
-      ]
+      "permanent": true
     }
   ],
   "headers": [
