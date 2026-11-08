@@ -7,9 +7,9 @@
   "trailingSlash": true,
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.pecheaubar.fr" }],
-      "destination": "https://pecheaubar.fr/:path*",
+      "destination": "https://pecheaubar.fr/$1",
       "permanent": true
     }
   ],
