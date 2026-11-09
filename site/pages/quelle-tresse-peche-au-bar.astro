@@ -1,0 +1,129 @@
+---
+import GuideLayout from '../layouts/GuideLayout.astro';
+
+/** What Google may show under the result, in the page's own words. */
+const faq = [
+  {
+    "question": "Quelle couleur de tresse privilégier pour le bar ?",
+    "answer": "Privilégiez des teintes neutres comme le gris, l'olive ou le vert foncé. Ces couleurs se fondent dans la majorité des environnements marins et laissent le bar plus à l'aise lors de son approche du leurre ou de l'appât."
+  },
+  {
+    "question": "La tresse convient-elle aux cannes de puissance modérée ?",
+    "answer": "Oui, à condition de sélectionner un diamètre compatible avec la puissance de votre canne. Une tresse trop forte sollicite excessivement les anneaux de cannes légères, tandis qu'une tresse trop fine ne permet pas d'exploiter la réserve de puissance de cannes plus musclées."
+  },
+  {
+    "question": "Combien de temps peut-on conserver une tresse usagée ?",
+    "answer": "Il est conseillé de remplacer la tresse à chaque changement de saison ou dès qu'une usure visible apparaît. La performance diminue progressivement avec le nombre de lancers et les frottements répétés, rendant la ligne moins fiable malgré son aspect extérieur correct."
+  },
+  {
+    "question": "Le vent influence-t-il le choix de la tresse ?",
+    "answer": "Le vent latéral n'influence pas directement le choix technique de la tresse, mais il impacte la distance utile. Si le vent fait reculer le lancer, une tresse plus fine aidera à compenser la perte de portée, mais augmentera le risque d'emmêlements si la gestion du pilote est approximative."
+  }
+];
+---
+
+<GuideLayout
+  slug="quelle-tresse-peche-au-bar"
+  title={"Quelle tresse pour la pêche du bar en surfcasting ?"}
+  description={"Choisir le bon diamètre de tresse pour le bar dépend de la distance et de la houle. Découvrez les critères techniques essentiels pour réussir vos lancers."}
+  social={"Choisir le bon diamètre de tresse pour le bar dépend de la distance et de la houle. Découvrez les critères techniques essentiels pour réussir vos lancers."}
+  faq={faq}
+>
+  <Fragment slot="hero">
+    <div>
+      <h1>Tresse pour le bar : critères de choix</h1>
+      <p class="lede">La sélection de la tresse influence directement la puissance d'un lanceur et la détection d'un bar. Un mauvais choix peut brider la canne ou rendre le combat difficile. Voici les repères pour faire le bon choix.</p>
+      <div class="hero-actions">
+        <a class="cta" href="/app/">Voir les conditions du jour <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </Fragment>
+
+  <section id="partie-1" class="flagship">
+    <div class="wrap">
+      <h2>Le lien entre puissance et diamètre</h2>
+      <div class="prose">
+        <p>En pêche du bar, la tresse permet d'envoyer plus loin que le nylon standard. Plus le diamètre est faible, moins la tresse freine le passage à travers les anneaux. Cela se traduit par une distance supplémentaire significative, voire décisive en cas de grosse houle.</p>
+        <p>Cependant, une tresse trop fine augmente le risque de rupture si un gros poisson s'accroche ou si le point de friction est mal géré. La puissance de la canne doit correspondre à la résistance au bris de la tresse choisie pour éviter les casses inutiles.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="partie-2">
+    <div class="wrap">
+      <h2>Adaptation aux conditions de houle</h2>
+      <div class="prose">
+        <p>La houle modifie l'incidence de la ligne sur l'eau. En conditions agitées, une tresse de diamètre moyen présente un meilleur équilibre entre robustesse et légèreté. Elle absorbe mieux les chocs lors de l'amortissement du lancer, ce qui préserve votre matériel.</p>
+        <p>Si la houle est faible, vous pouvez opter pour un diamètre plus fin pour maximiser la précision sur des postes précis. En revanche, au-delà d'un certain seuil d'énergie marine, la priorité passe à la sécurité du montage et la faculté à garder le pilote sous contrôle.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="partie-3">
+    <div class="wrap">
+      <h2>La liaison avec le leader</h2>
+      <div class="prose">
+        <p>La tresse se lie obligatoirement à un leader. La qualité de cette jonction est critique car c'est le point le plus faible de votre armement. Une mauvaise nœud peut entraîner une perte immédiate dès la première sollicitation du bar.</p>
+        <p>Il est recommandé de laisser une longueur de leader suffisante, généralement comprise entre deux et quatre mètres selon la présence de prédateurs secondaires ou d'obstacles sous-marins. ce leader doit être plus gros que la tresse pour fournir un amorti et protéger le nœud de l'usure.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="partie-4">
+    <div class="wrap">
+      <h2>Les caractéristiques de la fibre</h2>
+      <div class="prose">
+        <p>Les tessures modernes offrent une faible mémoire et une grande douceur. Cette douceur est importante pour la manipulation de la boîte à munitions et pour le passage dans les guide-fils de la canne. Une tresse trop rugueuse use prématurément les anneaux et réduit la durée de vie de votre canne.</p>
+        <p>La visibilité en eau claire est un autre facteur. Choisissez une couleur discrète, souvent gris ou olive, pour ne pas effrayer les bars dans les eaux peu profondes ou lors des attaques près du rivage. L'invisibilité réduit la méfiance du poisson lors de la phase de leurre.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="partie-5">
+    <div class="wrap">
+      <h2>Entretien et résistance à l'abrasion</h2>
+      <div class="prose">
+        <p>La tresse est sensible aux abrasions causées par les sables mobiles ou les rocks affleurants. Un contrôle visuel régulier est indispensable pour repérer les brins effilochés ou la perte de torsion. Une tresse dégradée perd drastiquement sa résistance initiale.</p>
+        <p>Lavez votre ligne avec de l'eau douce après chaque session pour éliminer le sel et le sable. Un séchage à l'ombre préserve l'intégrité des fibres et empêche la dégradation chimique due à l'humidité saline. Cette simple routine prolonge la durée de vie de votre matériel.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Questions fréquentes</h2>
+
+      <div class="faq">
+        <details open>
+          <summary>Quelle couleur de tresse privilégier pour le bar ?</summary>
+          <p>Privilégiez des teintes neutres comme le gris, l'olive ou le vert foncé. Ces couleurs se fondent dans la majorité des environnements marins et laissent le bar plus à l'aise lors de son approche du leurre ou de l'appât.</p>
+        </details>
+        <details>
+          <summary>La tresse convient-elle aux cannes de puissance modérée ?</summary>
+          <p>Oui, à condition de sélectionner un diamètre compatible avec la puissance de votre canne. Une tresse trop forte sollicite excessivement les anneaux de cannes légères, tandis qu'une tresse trop fine ne permet pas d'exploiter la réserve de puissance de cannes plus musclées.</p>
+        </details>
+        <details>
+          <summary>Combien de temps peut-on conserver une tresse usagée ?</summary>
+          <p>Il est conseillé de remplacer la tresse à chaque changement de saison ou dès qu'une usure visible apparaît. La performance diminue progressivement avec le nombre de lancers et les frottements répétés, rendant la ligne moins fiable malgré son aspect extérieur correct.</p>
+        </details>
+        <details>
+          <summary>Le vent influence-t-il le choix de la tresse ?</summary>
+          <p>Le vent latéral n'influence pas directement le choix technique de la tresse, mais il impacte la distance utile. Si le vent fait reculer le lancer, une tresse plus fine aidera à compenser la perte de portée, mais augmentera le risque d'emmêlements si la gestion du pilote est approximative.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="closing">
+    <section class="closing">
+      <div class="wrap">
+        <h2>Le bon moment pour y aller</h2>
+        <p class="section-lede">
+          Marée, houle, vent et lumière des sept prochains jours, ramenés à un score et à
+          une heure, pour n’importe quelle commune du littoral.
+        </p>
+        <a class="cta" href="/app/">Voir les conditions <span class="arrow">→</span></a>
+      </div>
+    </section>
+  </Fragment>
+</GuideLayout>

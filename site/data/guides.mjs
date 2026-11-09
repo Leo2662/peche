@@ -144,6 +144,13 @@ export const TOPICS = [
     headline: 'Quelle canne pour la pêche au bar du bord : longueur, puissance, action',
     about: 'Canne à pêche au bar du bord',
   },
+  {
+    slug: "quelle-tresse-peche-au-bar",
+    crumb: "Tresse pour le bar",
+    nav: "Choisir sa tresse",
+    headline: "Comment choisir la tresse idoine pour la pêche au bar",
+    about: "Sélection de la tresse",
+  },
 ];
 
 /** Every page in the route table, spot guides first. */
